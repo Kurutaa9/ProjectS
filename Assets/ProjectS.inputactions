@@ -285,11 +285,33 @@
                 },
                 {
                     "name": "",
+                    "id": "e66f4a9f-80c3-4858-9442-ca635674ce87",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "8a27b6d5-e177-4b18-83f3-c0cd025e7322",
                     "path": "<Keyboard>/#(V)",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
+                    "action": "LockOnTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e41bb1b2-2b12-428f-91e5-caa288f26968",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "LockOnTarget",
                     "isComposite": false,
                     "isPartOfComposite": false

@@ -598,8 +598,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5d7bb74388351f44ac8c2117db68d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensx: 0.3
-  sensy: 0.3
+  sensx: 10
+  sensy: 10
+  returnToTargetSpeed: 3
+  mouseIdleThreshold: 0.1
+  returnDelay: 0.1
+  maxAngleOffset: 30
+  lookAction: {fileID: 4724318637035288003, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  controllerSensitivity: 300
+  playerController: {fileID: 1921648515}
 --- !u!4 &1099322394 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4334314812708720166, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
@@ -917,6 +924,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpeed: 2
   jumpHeight: 1.5
+  rotationSpeed: 10
+  targetLockRange: 10
   moveAction: {fileID: -3130217082136603544, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   jumpAction: {fileID: -7633424460605379354, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   lockOnTargetAction: {fileID: -8217979969292354152, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
@@ -926,7 +935,12 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 64
+  Enemy:
+    serializedVersion: 2
+    m_Bits: 0
   controller: {fileID: 1921648511}
+  lockedOnTarget: 0
+  currentTarget: {fileID: 33856431}
 --- !u!1 &2022965907
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
 {
     public float playerSpeed;
     public float jumpHeight;
+    public float rotationSpeed;
+    public float targetLockRange;
 
     [Header("Input")]
     public InputActionReference moveAction;
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Layer masks")]
     public LayerMask ground;
+    public LayerMask Enemy;
 
     [Header("Player Controller")]
     public CharacterController controller;
@@ -40,7 +43,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveDir;
 
     //combat controls
-    private bool lockedOnTarget = true;
+    public bool lockedOnTarget = false;
+    public GameObject currentTarget;
 
     private void OnEnable()
     {
@@ -82,11 +86,24 @@ public class PlayerController : MonoBehaviour
         // Apply gravity
         playerVelocity.y += gravity * Time.deltaTime;
 
-        //set the player facing direction
-        if(moveDir.magnitude > 0.1f && !lockedOnTarget)
+        //set the player facing direction (only when in freelook) otherwise lock the camera to target
+        if (lockedOnTarget)
+        {
+            Vector3 targetDirection = currentTarget.transform.position - playerObj.transform.position;
+            targetDirection.y = 0;
+
+            if (targetDirection != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+                playerObj.transform.rotation = Quaternion.Slerp(playerObj.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+        }
+        else if (moveDir.magnitude > 0.1f && !lockedOnTarget)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir, Vector3.up);
-            playerObj.transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, targetRotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+            Quaternion finalRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, targetRotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+            //interpolates the playerobj rotation so when using wasd, the player rotation is smooth
+            playerObj.transform.rotation = Quaternion.Slerp(playerObj.transform.rotation, finalRotation, rotationSpeed * Time.deltaTime);
         }
 
         // Combine horizontal and vertical movement
@@ -104,7 +121,6 @@ public class PlayerController : MonoBehaviour
         if (lockOnTargetAction.action.triggered)
         {
             lockedOnTarget = !lockedOnTarget;
-            Debug.Log(lockedOnTarget);
         }
     }
 
