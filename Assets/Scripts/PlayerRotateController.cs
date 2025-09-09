@@ -25,6 +25,9 @@ public class PlayerRotateController : MonoBehaviour
 
     private float mouseIdleTimer;
     private bool isManuallyControlling = false;
+    private Vector2 combinedDelta;
+    private Vector2 mouseDelta;
+    private Vector2 controllerDelta;
 
     void Start()
     {
@@ -32,6 +35,10 @@ public class PlayerRotateController : MonoBehaviour
         Cursor.visible = false;
 
         lookAction.action.Enable();
+
+        combinedDelta = Vector2.zero;
+        mouseDelta = Vector2.zero;
+        controllerDelta = Vector2.zero;
     }
 
     void OnDisable()
@@ -41,13 +48,19 @@ public class PlayerRotateController : MonoBehaviour
 
     void Update()
     {
-        //mouse input for rotation
-        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
-        mouseDelta.x = mouseDelta.x * sensx * Time.deltaTime;
-        mouseDelta.y = mouseDelta.y * sensy * Time.deltaTime;
-        Vector2 controllerDelta = Gamepad.current.rightStick.ReadValue() * controllerSensitivity * Time.deltaTime;
+        if(Mouse.current != null){
+            //mouse input for rotation
+            mouseDelta = Mouse.current.delta.ReadValue();
+            mouseDelta.x = mouseDelta.x * sensx * Time.deltaTime;
+            mouseDelta.y = mouseDelta.y * sensy * Time.deltaTime;
+        }
 
-        Vector2 combinedDelta = mouseDelta + controllerDelta;
+        if(Gamepad.current != null){
+            //controller input
+            controllerDelta = Gamepad.current.rightStick.ReadValue() * controllerSensitivity * Time.deltaTime;
+        }
+
+        combinedDelta = mouseDelta + controllerDelta;
 
         if (playerController.lockedOnTarget)
         {
