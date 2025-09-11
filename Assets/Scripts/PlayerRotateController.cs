@@ -8,10 +8,6 @@ public class PlayerRotateController : MonoBehaviour
     
     public float sensx;
     public float sensy;
-    public float returnToTargetSpeed;
-    public float mouseIdleThreshold;
-    public float returnDelay;
-    public float maxAngleOffset;
 
     [Header("Controller Input")]
     public InputActionReference lookAction;
@@ -23,9 +19,8 @@ public class PlayerRotateController : MonoBehaviour
 
     public PlayerController playerController;
 
-    private float mouseIdleTimer;
-    private bool isManuallyControlling = false;
-    private Vector2 combinedDelta;
+    //INPUTS / KEYBINDS VARIABLES
+    public Vector2 combinedDelta;
     private Vector2 mouseDelta;
     private Vector2 controllerDelta;
 
@@ -64,91 +59,20 @@ public class PlayerRotateController : MonoBehaviour
 
         if (playerController.lockedOnTarget)
         {
-            if(combinedDelta.magnitude > mouseIdleThreshold)
-            {
-                isManuallyControlling = true;
-                mouseIdleTimer = 0f;
-                
-                Vector3 targetDirection = playerController.currentTarget.transform.position - transform.position;
-                targetDirection.y = 0;
-                Quaternion idealRotation = Quaternion.LookRotation(targetDirection);
-                float idealYRotation = idealRotation.eulerAngles.y;
-                
-                float lookx = combinedDelta.x;
-                float looky = combinedDelta.y;
+            Vector3 targetDirection = playerController.currentTarget.transform.position - transform.position;
+            targetDirection.y -= 2f;
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
 
-                //check if the mouse movement will exceed the specified maxangle when locked on to a target
-                //if it is only allow movement inward and not outward else normal mouse movement
-                float newYRotation = yRotation + lookx;
-                float newAngleFromTarget = Mathf.DeltaAngle(newYRotation, idealYRotation);
-                if (Mathf.Abs(newAngleFromTarget) <= maxAngleOffset)
-                {
-                    yRotation = newYRotation;
-                }
-                else
-                {
-                    //if the mouse is moving towards the center(inwards)
-                    if (Mathf.Abs(newAngleFromTarget) < Mathf.Abs(Mathf.DeltaAngle(yRotation, idealYRotation)))
-                    {
-                        yRotation = newYRotation;
-                    }
-                    else // otherwise clamp it so it doesnt move futher
-                    {
-                        float sign = Mathf.Sign(Mathf.DeltaAngle(yRotation, idealYRotation));
-                        yRotation = idealYRotation + (-sign * maxAngleOffset);
-                    }
-                }
+            float targetX = targetRotation.eulerAngles.x;
+            if (targetX > 180f) targetX -= 360f;
+            targetX = ClampAngle(targetX, -80f, 80f);
 
-                xRotation -= looky;
-                xRotation = ClampAngle(xRotation, -80f, 80f);
+            xRotation = targetX;
+            yRotation = targetRotation.eulerAngles.y;
 
-                transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-            }
-            else if (isManuallyControlling)
-            {
-                mouseIdleTimer += Time.deltaTime;
-                Debug.Log(mouseIdleTimer);
-                //if the player isnt controlling the mouse anymore for a while, go back to face the target
-                if(mouseIdleTimer > returnDelay)
-                {
-                    Vector3 targetDirection = playerController.currentTarget.transform.position - transform.position;
-                    targetDirection.y = 0;
-                    Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-
-                    float targetX = targetRotation.eulerAngles.x;
-                    if (targetX > 180f) targetX -= 360f;
-                    targetX = ClampAngle(targetX, -80f, 80f);
-
-                    float targetY = targetRotation.eulerAngles.y;
-
-                    xRotation = Mathf.LerpAngle(xRotation, targetX, returnToTargetSpeed * Time.deltaTime);
-                    yRotation = Mathf.LerpAngle(yRotation, targetY, returnToTargetSpeed * Time.deltaTime);
-
-                    transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-
-                    if (xRotation == targetX && yRotation == targetY)
-                    {
-                        isManuallyControlling = false;
-                    }
-                }
-            }
-            else
-            {
-                Vector3 targetDirection = playerController.currentTarget.transform.position - transform.position;
-                targetDirection.y = 0;
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-
-                float targetX = targetRotation.eulerAngles.x;
-                if (targetX > 180f) targetX -= 360f;
-                targetX = ClampAngle(targetX, -80f, 80f);
-
-                xRotation = targetX;
-                yRotation = targetRotation.eulerAngles.y;
-
-                Quaternion finalRotation = Quaternion.Euler(xRotation, yRotation, 0);
-                transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, playerController.rotationSpeed * Time.deltaTime);
-            }
-        }
+            Quaternion finalRotation = Quaternion.Euler(xRotation, yRotation, 0);
+            transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, playerController.rotationSpeed * Time.deltaTime);
+    }
         else
         {
             float lookx = combinedDelta.x;
