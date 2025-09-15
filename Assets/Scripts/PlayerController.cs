@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public InputActionReference lockOnTargetAction;
 
     [Header("orientation")]
+    public Camera cam;
     public Transform orientation;
 
     [Header("Object")]
@@ -161,6 +164,10 @@ public class PlayerController : MonoBehaviour
             Vector3 targetPos = targetCollider.bounds.center;
             Vector3 directionToTarget = targetPos - orientation.position;
 
+            float dot = Vector3.Dot(cameraForward.normalized, directionToTarget.normalized);
+            if (dot < 0.1f) continue; // if the object is *behind* player, skip it, dont lock to it
+            //not technically behind, dot < 0.1 means it is more than ~80deg to the left and right of the player
+
             //Calculate angle from player cam center to the target and also distance
             float angle = Vector3.Angle(cameraForward, directionToTarget);
             float distance = Vector3.Distance(transform.position, targetPos);
@@ -192,53 +199,34 @@ public class PlayerController : MonoBehaviour
         //get all possible lock target 
         Collider[] potentialTargets = Physics.OverlapSphere(transform.position, targetLockRange, lockTarget);
 
+        Vector2 screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+
         GameObject bestTarget = null;
         float bestScore = float.MaxValue;
-
-        //direction from camera to current Target
-        Vector3 currentTargetDir = currentTarget.transform.position - orientation.position;
-        Vector3 currentTargetDirFlat = new Vector3(currentTargetDir.x, 0, currentTargetDir.z).normalized;
-
-        Vector3 forward = orientation.forward;
-        Vector3 right = orientation.right;
-        forward.y = 0;
-        forward = forward.normalized;
-
-        Vector3 desiredLookDir = forward * inputDir.y + right * inputDir.x;
-        desiredLookDir = desiredLookDir.normalized;
-
 
         foreach (Collider target in potentialTargets)
         {
             if (target.gameObject == currentTarget || target.gameObject == gameObject) continue;
 
-            Vector3 dirToTarget = target.transform.position - orientation.position;
-            //Vector3 dirToTargetFlat = new Vector3(dirToTarget.x, 0, dirToTarget.z);
-            float distanceToTarget = dirToTarget.magnitude;
-            //dirToTargetFlat = dirToTargetFlat.normalized;
-            float dotProduct = Vector3.Dot(currentTargetDirFlat, dirToTarget);
+            Vector3 worldPos = target.transform.position;
+            Vector3 screenPoint = cam.WorldToScreenPoint(worldPos);
 
-            if (dotProduct > 0)
+            if (screenPoint.z < 0) continue;
+
+            Vector2 screenPos = new Vector2(screenPoint.x,screenPoint.y);
+            Vector2 disFromCenter = screenPos - screenCenter;
+            float dot = Vector2.Dot(inputDir.normalized, disFromCenter.normalized);
+
+            if (dot < 0.8f) continue;
+
+            float dis3D = Vector3.Distance(cam.transform.position, worldPos);
+
+            float score = disFromCenter.magnitude + (dis3D * 0.1f);
+
+            if(score < bestScore)
             {
-                float heightDifference = dirToTarget.y - currentTargetDir.y;
-
-                bool matchesVertical = (inputDir.y > 0 && heightDifference > 0) ||
-                                      (inputDir.y < 0 && heightDifference < 0) ||
-                                      (Mathf.Abs(inputDir.y) < 0.1f);
-
-                if (matchesVertical)
-                {
-                    //angle between desired direction and direction to this target
-                    float angle = Vector3.Angle(desiredLookDir, dirToTarget);
-                    float score = angle + (distanceToTarget * 0.1f);
-
-
-                    if (score < bestScore)
-                    {
-                        bestScore = score;
-                        bestTarget = target.gameObject;
-                    }
-                }
+                bestScore = score;
+                bestTarget = target.gameObject;
             }
         }
 

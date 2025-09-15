@@ -1545,6 +1545,7 @@ MonoBehaviour:
   moveAction: {fileID: -3130217082136603544, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   jumpAction: {fileID: -7633424460605379354, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   lockOnTargetAction: {fileID: -8217979969292354152, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  cam: {fileID: 646550151}
   orientation: {fileID: 896055525}
   playerObj: {fileID: 1575660633}
   anim: {fileID: 1575660635}
