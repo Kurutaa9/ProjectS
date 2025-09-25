@@ -1344,14 +1344,50 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 78a7d7a560cc8684ba2744382d21f004, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'mixamorig:Hips'\n\tTransform 'mixamorig:LeftFoot'\n\tTransform
+    'mixamorig:LeftHandThumb2'\n\tTransform 'mixamorig:LeftHandIndex1'\n\tTransform
+    'mixamorig:LeftHandPinky2'\n\tTransform 'mixamorig:RightHandRing2'\n\tTransform
+    'mixamorig:Spine1'\n\tTransform 'mixamorig:LeftToeBase'\n\tTransform 'mixamorig:LeftHandThumb3'\n\tTransform
+    'mixamorig:RightArm'\n\tand more ...\n\tFrom animation clip 'walkforward'\n\tFrom
+    animation clip 'walkBack'\n\tFrom animation clip 'strafe1(right)'\n\tFrom animation
+    clip 'strafe2(left)'\n\tFrom animation clip 'walkforward'\n\tFrom animation clip
+    'walkforward'\n\tFrom animation clip 'runforward'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1575660636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575660633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62dc0505bcf539947aa4914eb4dad6a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerParent: {fileID: 1921648510}
+  anim: {fileID: 1575660635}
+--- !u!114 &1575660637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575660633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 579ee111e9a2c564daae5f0e13bea13c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 1921648515}
 --- !u!1 &1590886256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,6 +1580,8 @@ MonoBehaviour:
   rotateController: {fileID: 896055526}
   moveAction: {fileID: -3130217082136603544, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   jumpAction: {fileID: -7633424460605379354, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  AttackAction: {fileID: -4553274764285300186, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  rollAction: {fileID: 5912490216897630189, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   lockOnTargetAction: {fileID: -8217979969292354152, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   cam: {fileID: 646550151}
   orientation: {fileID: 896055525}
@@ -1561,6 +1599,11 @@ MonoBehaviour:
   targetSwitchCooldown: 0.2
   lockedOnTarget: 0
   currentTarget: {fileID: 33856431}
+  isRolling: 0
+  rollDistance: 4
+  rollSpeedMultiplier: 2
+  inputsLocked: 0
+  isAttacking: 0
 --- !u!114 &1921648516
 MonoBehaviour:
   m_ObjectHideFlags: 0

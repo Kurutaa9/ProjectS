@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     public PlayerRotateController rotateController;
     public InputActionReference moveAction;
     public InputActionReference jumpAction;
+    public InputActionReference AttackAction;
+    public InputActionReference rollAction;
     public InputActionReference lockOnTargetAction;
 
     [Header("orientation")]
@@ -49,11 +51,25 @@ public class PlayerController : MonoBehaviour
     public bool lockedOnTarget = false;
     public GameObject currentTarget;
 
+    //rolling
+    [Header("Roll Settings")]
+    public bool isRolling = false;
+    public float rollDistance = 4f;
+    public float rollSpeedMultiplier = 2f;
+    private Quaternion rollTargetRotation;
+    private Vector3 rollDirection;
+    public bool inputsLocked = false;
+
+    //Attacking
+    public bool isAttacking = false;
+
     private void OnEnable()
     {
         moveAction.action.Enable();
         jumpAction.action.Enable();
         lockOnTargetAction.action.Enable();
+        AttackAction.action.Enable();
+        rollAction.action.Enable();
     }
 
     private void OnDisable()
@@ -61,6 +77,8 @@ public class PlayerController : MonoBehaviour
         moveAction.action.Disable();
         jumpAction.action.Disable();
         lockOnTargetAction.action.Disable();
+        AttackAction.action.Disable();
+        rollAction.action.Disable();
     }
 
     void Update()
@@ -73,8 +91,14 @@ public class PlayerController : MonoBehaviour
         }
 
         // Read input   
-        Vector2 input = moveAction.action.ReadValue<Vector2>();
-        move = new Vector3(input.x, 0, input.y);
+        if (!inputsLocked)
+        {
+            Vector2 input = moveAction.action.ReadValue<Vector2>();
+            move = new Vector3(input.x, 0, input.y);
+        } else
+        {
+            move = Vector3.zero;
+        }
         move = Vector3.ClampMagnitude(move, 1f);
         moveDir = orientation.forward * move.z + orientation.right * move.x;
         moveDir.y = 0f;
@@ -90,7 +114,14 @@ public class PlayerController : MonoBehaviour
         playerVelocity.y += gravity * Time.deltaTime;
 
         //set the player facing direction (only when in freelook) otherwise lock the camera to target
-        if (lockedOnTarget)
+        if (isRolling)
+        {
+            playerObj.transform.rotation = Quaternion.Slerp(
+                playerObj.transform.rotation,
+                rollTargetRotation,
+                rotationSpeed * 2f * Time.deltaTime);
+        }
+        else if (lockedOnTarget)
         {
             Vector3 targetDirection = currentTarget.transform.position - playerObj.transform.position;
             targetDirection.y = 0;
@@ -112,14 +143,22 @@ public class PlayerController : MonoBehaviour
         }
 
         // Combine horizontal and vertical movement
-        Vector3 finalMove = (moveDir * playerSpeed) + (playerVelocity.y * Vector3.up);
+        Vector3 finalMove;
 
-        //playerVelocity.y += gravity * Time.deltaTime;
+        if (isRolling)
+        {
+            finalMove = (rollDirection * playerSpeed * rollSpeedMultiplier) + (playerVelocity.y * Vector3.up);
+        }
+        else
+        {
+            finalMove = (moveDir * playerSpeed) + (playerVelocity.y * Vector3.up);
+        }
+
         controller.Move(finalMove * Time.deltaTime);
-
         combatControls();
         updateAnimations();
     }
+
 
     private void combatControls()
     {
@@ -141,6 +180,37 @@ public class PlayerController : MonoBehaviour
                 currentTarget = null;
             }
         }
+
+        if (AttackAction.action.triggered && !isAttacking)
+        {
+            anim.SetBool("IsAttacking", true);
+            isAttacking = true;
+        }
+
+        if (rollAction.action.triggered && !isRolling && grounded && !isAttacking)
+        {
+            StartRoll();
+        }
+    }
+
+    private void StartRoll()
+    {
+        isRolling = true;
+        inputsLocked = true;
+        anim.SetBool("IsRolling", true);
+
+        if (moveDir.magnitude > 0.1f)
+        {
+            rollDirection = moveDir;
+        }
+        else
+        {
+            rollDirection = playerObj.transform.forward;
+        }
+
+        //  set rotation to roll
+        rollTargetRotation = Quaternion.LookRotation(rollDirection, Vector3.up);
+        //anim.SetTrigger("Roll");
     }
 
     private GameObject FindBestLockOnTarget()
