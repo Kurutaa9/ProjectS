@@ -9,7 +9,9 @@ public class RootMotionController : MonoBehaviour
 
     private void OnAnimatorMove()
     {
+        anim.applyRootMotion = true;
+
         playerParent.transform.position += anim.deltaPosition;
-        //playerParent.transform.rotation = transform.rotation;
+        playerParent.transform.rotation *= anim.deltaRotation;
     }
 }

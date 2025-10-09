@@ -18,6 +18,7 @@ public class PlayerRotateController : MonoBehaviour
     float xRotation;
 
     public PlayerController playerController;
+    public Transform playerParentTransform;
 
     //INPUTS / KEYBINDS VARIABLES
     public Vector2 combinedDelta;

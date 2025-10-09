@@ -61,7 +61,10 @@ public class PlayerController : MonoBehaviour
     public bool inputsLocked = false;
 
     //Attacking
-    public bool isAttacking = false;
+    public PlayerCombat playerCombat;
+    public bool IsAttacking = false;
+    public bool attackLocked = false;
+
 
     private void OnEnable()
     {
@@ -105,7 +108,7 @@ public class PlayerController : MonoBehaviour
         moveDir = moveDir.normalized;
 
         // Jump
-        if (jumpAction.action.triggered && grounded)
+        if (jumpAction.action.triggered && grounded && !inputsLocked)
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
         }
@@ -181,13 +184,15 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (AttackAction.action.triggered && !isAttacking)
+        //attacking
+        if (AttackAction.action.triggered && !attackLocked)
         {
-            anim.SetBool("IsAttacking", true);
-            isAttacking = true;
+            playerCombat.attackbuffer = true;
         }
 
-        if (rollAction.action.triggered && !isRolling && grounded && !isAttacking)
+
+        //roll
+        if (rollAction.action.triggered && !isRolling && grounded && !inputsLocked)
         {
             StartRoll();
         }
@@ -197,7 +202,7 @@ public class PlayerController : MonoBehaviour
     {
         isRolling = true;
         inputsLocked = true;
-        anim.SetBool("IsRolling", true);
+        attackLocked = true;
 
         if (moveDir.magnitude > 0.1f)
         {
@@ -210,6 +215,7 @@ public class PlayerController : MonoBehaviour
 
         //  set rotation to roll
         rollTargetRotation = Quaternion.LookRotation(rollDirection, Vector3.up);
+        anim.SetBool("IsRolling", true);
         //anim.SetTrigger("Roll");
     }
 
@@ -312,8 +318,9 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("lockedOnTarget", lockedOnTarget);
         if (lockedOnTarget)
         {
-            anim.SetFloat("strafevelx", controller.velocity.x);
-            anim.SetFloat("strafevely", controller.velocity.z);
+            Vector3 localVelocity = playerObj.transform.InverseTransformDirection(controller.velocity);
+            anim.SetFloat("strafevelx", localVelocity.x, 0.2f, Time.deltaTime);
+            anim.SetFloat("strafevely", localVelocity.z, 0.2f, Time.deltaTime);
         }
         else
         {

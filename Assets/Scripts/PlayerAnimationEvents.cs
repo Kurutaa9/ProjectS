@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Networking.PlayerConnection;
 using UnityEngine;
 
 public class PlayerAnimationEvents : MonoBehaviour
@@ -12,11 +11,17 @@ public class PlayerAnimationEvents : MonoBehaviour
         playerController.isRolling = false;
         playerController.anim.SetBool("IsRolling", false);
         playerController.inputsLocked = false;
+        playerController.attackLocked = false;
+        Debug.Log("Set input locked fasle form rolling");
     }
 
-    public void setAttackingFalse()
+    public void setInputLock()
     {
-        playerController.isAttacking = false;
-        playerController.anim.SetBool("IsAttacking", false);
+        playerController.inputsLocked = true;
+    }
+
+    public void resetInputLock()
+    {
+        playerController.inputsLocked = false;
     }
 }

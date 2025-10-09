@@ -691,6 +691,24 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &836669973 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4334314813405729788, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+  m_PrefabInstance: {fileID: 1723347081}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &836669979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836669973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc6c74f987bf98945aff0a13dcd33443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 0
 --- !u!1001 &851584879
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -797,6 +815,7 @@ MonoBehaviour:
   lookAction: {fileID: 4724318637035288003, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   controllerSensitivity: 300
   playerController: {fileID: 1921648515}
+  playerParentTransform: {fileID: 1921648512}
   combinedDelta: {x: 0, y: 0}
 --- !u!1 &923365531
 GameObject:
@@ -1347,34 +1366,11 @@ Animator:
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'mixamorig:Hips'\n\tTransform 'mixamorig:LeftFoot'\n\tTransform
-    'mixamorig:LeftHandThumb2'\n\tTransform 'mixamorig:LeftHandIndex1'\n\tTransform
-    'mixamorig:LeftHandPinky2'\n\tTransform 'mixamorig:RightHandRing2'\n\tTransform
-    'mixamorig:Spine1'\n\tTransform 'mixamorig:LeftToeBase'\n\tTransform 'mixamorig:LeftHandThumb3'\n\tTransform
-    'mixamorig:RightArm'\n\tand more ...\n\tFrom animation clip 'walkforward'\n\tFrom
-    animation clip 'walkBack'\n\tFrom animation clip 'strafe1(right)'\n\tFrom animation
-    clip 'strafe2(left)'\n\tFrom animation clip 'walkforward'\n\tFrom animation clip
-    'walkforward'\n\tFrom animation clip 'runforward'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1575660636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575660633}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62dc0505bcf539947aa4914eb4dad6a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerParent: {fileID: 1921648510}
-  anim: {fileID: 1575660635}
 --- !u!114 &1575660637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1388,6 +1384,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 1921648515}
+--- !u!114 &1575660638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575660633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62dc0505bcf539947aa4914eb4dad6a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerParent: {fileID: 1921648510}
+  anim: {fileID: 1575660635}
 --- !u!1 &1590886256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1490,6 +1500,7 @@ GameObject:
   - component: {fileID: 1921648514}
   - component: {fileID: 1921648515}
   - component: {fileID: 1921648516}
+  - component: {fileID: 1921648517}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1600,10 +1611,12 @@ MonoBehaviour:
   lockedOnTarget: 0
   currentTarget: {fileID: 33856431}
   isRolling: 0
-  rollDistance: 4
+  rollDistance: 5
   rollSpeedMultiplier: 2
   inputsLocked: 0
-  isAttacking: 0
+  playerCombat: {fileID: 1921648517}
+  IsAttacking: 0
+  attackLocked: 0
 --- !u!114 &1921648516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1620,6 +1633,28 @@ MonoBehaviour:
   imagePrefab: {fileID: 3076291787529905938, guid: 6eb6c389c47b50e4da97b80e9ab64ad7, type: 3}
   uiCanvas: {fileID: 959512126}
   indicatorScale: 0.1
+--- !u!114 &1921648517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921648510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc420f8f40763c348a4a33a98a7ac1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 1921648515}
+  combo:
+  - {fileID: 11400000, guid: 8b5524132cd8d514fabaac1da83dd4d8, type: 2}
+  - {fileID: 11400000, guid: bac14b6f973ad1e408d8f1d943c4c02b, type: 2}
+  - {fileID: 11400000, guid: cfd88c882bf66534593911a13d39ca5b, type: 2}
+  attackbuffer: 0
+  comboCooldown: 0.5
+  comboResetTime: 2
+  anim: {fileID: 1575660635}
+  weapon: {fileID: 836669979}
 --- !u!1 &2022965907
 GameObject:
   m_ObjectHideFlags: 0
