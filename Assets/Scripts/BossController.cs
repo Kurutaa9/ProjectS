@@ -1,22 +1,15 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UI;
-using TMPro;
 
 public class BossController : MonoBehaviour
 {
-    public enum BossState { Idle, Chase, Attack, Recover, Enraged, Dead }
+    public enum BossState { Idle, Chase, Attack, Recover, Enraged, Dead, JumpAttack }
     private BossState currentState;
 
     [Header("References")]
     public Transform player;
     private NavMeshAgent agent;
     private Animator anim;
-
-    [Header("UI References")]
-    public GameObject healthBarUI; // Drag your health bar UI here
-    public Slider healthSlider; // If using a slider for health bar
-    public TextMeshProUGUI bossName;
 
     [Header("Boss Settings")]
     public float maxHealth = 1000f;
@@ -26,25 +19,35 @@ public class BossController : MonoBehaviour
     public float attackCooldown = 2f;
     private float lastAttackTime;
 
+    [Header("Jump Attack Settings")]
+    public float jumpDuration = 1.0f;       // how long the jump lasts
+    public float jumpHeight = 3f;           // max height of the arc
+    public AnimationCurve jumpCurve;        // controls jump arc
+    private bool isJumping = false;
+    private Vector3 jumpStart;
+    private Vector3 jumpTarget;
+    private float jumpTimer = 0f;
+
+    [Header("Rotation")]
+    public float attackTurnSpeed = 8f; // rotation speed while attacking
+
     [Header("Enrage Settings")]
     public float enrageThreshold = 0.5f; // 50% HP
     private bool isEnraged = false;
-
-    [Header("Jump Attack Settings")]
-    public float jumpAttackMinRange = 5f;
-    public float jumpAttackMaxRange = 9f;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        anim.applyRootMotion = false; // off by default
         currentHealth = maxHealth;
         ChangeState(BossState.Idle);
     }
 
     void Update()
     {
+        if (!agent.isOnNavMesh)
+        Debug.LogError("Boss is NOT on the NavMesh!");
+
         switch (currentState)
         {
             case BossState.Idle:
@@ -58,6 +61,11 @@ public class BossController : MonoBehaviour
             case BossState.Attack:
                 HandleAttack();
                 break;
+            
+            case BossState.JumpAttack:
+                HandleJumpAttack();
+                break;
+
 
             case BossState.Recover:
                 HandleRecover();
@@ -85,24 +93,24 @@ public class BossController : MonoBehaviour
         anim.SetBool("isMoving", false);
         if (Vector3.Distance(transform.position, player.position) < chaseRange)
         {
-            // Show health UI when entering chase zone
-            if (healthBarUI != null)
-            {
-                bossName.text = "Maw";
-                healthBarUI.SetActive(true);
-            }
             ChangeState(BossState.Chase);
         }
     }
 
     void HandleChase()
     {
+        Debug.Log($"Chase: speed={agent.speed}, stopped={agent.isStopped}, onNav={agent.isOnNavMesh}, hasPath={agent.hasPath}, remaining={agent.remainingDistance}");
+
+
         anim.SetBool("isMoving", true);
         agent.isStopped = false;
         agent.SetDestination(player.position);
+        if (Vector3.Distance(transform.position, player.position) > 10f) // if player is far, leap
+        {
+            StartJumpAttack();
+        }
 
-        float dist = Vector3.Distance(transform.position, player.position);
-        if (dist <= attackRange || (dist >= jumpAttackMinRange && dist <= jumpAttackMaxRange))
+        else if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
             ChangeState(BossState.Attack);
         }
@@ -111,24 +119,66 @@ public class BossController : MonoBehaviour
     void HandleAttack()
     {
         agent.isStopped = true;
+        FacePlayer(); // ensure boss faces player while attacking
         anim.SetBool("isMoving", false);
 
         if (Time.time - lastAttackTime >= attackCooldown)
         {
-            float dist = Vector3.Distance(transform.position, player.position);
-            if (dist >= jumpAttackMinRange && dist <= jumpAttackMaxRange)
-            {
-                anim.SetTrigger("JumpAttack"); // Jump: root motion via animation events
-            }
-            else
-            {
-                anim.SetTrigger("Attack"); // Normal attack
-            }
+            anim.SetTrigger("Attack"); 
             lastAttackTime = Time.time;
+            ChangeState(BossState.Recover);
         }
-
-        ChangeState(BossState.Recover);
     }
+
+    void StartJumpAttack()
+    {
+        isJumping = true;
+        agent.enabled = false; // disable NavMeshAgent control
+        jumpStart = transform.position;
+        // jumpTarget = player.position; // snapshot target
+        jumpTimer = 0f;
+
+         // Add an offset in front of the player
+        Vector3 forwardOffset = player.forward * 2f; // 2 units in front of player
+        jumpTarget = player.position + forwardOffset; // snapshot target in front
+
+        anim.SetTrigger("JumpAttack"); // play jump animation
+        ChangeState(BossState.JumpAttack);
+    }
+
+    void HandleJumpAttack()
+    {
+        if (!isJumping) return;
+
+        FacePlayer(); // keep rotating toward player during jump
+
+        jumpTimer += Time.deltaTime;
+        float t = jumpTimer / jumpDuration;
+
+        if (t >= 1f)
+        {
+            // End jump
+            transform.position = jumpTarget;
+            isJumping = false;
+            agent.enabled = true;
+            lastAttackTime = Time.time;
+            ChangeState(BossState.Recover);
+        }
+        else
+        {
+            // Horizontal lerp
+            Vector3 horiz = Vector3.Lerp(jumpStart, jumpTarget, t);
+
+            // Vertical arc using curve
+            float height = jumpCurve.Evaluate(t) * jumpHeight;
+            transform.position = new Vector3(horiz.x, jumpStart.y + height, horiz.z);
+            // float height = 4 * jumpHeight * t * (1 - t);
+            // transform.position = new Vector3(horiz.x, jumpStart.y + height, horiz.z);
+
+        }
+    }
+
+
 
     void HandleRecover()
     {
@@ -146,6 +196,7 @@ public class BossController : MonoBehaviour
 
         if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
+            FacePlayer(); // keep turning toward player in enraged melee
             if (Time.time - lastAttackTime >= attackCooldown)
             {
                 anim.SetTrigger("EnrageAttack"); // Use stronger attack
@@ -179,13 +230,6 @@ public class BossController : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-
-        // Update health bar UI
-        if (healthSlider != null)
-        {
-            healthSlider.value = currentHealth / maxHealth;
-        }
-
         if (currentHealth <= 0 && currentState != BossState.Dead)
         {
             Die();
@@ -198,23 +242,16 @@ public class BossController : MonoBehaviour
         agent.isStopped = true;
         anim.SetTrigger("Die");
         // Disable boss logic here
-        // Hide health UI when boss dies
-        if (healthBarUI != null)
-        {
-            healthBarUI.SetActive(false);
-        }
     }
 
-    // Animation Events (call these from the Jump Attack clip)
-    public void AE_EnableRootMotion()
+    // Smooth horizontal facing toward player
+    private void FacePlayer()
     {
-        anim.applyRootMotion = true;
-        if (agent != null) agent.enabled = false; // prevent conflicts while leaping
-    }
-
-    public void AE_DisableRootMotion()
-    {
-        anim.applyRootMotion = false;
-        if (agent != null) agent.enabled = true; // restore NavMeshAgent after leap
+        if (player == null) return;
+        Vector3 dir = player.position - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.0001f) return;
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, attackTurnSpeed * Time.deltaTime);
     }
 }
