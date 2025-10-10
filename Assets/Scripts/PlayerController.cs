@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Player Controller")]
     public CharacterController controller;
+    public PlayerStats playerStats;
 
     [Header("TargetLock Settings")]
     public float targetLockRange;
@@ -192,8 +193,9 @@ public class PlayerController : MonoBehaviour
 
 
         //roll
-        if (rollAction.action.triggered && !isRolling && grounded && !inputsLocked)
+        if (rollAction.action.triggered && !isRolling && grounded && !inputsLocked && playerStats.CanPerformAction(playerStats.GetRollStaminaCost()))
         {
+            playerStats.ConsumeStamina(playerStats.GetRollStaminaCost());
             StartRoll();
         }
     }

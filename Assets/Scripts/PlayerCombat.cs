@@ -16,7 +16,7 @@ public class PlayerCombat : MonoBehaviour
     int debugCounter = 0;
 
     public Animator anim;
-    [SerializeField] Weapon weapon;
+    [SerializeField] public Weapon weapon;
 
     void Start()
     {
@@ -32,8 +32,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void Attack()
     {
-        
-        //return if the time since last final attack is to fast or no 
+        //return if the time since last final attack is too fast or no 
         if (Time.time - lastClickedTime <= 0.2f || comboCounter >= combo.Count || !attackbuffer)
         {
             return;
@@ -48,16 +47,17 @@ public class PlayerCombat : MonoBehaviour
         CancelInvoke("EndCombo");
         attackbuffer = false;
         playerController.IsAttacking = true;
-        playerController.inputsLocked = true;
+        playerController.inputsLocked = true; //used too lock player inputs so cant do anything while attacking
 
-        anim.runtimeAnimatorController = combo[comboCounter].animatorOV;
-        anim.Play("Attack", 0, 0);
-        weapon.damage = combo[comboCounter].damage;
+        anim.runtimeAnimatorController = combo[comboCounter].animatorOV; //overirdes current animator with the new animations for that specific combo
+        anim.Play("Attack", 0, 0); // play the attack animation that has been overwritten
+        weapon.damage = combo[comboCounter].damage; //set the weapon damage according to the current combo
+        weapon.StartAttack();
 
         comboCounter++;
         lastClickedTime = Time.time;
 
-        if(comboCounter >= combo.Count)
+        if(comboCounter >= combo.Count) //reset combo if reached max combo
         {
             comboCounter = 0;
         }
@@ -76,7 +76,6 @@ public class PlayerCombat : MonoBehaviour
 
     void EndCombo()
     {
-        Debug.Log("reset combo");
         comboCounter = 0;
         lastComboEnd = Time.time;
     }
