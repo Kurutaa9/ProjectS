@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public InputActionReference moveAction;
     public InputActionReference jumpAction;
     public InputActionReference AttackAction;
+    public InputActionReference sprintAction;
     public InputActionReference rollAction;
     public InputActionReference lockOnTargetAction;
 
@@ -61,6 +62,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 rollDirection;
     public bool inputsLocked = false;
 
+    // Sprinting
+    [Header("Sprint Settings")]
+    public bool isSprinting = false;
+    [Tooltip("Multiplier applied to playerSpeed while sprinting")]
+    public float sprintSpeedMultiplier = 1.75f;
+
     //Attacking
     public PlayerCombat playerCombat;
     public bool IsAttacking = false;
@@ -73,6 +80,7 @@ public class PlayerController : MonoBehaviour
         jumpAction.action.Enable();
         lockOnTargetAction.action.Enable();
         AttackAction.action.Enable();
+        if (sprintAction != null) sprintAction.action.Enable();
         rollAction.action.Enable();
     }
 
@@ -82,6 +90,7 @@ public class PlayerController : MonoBehaviour
         jumpAction.action.Disable();
         lockOnTargetAction.action.Disable();
         AttackAction.action.Disable();
+        if (sprintAction != null) sprintAction.action.Disable();
         rollAction.action.Disable();
     }
 
@@ -149,13 +158,32 @@ public class PlayerController : MonoBehaviour
         // Combine horizontal and vertical movement
         Vector3 finalMove;
 
+        // Determine whether sprinting is active: sprint only when moving, grounded,
+        // not target-locked, not rolling, and inputs aren't locked.
+        float speedMultiplier = 1f;
+        try
+        {
+            float sprintVal = (sprintAction != null) ? sprintAction.action.ReadValue<float>() : 0f;
+            isSprinting = sprintVal > 0.5f && !lockedOnTarget && moveDir.magnitude > 0.1f && !inputsLocked && grounded && !isRolling;
+        }
+        catch
+        {
+            // In case the action isn't set or ReadValue fails, ensure sprint is false
+            isSprinting = false;
+        }
+
+        if (isSprinting)
+        {
+            speedMultiplier = sprintSpeedMultiplier;
+        }
+
         if (isRolling)
         {
             finalMove = (rollDirection * playerSpeed * rollSpeedMultiplier) + (playerVelocity.y * Vector3.up);
         }
         else
         {
-            finalMove = (moveDir * playerSpeed) + (playerVelocity.y * Vector3.up);
+            finalMove = (moveDir * playerSpeed * speedMultiplier) + (playerVelocity.y * Vector3.up);
         }
 
         controller.Move(finalMove * Time.deltaTime);
@@ -318,6 +346,7 @@ public class PlayerController : MonoBehaviour
     private void updateAnimations()
     {
         anim.SetBool("lockedOnTarget", lockedOnTarget);
+        anim.SetBool("IsSprinting", isSprinting);
         if (lockedOnTarget)
         {
             Vector3 localVelocity = playerObj.transform.InverseTransformDirection(controller.velocity);
