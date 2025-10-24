@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 78d20d05e4a7448f69124477d9830caa
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/Tools/SyntyPropBoneTool/Configs/POLYGONRig_01_PropBoneBindingConfig.asset
+  uploadId: 686788

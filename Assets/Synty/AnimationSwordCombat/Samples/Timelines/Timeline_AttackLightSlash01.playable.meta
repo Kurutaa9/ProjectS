@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a9071a975a31f674888da6696cbe2416
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Timelines/Timeline_AttackLightSlash01.playable
+  uploadId: 686788

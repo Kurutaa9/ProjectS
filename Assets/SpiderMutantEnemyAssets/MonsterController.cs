@@ -10,6 +10,7 @@ public class MonsterController : MonoBehaviour
     public Transform player;
     private NavMeshAgent agent;
     private Animator anim;
+    private EnemyStatController enemyStats;
 
     [Header("Settings")]
     public float maxHealth;
@@ -18,6 +19,8 @@ public class MonsterController : MonoBehaviour
     public float attackRange;
     public float attackCooldown;
     private float lastAttackTime;
+    private float playerDetectionInterval = 0.5f;
+    private float lastDetectionTime;
 
     [Header("Attack Facing")]
     public float attackTurnSpeed = 8f;          // how fast to rotate toward player while preparing / performing attack
@@ -32,10 +35,17 @@ public class MonsterController : MonoBehaviour
         anim = GetComponent<Animator>();
         currentHealth = maxHealth;
         ChangeState(State.Idle);
+        lastDetectionTime = Time.time - playerDetectionInterval;
     }
 
     void Update()
     {
+        if (Time.time - lastDetectionTime >= playerDetectionInterval)
+        {
+            DetectPlayer();
+            lastDetectionTime = Time.time;
+        }
+
         switch (currentState)
         {
             case State.Idle:    HandleIdle(); break;
@@ -43,6 +53,20 @@ public class MonsterController : MonoBehaviour
             case State.Attack:  HandleAttack(); break;
             case State.Recover: HandleRecover(); break;
             case State.Dead:    break;
+        }
+    }
+
+    //detect player
+    private void DetectPlayer()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, chaseRange);
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                player = hit.transform;
+                break;
+            }
         }
     }
 

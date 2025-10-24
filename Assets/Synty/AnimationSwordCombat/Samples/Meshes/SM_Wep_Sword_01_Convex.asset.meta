@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 348f4c10f67baf14a9f1340732c1d568
+timeCreated: 1584484937
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Meshes/SM_Wep_Sword_01_Convex.asset
+  uploadId: 686788

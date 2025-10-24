@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e74dadbd254bc1e42a0bfa20f14ba5b3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Timelines/Timeline_AttackLightCombo01.playable
+  uploadId: 686788

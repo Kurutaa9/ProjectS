@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 87a906e3df0f4c2478f614e11f754da8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Timelines/Timeline_IdleEnergetic.playable
+  uploadId: 686788

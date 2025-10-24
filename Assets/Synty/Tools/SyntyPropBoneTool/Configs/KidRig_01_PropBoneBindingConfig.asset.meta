@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6a4523363b8e641ea9bb8276d6e8554e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/Tools/SyntyPropBoneTool/Configs/KidRig_01_PropBoneBindingConfig.asset
+  uploadId: 686788

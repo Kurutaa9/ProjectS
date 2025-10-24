@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 737bc297511dd9b4082c63ec65f7974c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Timelines/Timeline_AttackHeavyStab01.playable
+  uploadId: 686788

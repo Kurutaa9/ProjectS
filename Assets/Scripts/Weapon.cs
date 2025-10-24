@@ -12,7 +12,6 @@ public class Weapon : MonoBehaviour
     public void StartAttack()
     {
         hitEnemies.Clear();
-        Debug.Log("Weapon: Starting new attack, cleared hitEnemies list");
     }
 
     private void OnTriggerEnter(Collider other)

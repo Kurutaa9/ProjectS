@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 24f1f6db4a9522446b3bf70fe87e6036
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Timelines/Timeline_HitReact.playable
+  uploadId: 686788

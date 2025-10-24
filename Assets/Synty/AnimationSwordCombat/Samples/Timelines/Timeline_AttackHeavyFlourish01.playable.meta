@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 79cc0fa0c1477214799691b1c958e7a3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 291806
+  packageName: Synty ANIMATION - Sword Combat
+  packageVersion: 1.0.1
+  assetPath: Assets/__Download/Synty/AnimationSwordCombat/Samples/Timelines/Timeline_AttackHeavyFlourish01.playable
+  uploadId: 686788
