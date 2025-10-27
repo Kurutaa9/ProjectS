@@ -61,6 +61,35 @@ public class PlayerCombat : MonoBehaviour
         }
 
         CancelInvoke("EndCombo");
+        // Before starting, check stamina cost for this attack and consume it.
+        float attackStaminaCost = 0f;
+        if (combo != null && combo.Count > comboCounter)
+        {
+            attackStaminaCost = combo[comboCounter].staminaCost;
+        }
+
+        // If no stamina available for this attack, discard the buffered input and abort.
+        if (playerController != null && playerController.playerStats != null)
+        {
+            if (!playerController.playerStats.CanPerformAction(attackStaminaCost))
+            {
+                // Player lacks stamina: end the combo so we don't resume mid-combo
+                // once stamina regenerates. Apply the short finish cooldown and
+                // reset combo trackers.
+                attackbuffer = false;
+                comboCounter = 0;
+                lastComboEnd = Time.time;
+                lastComboCooldown = shortFinishCooldown;
+                currentExecutingAttackIndex = -1;
+                lastCompletedAttackIndex = -1;
+                return;
+            }
+            else
+            {
+                playerController.playerStats.ConsumeStamina(attackStaminaCost);
+            }
+        }
+
         attackbuffer = false;
         playerController.IsAttacking = true;
         playerController.inputsLocked = true; //used too lock player inputs so cant do anything while attacking

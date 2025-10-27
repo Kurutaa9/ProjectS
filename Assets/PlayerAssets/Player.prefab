@@ -2660,6 +2660,7 @@ MonoBehaviour:
   moveAction: {fileID: -3130217082136603544, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   jumpAction: {fileID: -7633424460605379354, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   AttackAction: {fileID: -4553274764285300186, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  sprintAction: {fileID: -3463504297877522698, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   rollAction: {fileID: 5912490216897630189, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   lockOnTargetAction: {fileID: -8217979969292354152, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   cam: {fileID: 0}
@@ -2683,6 +2684,8 @@ MonoBehaviour:
   rollDistance: 5
   rollSpeedMultiplier: 2
   inputsLocked: 0
+  isSprinting: 0
+  sprintSpeedMultiplier: 1.75
   playerCombat: {fileID: 8824110412222569697}
   IsAttacking: 0
   attackLocked: 0
@@ -2720,6 +2723,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bac14b6f973ad1e408d8f1d943c4c02b, type: 2}
   - {fileID: 11400000, guid: cfd88c882bf66534593911a13d39ca5b, type: 2}
   attackbuffer: 0
+  shortFinishCooldown: 0.01
+  fullFinishCooldown: 0.05
   anim: {fileID: 3788377233913091284}
   weapon: {fileID: 0}
 --- !u!114 &8824110412222569699

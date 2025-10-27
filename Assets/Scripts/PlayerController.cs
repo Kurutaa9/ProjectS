@@ -67,6 +67,14 @@ public class PlayerController : MonoBehaviour
     public bool isSprinting = false;
     [Tooltip("Multiplier applied to playerSpeed while sprinting")]
     public float sprintSpeedMultiplier = 1.75f;
+    [Tooltip("Stamina drained per second while sprinting")]
+    public float sprintStaminaDrain = 10f;
+    [Tooltip("Stamina cost applied once when jumping")]
+    public float jumpStaminaCost = 15f;
+    [Header("Exhaustion")]
+    [Tooltip("If stamina hits zero while sprinting the player becomes exhausted and cannot sprint again until stamina recovers to this percent of max (0-1)")]
+    public float exhaustionRecoverPercent = 0.2f;
+    public bool isExhausted = false;
 
     //Attacking
     public PlayerCombat playerCombat;
@@ -80,7 +88,7 @@ public class PlayerController : MonoBehaviour
         jumpAction.action.Enable();
         lockOnTargetAction.action.Enable();
         AttackAction.action.Enable();
-        if (sprintAction != null) sprintAction.action.Enable();
+        sprintAction.action.Enable();
         rollAction.action.Enable();
     }
 
@@ -90,7 +98,7 @@ public class PlayerController : MonoBehaviour
         jumpAction.action.Disable();
         lockOnTargetAction.action.Disable();
         AttackAction.action.Disable();
-        if (sprintAction != null) sprintAction.action.Disable();
+        sprintAction.action.Disable();
         rollAction.action.Disable();
     }
 
@@ -120,11 +128,28 @@ public class PlayerController : MonoBehaviour
         // Jump
         if (jumpAction.action.triggered && grounded && !inputsLocked)
         {
-            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
+            if (playerStats != null && playerStats.CanPerformAction(jumpStaminaCost))
+            {
+                playerStats.ConsumeStamina(jumpStaminaCost);
+                playerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
+            }
+            // else
+            // {
+            //     // Not enough stamina — do not jump. Could add feedback here.
+            // }
         }
 
         // Apply gravity
         playerVelocity.y += gravity * Time.deltaTime;
+
+        // Recover from exhaustion when stamina has regenerated enough
+        if (isExhausted && playerStats != null)
+        {
+            if (playerStats.GetCurrentStamina() >= playerStats.GetMaxStamina() * exhaustionRecoverPercent)
+            {
+                isExhausted = false;
+            }
+        }
 
         //set the player facing direction (only when in freelook) otherwise lock the camera to target
         if (isRolling)
@@ -164,7 +189,8 @@ public class PlayerController : MonoBehaviour
         try
         {
             float sprintVal = (sprintAction != null) ? sprintAction.action.ReadValue<float>() : 0f;
-            isSprinting = sprintVal > 0.5f && !lockedOnTarget && moveDir.magnitude > 0.1f && !inputsLocked && grounded && !isRolling;
+            // Can't start sprint if exhausted
+            isSprinting = sprintVal > 0.5f && !lockedOnTarget && moveDir.magnitude > 0.1f && !inputsLocked && grounded && !isRolling && !isExhausted;
         }
         catch
         {
@@ -174,7 +200,35 @@ public class PlayerController : MonoBehaviour
 
         if (isSprinting)
         {
-            speedMultiplier = sprintSpeedMultiplier;
+            // Drain stamina over time while sprinting. If stamina runs out, stop sprinting
+            // and set exhaustion. We drain up to the remaining stamina so stamina will
+            // not go negative.
+            float drain = sprintStaminaDrain * Time.deltaTime;
+            if (playerStats != null)
+            {
+                float current = playerStats.GetCurrentStamina();
+                float actualDrain = Mathf.Min(drain, current);
+                if (actualDrain > 0f)
+                {
+                    playerStats.ConsumeStamina(actualDrain);
+                }
+
+                if (current <= drain)
+                {
+                    // stamina would reach zero this frame -> exhaustion
+                    isSprinting = false;
+                    isExhausted = true;
+                    speedMultiplier = 1f;
+                }
+                else
+                {
+                    speedMultiplier = sprintSpeedMultiplier;
+                }
+            }
+            else
+            {
+                speedMultiplier = sprintSpeedMultiplier;
+            }
         }
 
         if (isRolling)
@@ -346,7 +400,7 @@ public class PlayerController : MonoBehaviour
     private void updateAnimations()
     {
         anim.SetBool("lockedOnTarget", lockedOnTarget);
-        anim.SetBool("IsSprinting", isSprinting);
+        anim.SetBool("isSprinting", isSprinting);
         if (lockedOnTarget)
         {
             Vector3 localVelocity = playerObj.transform.InverseTransformDirection(controller.velocity);

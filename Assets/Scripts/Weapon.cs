@@ -6,7 +6,10 @@ public class Weapon : MonoBehaviour
 {
     public float damage;
     private List<GameObject> hitEnemies = new List<GameObject>();
-    public bool canDamage= false;
+    public bool canDamage = false;
+
+    [SerializeField]
+    private float attackStaminaCost;
 
 
     public void StartAttack()
