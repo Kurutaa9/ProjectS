@@ -762,6 +762,17 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 2850030926290925999, guid: 8d6133d732367e647858eddc87953d69, type: 3}
   m_PrefabInstance: {fileID: 2850030926937402152}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &704709038 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2295006213808430432, guid: 41b13935e4026114287f27c735bf842b, type: 3}
+  m_PrefabInstance: {fileID: 8824110410317699940}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc6c74f987bf98945aff0a13dcd33443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &880694726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1482,17 +1493,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1870060585 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3713737322697533114, guid: 41b13935e4026114287f27c735bf842b, type: 3}
-  m_PrefabInstance: {fileID: 8824110410317699940}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc6c74f987bf98945aff0a13dcd33443, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2022965907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1929,6 +1929,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4484208065239298898, guid: 41b13935e4026114287f27c735bf842b, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7256057588461195610, guid: 41b13935e4026114287f27c735bf842b, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8543018039681626440, guid: 41b13935e4026114287f27c735bf842b, type: 3}
       propertyPath: controllerSensitivity
       value: 300
@@ -1944,7 +1952,7 @@ PrefabInstance:
     - target: {fileID: 8824110412222569697, guid: 41b13935e4026114287f27c735bf842b, type: 3}
       propertyPath: weapon
       value: 
-      objectReference: {fileID: 1870060585}
+      objectReference: {fileID: 704709038}
     - target: {fileID: 8824110412222569698, guid: 41b13935e4026114287f27c735bf842b, type: 3}
       propertyPath: healthBar
       value: 
@@ -2001,5 +2009,6 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 646550151}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3713737322697533114, guid: 41b13935e4026114287f27c735bf842b, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 41b13935e4026114287f27c735bf842b, type: 3}

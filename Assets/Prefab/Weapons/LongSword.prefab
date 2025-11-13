@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4334314812708720166}
-  - component: {fileID: 3713737322309461669}
   m_Layer: 0
   m_Name: LongSword
   m_TagString: Untagged
@@ -33,20 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3713737322309461669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4334314812708720168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc6c74f987bf98945aff0a13dcd33443, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 10
-  canDamage: 0
 --- !u!1 &4334314813405729788
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,6 +45,7 @@ GameObject:
   - component: {fileID: 4334314813405729784}
   - component: {fileID: 4484208065627108173}
   - component: {fileID: 7256057588077515077}
+  - component: {fileID: 2295006213391195519}
   m_Layer: 0
   m_Name: LongSwordMesh
   m_TagString: Untagged
@@ -140,7 +126,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4334314813405729788}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.04, y: 0.980288, z: 0.020938}
@@ -153,8 +139,23 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4334314813405729788}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.207682, y: 0.04, z: 0.020938}
   m_Center: {x: 0, y: 0.03, z: 0}
+--- !u!114 &2295006213391195519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4334314813405729788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc6c74f987bf98945aff0a13dcd33443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 10
+  canDamage: 0
+  attackStaminaCost: 0
