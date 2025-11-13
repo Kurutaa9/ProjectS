@@ -34,4 +34,24 @@ public class PlayerAnimationEvents : MonoBehaviour
     {
         playerCombat.weapon.canDamage = false;
     }
+
+    // Dodge i-frames via animation events
+    // Add these two events to the dodge animation timeline at the start and end of the invincibility window
+    public void dodgeInvincibilityOn()
+    {
+        if (playerController != null && playerController.playerStats != null)
+        {
+            playerController.playerStats.SetInvincible(true);
+            Debug.Log($"[PlayerIFrames] ON at t={Time.time:F2}");
+        }
+    }
+
+    public void dodgeInvincibilityOff()
+    {
+        if (playerController != null && playerController.playerStats != null)
+        {
+            playerController.playerStats.SetInvincible(false);
+            Debug.Log($"[PlayerIFrames] OFF at t={Time.time:F2}");
+        }
+    }
 }

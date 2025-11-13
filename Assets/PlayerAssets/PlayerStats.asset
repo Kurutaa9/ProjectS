@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   maxStamina: 100
-  staminaRegen: 5
+  staminaRegen: 40
   rollStaminaCost: 20
   baseDamage: 10
