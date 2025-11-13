@@ -28,13 +28,11 @@ public class EnemyHealthBar : MonoBehaviour
 
     private void UpdateHealthBar(float currentHealth)
     {
-        Debug.Log(healthBar.value);
         healthBar.value = currentHealth / enemyStats.GetMaxHealth();
     }
 
     private void ToggleVisibility(bool hasTakenDamage)
     {
-        Debug.Log(hasTakenDamage);
         canvas.enabled = hasTakenDamage;
     }
 

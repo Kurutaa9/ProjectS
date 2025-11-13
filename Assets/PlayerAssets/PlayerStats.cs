@@ -9,6 +9,14 @@ public class PlayerStats : MonoBehaviour
 
     private float currentHealth;
     private float currentStamina;
+    [Header("Status Flags")]
+    [Tooltip("When true, incoming damage is ignored (used for dodge i-frames).")]
+    public bool isInvincible = false;
+
+    [Header("Stamina Regen Control")]
+    [Tooltip("Seconds to wait after any stamina usage before regen starts again.")]
+    public float staminaRegenDelay = 0.75f;
+    private float regenBlockedUntil = 0f;
 
     public UnityEvent<float> OnHealthChanged;
     public UnityEvent<float> OnStaminaChanged;
@@ -24,28 +32,46 @@ public class PlayerStats : MonoBehaviour
 
     void Update()
     {
-        //stamina regen
-        if (currentStamina < baseStats.maxStamina)
+        // stamina regen with delay after last consumption
+        if (currentStamina < baseStats.maxStamina && Time.time >= regenBlockedUntil)
         {
+            float before = currentStamina;
             currentStamina = Mathf.Min(currentStamina + baseStats.staminaRegen * Time.deltaTime, baseStats.maxStamina);
-            OnStaminaChanged.Invoke(currentStamina);
+            if (!Mathf.Approximately(currentStamina, before))
+            {
+                OnStaminaChanged.Invoke(currentStamina);
+            }
         }
     }
 
     public void ConsumeStamina(float amount)
     {
+        float before = currentStamina;
         currentStamina = Mathf.Max(currentStamina - amount, 0f);
-        OnStaminaChanged.Invoke(currentStamina);
+        regenBlockedUntil = Time.time + staminaRegenDelay; // block regen for a short time after use
+        if (!Mathf.Approximately(currentStamina, before))
+        {
+            OnStaminaChanged.Invoke(currentStamina);
+        }
     }
 
     public void TakeDamage(float amount)
     {
+        // Ignore damage while invincible (e.g., during dodge i-frames)
+        if (isInvincible)
+            return;
+
         currentHealth = Mathf.Max(currentHealth - amount, 0f);
         OnHealthChanged.Invoke(currentHealth);
         if (currentHealth <= 0f)
         {
             OnDeath.Invoke();
         }
+    }
+
+    public void SetInvincible(bool value)
+    {
+        isInvincible = value;
     }
 
     public float GetCurrentHealth()
