@@ -15,15 +15,15 @@ public class BossController : MonoBehaviour
     public float maxHealth = 1000f;
     private float currentHealth;
     public float chaseRange = 15f;
-    public float attackRange = 3f;
-    public float attackCooldown = 2f;
+    public float attackRange = 5f;
+    public float attackCooldown = 1f;
     private float lastAttackTime;
 
     [Header("Jump Attack Settings")]
-    public float jumpDuration = 1.0f;       // how long the jump lasts
-    public float jumpHeight = 3f;           // max height of the arc
+    public float jumpDuration = 2.0f;       // how long the jump lasts
+    public float jumpHeight = 5f;           // max height of the arc
     public AnimationCurve jumpCurve;        // controls jump arc
-    public float jumpTriggerRange = 15.0f;
+    public float jumpAttackRange = 10f;
     private bool isJumping = false;
     private Vector3 jumpStart;
     private Vector3 jumpTarget;
@@ -45,7 +45,6 @@ public class BossController : MonoBehaviour
         anim = GetComponent<Animator>();
         currentHealth = maxHealth;
         ChangeState(BossState.Idle);
-
         if (agent != null)
         {
             agent.stoppingDistance = Mathf.Max(0f, attackRange); // stop at attack range
@@ -114,36 +113,36 @@ public class BossController : MonoBehaviour
         anim.SetBool("isMoving", true);
         float dist = Vector3.Distance(transform.position, player.position);
 
-        // If within attack range, stop and switch to Attack
+        // Prefer jump if in band
+        if (dist >= jumpAttackRange && dist <= chaseRange)
+        {
+            anim.SetBool("isMoving", false);
+            StartJumpAttack();
+            return;
+        }
+
+        // If within melee range -> attack
         if (dist <= attackRange)
         {
             anim.SetBool("isMoving", false);
-            if (agent != null && agent.isOnNavMesh)
-            {
-                agent.isStopped = true;
-                agent.ResetPath();
-            }
             ChangeState(BossState.Attack);
             return;
         }
 
         // Otherwise, chase
-        anim.SetBool("isMoving", true);
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = false;
             agent.SetDestination(player.position);
         }
 
-        if (Vector3.Distance(transform.position, player.position) > jumpTriggerRange) // if player is far, leap
-        {
-            StartJumpAttack();
-        }
+        
     }
 
     void HandleAttack()
     {
         agent.isStopped = true;
+        agent.enabled = false;
         FacePlayer(); // ensure boss faces player while attacking
         anim.SetBool("isMoving", false);
 
@@ -166,8 +165,8 @@ public class BossController : MonoBehaviour
          // Add an offset in front of the player
         Vector3 forwardOffset = player.forward * 2f; // 2 units in front of player
         jumpTarget = player.position + forwardOffset; // snapshot target in front
-
         anim.SetTrigger("JumpAttack"); // play jump animation
+
         ChangeState(BossState.JumpAttack);
     }
 
@@ -208,7 +207,7 @@ public class BossController : MonoBehaviour
     void HandleRecover()
     {
         float dist = Vector3.Distance(transform.position, player.position);
-
+        agent.enabled = true;
         // Hold position and keep facing while in attack range
         if (dist <= attackRange)
         {
