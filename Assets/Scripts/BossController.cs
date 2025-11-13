@@ -23,6 +23,7 @@ public class BossController : MonoBehaviour
     public float jumpDuration = 1.0f;       // how long the jump lasts
     public float jumpHeight = 3f;           // max height of the arc
     public AnimationCurve jumpCurve;        // controls jump arc
+    public float jumpTriggerRange = 15.0f;
     private bool isJumping = false;
     private Vector3 jumpStart;
     private Vector3 jumpTarget;
@@ -35,12 +36,20 @@ public class BossController : MonoBehaviour
     public float enrageThreshold = 0.5f; // 50% HP
     private bool isEnraged = false;
 
+    [Tooltip("Extra distance required to resume chase after being in attack range")]
+    public float attackHysteresis = 0.5f;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         currentHealth = maxHealth;
         ChangeState(BossState.Idle);
+
+        if (agent != null)
+        {
+            agent.stoppingDistance = Mathf.Max(0f, attackRange); // stop at attack range
+        }
     }
 
     void Update()
@@ -103,16 +112,32 @@ public class BossController : MonoBehaviour
 
 
         anim.SetBool("isMoving", true);
-        agent.isStopped = false;
-        agent.SetDestination(player.position);
-        if (Vector3.Distance(transform.position, player.position) > 10f) // if player is far, leap
+        float dist = Vector3.Distance(transform.position, player.position);
+
+        // If within attack range, stop and switch to Attack
+        if (dist <= attackRange)
         {
-            StartJumpAttack();
+            anim.SetBool("isMoving", false);
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+            }
+            ChangeState(BossState.Attack);
+            return;
         }
 
-        else if (Vector3.Distance(transform.position, player.position) <= attackRange)
+        // Otherwise, chase
+        anim.SetBool("isMoving", true);
+        if (agent != null && agent.isOnNavMesh)
         {
-            ChangeState(BossState.Attack);
+            agent.isStopped = false;
+            agent.SetDestination(player.position);
+        }
+
+        if (Vector3.Distance(transform.position, player.position) > jumpTriggerRange) // if player is far, leap
+        {
+            StartJumpAttack();
         }
     }
 
@@ -182,9 +207,39 @@ public class BossController : MonoBehaviour
 
     void HandleRecover()
     {
-        if (Time.time - lastAttackTime >= attackCooldown)
+        float dist = Vector3.Distance(transform.position, player.position);
+
+        // Hold position and keep facing while in attack range
+        if (dist <= attackRange)
         {
-            ChangeState(BossState.Chase);
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+            }
+            anim.SetBool("isMoving", false);
+            FacePlayer(); // keep oriented during recovery
+
+            if (Time.time - lastAttackTime >= attackCooldown)
+            {
+                ChangeState(BossState.Attack);
+            }
+            return;
+        }
+
+        // If player moved out of attack range + hysteresis, resume chase
+        if (dist > attackRange + attackHysteresis)
+        {
+            anim.SetBool("isMoving", true);
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(player.position);
+            }
+
+            if (Time.time - lastAttackTime >= attackCooldown)
+            {
+                ChangeState(BossState.Chase);
+            }
         }
     }
 
