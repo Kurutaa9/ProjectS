@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 289e3e21975c6c74192574ccb7f8ee86, type: 3}
   m_Name: MawStats
   m_EditorClassIdentifier: 
-  maxHealth: 1000
+  maxHealth: 100
   maxStamina: 100
   staminaRegen: 1
   rollStaminaCost: 20
