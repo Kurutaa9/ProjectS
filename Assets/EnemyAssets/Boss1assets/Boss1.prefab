@@ -79,6 +79,7 @@ GameObject:
   - component: {fileID: 4512354160518222688}
   - component: {fileID: 6828799239682040880}
   - component: {fileID: 1433385202581581170}
+  - component: {fileID: 30742593}
   m_Layer: 0
   m_Name: Boss1
   m_TagString: Enemy
@@ -144,7 +145,7 @@ MonoBehaviour:
   anim: {fileID: 5526588551454399812}
   combat: {fileID: 2831172965067239933}
   detectionRange: 30
-  attackRange: 1.5
+  attackRange: 1.1
   stopDistanceBuffer: 0.2
   faceTargetSpeed: 10
   chestOffset: {x: 0, y: 1.2, z: 0}
@@ -173,9 +174,9 @@ MonoBehaviour:
     windup: 0.3
     timeBetweenHits: 0.35
     hitWindow: 0.18
-    recovery: 0.5
+    recovery: 1
     damagePerHit: 10
-    selectionWeight: 0.5
+    selectionWeight: 0.3
   longCombo:
     name: Long Combo
     animatorTrigger: AttackLong
@@ -183,9 +184,9 @@ MonoBehaviour:
     windup: 0.35
     timeBetweenHits: 0.33
     hitWindow: 0.18
-    recovery: 0.7
+    recovery: 4
     damagePerHit: 8
-    selectionWeight: 0.35
+    selectionWeight: 0.3
   special:
     name: Special
     animatorTrigger: AttackSpecial
@@ -193,9 +194,9 @@ MonoBehaviour:
     windup: 0.6
     timeBetweenHits: 0.4
     hitWindow: 0.25
-    recovery: 0.9
+    recovery: 5
     damagePerHit: 20
-    selectionWeight: 0.15
+    selectionWeight: 0.3
   shortAttackSO: {fileID: 0}
   longAttackSO: {fileID: 0}
   specialAttackSO: {fileID: 0}
@@ -227,7 +228,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
@@ -253,6 +254,23 @@ MonoBehaviour:
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &30742593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168022619153831306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76ed8b1d838f79419843ae8ee9d6963, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 1433385202581581170}
+  targetAnimator: {fileID: 5526588551454399812}
+  deathStateName: Die
+  animatorLayer: 0
+  destroyDelay: 1.5
 --- !u!1 &288698329951756986
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,6 +594,7 @@ GameObject:
   - component: {fileID: 1896666169865389886}
   - component: {fileID: 5526588551454399812}
   - component: {fileID: 6799701893398719183}
+  - component: {fileID: 1953260837}
   m_Layer: 0
   m_Name: Paladin J Nordstrom
   m_TagString: Untagged
@@ -636,6 +655,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerParent: {fileID: 168022619153831306}
   anim: {fileID: 5526588551454399812}
+--- !u!114 &1953260837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232191318237879684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b784fa873d171e479519870d4fffcc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weapon: {fileID: 7491766539799139568}
 --- !u!1 &1359513369601801951
 GameObject:
   m_ObjectHideFlags: 0
@@ -1597,6 +1629,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1346885902380514334}
+  - component: {fileID: 1164420752}
   m_Layer: 7
   m_Name: lock target
   m_TagString: Untagged
@@ -1619,6 +1652,19 @@ Transform:
   m_Father: {fileID: 168022619153831284}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &1164420752
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4044066877373681879}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4068817449051000276
 GameObject:
   m_ObjectHideFlags: 0

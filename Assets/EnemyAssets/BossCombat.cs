@@ -124,7 +124,11 @@ public class BossCombat : MonoBehaviour
                     weapon.canDamage = true;
                 }
                 yield return new WaitForSeconds(Mathf.Max(0.01f, data.hitWindow));
-                if (weapon) weapon.canDamage = false;
+                if (weapon)
+                {
+                    weapon.canDamage = false;
+                    weapon.EndAttack();
+                }
 
                 // time to next hit (skip after last)
                 if (i < data.hits - 1 && data.timeBetweenHits > 0f)

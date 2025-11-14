@@ -7,7 +7,8 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     public float damage;
-    private readonly List<GameObject> hitVictims = new List<GameObject>();
+    // Track victims by a stable key (component/root instanceID) to avoid multi-collider double hits
+    private readonly HashSet<int> hitVictimIds = new HashSet<int>();
     public bool canDamage = false;
 
     public enum Team { Player, Enemy }
@@ -39,7 +40,12 @@ public class Weapon : MonoBehaviour
 
     public void StartAttack()
     {
-        hitVictims.Clear();
+        hitVictimIds.Clear();
+    }
+
+    public void EndAttack()
+    {
+        hitVictimIds.Clear();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -49,9 +55,6 @@ public class Weapon : MonoBehaviour
         // Prevent self-hits: ignore colliders that belong to the same root as the owner
         if (ownerRoot != null && other.transform.root == ownerRoot) return;
 
-        // Already hit this object in this attack window
-        if (hitVictims.Contains(other.gameObject)) return;
-
         // Note: don't rely solely on collider tags; many setups tag the root only.
         // Instead, detect valid target components on the hit object or its parents.
         if (ownerTeam == Team.Player)
@@ -59,8 +62,10 @@ public class Weapon : MonoBehaviour
             var enemy = other.GetComponent<EnemyStatController>() ?? other.GetComponentInParent<EnemyStatController>();
             if (enemy != null)
             {
+                int key = enemy.GetInstanceID();
+                if (hitVictimIds.Contains(key)) return;
                 enemy.TakeDamage(damage);
-                hitVictims.Add(other.gameObject);
+                hitVictimIds.Add(key);
                 return;
             }
         }
@@ -69,8 +74,10 @@ public class Weapon : MonoBehaviour
             var player = other.GetComponent<PlayerStats>() ?? other.GetComponentInParent<PlayerStats>();
             if (player != null)
             {
+                int key = player.GetInstanceID();
+                if (hitVictimIds.Contains(key)) return;
                 player.TakeDamage(damage);
-                hitVictims.Add(other.gameObject);
+                hitVictimIds.Add(key);
                 return;
             }
         }

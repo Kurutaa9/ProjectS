@@ -30,5 +30,6 @@ public class animEvents : MonoBehaviour
     {
         if (!weapon) return;
         weapon.canDamage = false;
+        weapon.EndAttack();
     }
 }
