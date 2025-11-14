@@ -39,6 +39,8 @@ public class BossController : MonoBehaviour
     [Tooltip("Extra distance required to resume chase after being in attack range")]
     public float attackHysteresis = 0.5f;
 
+    [HideInInspector] public bool isChasing; // public flag for UI
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -108,7 +110,7 @@ public class BossController : MonoBehaviour
     void HandleChase()
     {
         Debug.Log($"Chase: speed={agent.speed}, stopped={agent.isStopped}, onNav={agent.isOnNavMesh}, hasPath={agent.hasPath}, remaining={agent.remainingDistance}");
-
+        isChasing = true;
 
         anim.SetBool("isMoving", true);
         float dist = Vector3.Distance(transform.position, player.position);
