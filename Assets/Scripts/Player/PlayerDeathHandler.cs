@@ -21,12 +21,27 @@ public class PlayerDeathHandler : MonoBehaviour
     private bool isDying = false;
     private Vector3 initialPosition;
     private Quaternion initialRotation;
+    // cached runtime components/state to disable/restore during death
+    private CharacterController cachedCC;
+    private bool ccWasEnabled = true;
+    private MonoBehaviour cachedRootMotionComp;
+    private bool rootMotionWasEnabled = false;
+    private bool animatorApplyRootMotionWas = false;
 
     private void Awake()
     {
         if (!playerStats) playerStats = GetComponent<PlayerStats>();
         if (!playerController) playerController = GetComponent<PlayerController>();
         if (!playerAnimator) playerAnimator = GetComponentInChildren<Animator>();
+        // cache CharacterController and any root motion controller on the player
+        cachedCC = GetComponent<CharacterController>();
+        // Try to find an existing script that applies root motion (common name in project)
+        cachedRootMotionComp = GetComponent<RootMotionController>();
+        if (cachedRootMotionComp == null)
+            cachedRootMotionComp = GetComponentInChildren<RootMotionController>();
+
+        if (playerAnimator != null)
+            animatorApplyRootMotionWas = playerAnimator.applyRootMotion;
 
         // Capture the initial spawn point for fallback
         initialPosition = transform.position;
@@ -54,6 +69,27 @@ public class PlayerDeathHandler : MonoBehaviour
             playerController.inputsLocked = true;
             playerController.attackLocked = true;
             playerController.isSprinting = false;
+        }
+
+        // Immediately disable CharacterController movement so physics/move calls stop
+        if (cachedCC != null)
+        {
+            ccWasEnabled = cachedCC.enabled;
+            cachedCC.enabled = false;
+        }
+
+        // Disable any root-motion applier component so the animator cannot move the parent
+        if (cachedRootMotionComp != null)
+        {
+            rootMotionWasEnabled = cachedRootMotionComp.enabled;
+            cachedRootMotionComp.enabled = false;
+        }
+
+        // Prevent animator root motion from being applied while dying (we're teleporting on respawn)
+        if (playerAnimator != null)
+        {
+            animatorApplyRootMotionWas = playerAnimator.applyRootMotion;
+            playerAnimator.applyRootMotion = false;
         }
 
         // Force death animation
@@ -99,9 +135,11 @@ public class PlayerDeathHandler : MonoBehaviour
         var cc = (playerController != null) ? playerController.controller : null;
         if (cc != null)
         {
+            // ensure controller is disabled while teleporting (if not already)
+            bool prev = cc.enabled;
             cc.enabled = false;
             transform.SetPositionAndRotation(respawnPos, respawnRot);
-            cc.enabled = true;
+            cc.enabled = prev;
         }
         else
         {
@@ -132,6 +170,22 @@ public class PlayerDeathHandler : MonoBehaviour
         {
             playerController.inputsLocked = false;
             playerController.attackLocked = false;
+        }
+
+        // Restore CharacterController and root motion component states
+        if (cachedCC != null)
+        {
+            cachedCC.enabled = ccWasEnabled;
+        }
+
+        if (cachedRootMotionComp != null)
+        {
+            cachedRootMotionComp.enabled = rootMotionWasEnabled;
+        }
+
+        if (playerAnimator != null)
+        {
+            playerAnimator.applyRootMotion = animatorApplyRootMotionWas;
         }
 
         if (postRespawnIFrames > 0f && playerStats)

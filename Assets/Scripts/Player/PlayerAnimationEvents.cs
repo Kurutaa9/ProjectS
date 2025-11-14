@@ -27,12 +27,14 @@ public class PlayerAnimationEvents : MonoBehaviour
 
     public void weaponCanDamageTrue()
     {
+        playerCombat.weapon.StartAttack();
         playerCombat.weapon.canDamage = true;
     }
 
     public void weaponCanDamageFalse()
     {
         playerCombat.weapon.canDamage = false;
+        playerCombat.weapon.EndAttack();
     }
 
     // Dodge i-frames via animation events
