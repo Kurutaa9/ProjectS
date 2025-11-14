@@ -65,6 +65,10 @@ MonoBehaviour:
   popupCanvas: {fileID: 0}
   pauseOnOpen: 1
   manageCursor: 1
+  setCheckpointOnOpen: 1
+  checkpointOverride: {fileID: 1340790656698111321}
+  lockPlayerInputsOnOpen: 1
+  playerController: {fileID: 0}
 --- !u!1 &1340790656935421579
 GameObject:
   m_ObjectHideFlags: 0
