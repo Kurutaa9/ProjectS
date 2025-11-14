@@ -590,7 +590,7 @@ MonoBehaviour:
   sensx: 30
   sensy: 30
   lookAction: {fileID: 4724318637035288003, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
-  controllerSensitivity: 30
+  controllerSensitivity: 300
   playerController: {fileID: 8824110412222569703}
   playerParentTransform: {fileID: 8824110412222569700}
   combinedDelta: {x: 0, y: 0}
@@ -2569,6 +2569,7 @@ GameObject:
   - component: {fileID: 8824110412222569697}
   - component: {fileID: 8824110412222569699}
   - component: {fileID: 8824110412222569698}
+  - component: {fileID: 440394917}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2730,7 +2731,7 @@ MonoBehaviour:
   shortFinishCooldown: 0.01
   fullFinishCooldown: 0.05
   anim: {fileID: 3788377233913091284}
-  weapon: {fileID: 0}
+  weapon: {fileID: 2295006213808430432}
 --- !u!114 &8824110412222569699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2745,7 +2746,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 674c606fea44ff943a16379adbbd429c, type: 2}
   isInvincible: 0
-  staminaRegenDelay: 0.75
+  staminaRegenDelay: 1
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2770,6 +2771,26 @@ MonoBehaviour:
   playerStats: {fileID: 8824110412222569699}
   healthBar: {fileID: 0}
   staminaBar: {fileID: 0}
+--- !u!114 &440394917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824110412222569498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52fe0c1041ddce14c81976b1e05f2797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerStats: {fileID: 8824110412222569699}
+  playerAnimator: {fileID: 3788377233913091284}
+  playerController: {fileID: 8824110412222569703}
+  deathStateName: Death
+  animatorLayer: 0
+  respawnDelay: 0.25
+  idleStateName: Idle
+  postRespawnIFrames: 1
 --- !u!1 &8944377135854447402
 GameObject:
   m_ObjectHideFlags: 0
@@ -2859,6 +2880,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+--- !u!114 &2295006213808430432 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+  m_PrefabInstance: {fileID: 690126879}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc6c74f987bf98945aff0a13dcd33443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &4334314812320583225 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4334314812708720166, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
