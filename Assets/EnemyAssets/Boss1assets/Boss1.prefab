@@ -631,7 +631,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1232191318237879684}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62dc0505bcf539947aa4914eb4dad6a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 773078afa694ff04081f0d14fb9443cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerParent: {fileID: 168022619153831306}
@@ -2820,7 +2820,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716133, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.22
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716133, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2840,11 +2840,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716133, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 396.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716133, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 221.81
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716133, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
