@@ -1,0 +1,161 @@
+using System.Collections;
+using UnityEngine;
+
+// Plays the player's death animation, then respawns at last checkpoint (or initial position if none).
+public class PlayerDeathHandler : MonoBehaviour
+{
+    [Header("References")]
+    [SerializeField] private PlayerStats playerStats;
+    [SerializeField] private Animator playerAnimator;
+    [SerializeField] private PlayerController playerController;
+
+    [Header("Animation")] 
+    [Tooltip("Exact Animator state name to play on death")] public string deathStateName = "Death";
+    [Tooltip("Animator layer index where the death state resides")] public int animatorLayer = 0;
+    [Tooltip("Extra delay after death animation completes before respawn (seconds)")] public float respawnDelay = 0.25f;
+    [Tooltip("Animator state to force after respawn to exit death")] public string idleStateName = "Idle";
+
+    [Header("Respawn")]
+    [Tooltip("Seconds of invincibility after respawn")] public float postRespawnIFrames = 1.0f;
+
+    private bool isDying = false;
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+
+    private void Awake()
+    {
+        if (!playerStats) playerStats = GetComponent<PlayerStats>();
+        if (!playerController) playerController = GetComponent<PlayerController>();
+        if (!playerAnimator) playerAnimator = GetComponentInChildren<Animator>();
+
+        // Capture the initial spawn point for fallback
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+    }
+
+    private void OnEnable()
+    {
+        if (playerStats) playerStats.OnDeath.AddListener(OnPlayerDeath);
+    }
+
+    private void OnDisable()
+    {
+        if (playerStats) playerStats.OnDeath.RemoveListener(OnPlayerDeath);
+    }
+
+    private void OnPlayerDeath()
+    {
+        if (isDying) return;
+        isDying = true;
+
+        // Lock inputs and stop actions
+        if (playerController)
+        {
+            playerController.inputsLocked = true;
+            playerController.attackLocked = true;
+            playerController.isSprinting = false;
+        }
+
+        // Force death animation
+        if (playerAnimator && !string.IsNullOrEmpty(deathStateName))
+        {
+            foreach (var p in playerAnimator.parameters)
+            {
+                if (p.type == AnimatorControllerParameterType.Trigger)
+                    playerAnimator.ResetTrigger(p.name);
+            }
+            playerAnimator.Play(deathStateName, animatorLayer, 0f);
+        }
+
+        StartCoroutine(DeathThenRespawnRoutine());
+    }
+
+    private IEnumerator DeathThenRespawnRoutine()
+    {
+        // Wait for death state to finish
+        yield return null;
+        if (playerAnimator && !string.IsNullOrEmpty(deathStateName))
+        {
+            int deathHash = Animator.StringToHash(deathStateName);
+            float safety = 10f;
+            float t = 0f;
+            while (t < safety)
+            {
+                var st = playerAnimator.GetCurrentAnimatorStateInfo(animatorLayer);
+                if (st.shortNameHash == deathHash && st.normalizedTime >= 0.99f)
+                    break;
+                t += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        if (respawnDelay > 0f) yield return new WaitForSeconds(respawnDelay);
+
+        // Respawn at last checkpoint if available, else at initial
+        Vector3 respawnPos = CheckpointManager.HasCheckpoint ? CheckpointManager.CheckpointPosition : initialPosition;
+        Quaternion respawnRot = CheckpointManager.HasCheckpoint ? CheckpointManager.CheckpointRotation : initialRotation;
+
+        // Teleport player (handle CharacterController safely to avoid snap-back)
+        var cc = (playerController != null) ? playerController.controller : null;
+        if (cc != null)
+        {
+            cc.enabled = false;
+            transform.SetPositionAndRotation(respawnPos, respawnRot);
+            cc.enabled = true;
+        }
+        else
+        {
+            transform.SetPositionAndRotation(respawnPos, respawnRot);
+        }
+
+        // Restore stats then apply brief invincibility (order matters: heal before i-frames)
+        if (playerStats)
+        {
+            RestoreFull(playerStats);
+            playerStats.SetInvincible(true);
+        }
+
+        // Force reset to an idle/locomotion state so we don't remain in death
+        if (playerAnimator && !string.IsNullOrEmpty(idleStateName))
+        {
+            foreach (var p in playerAnimator.parameters)
+            {
+                if (p.type == AnimatorControllerParameterType.Trigger)
+                    playerAnimator.ResetTrigger(p.name);
+            }
+            playerAnimator.Play(idleStateName, animatorLayer, 0f);
+        }
+
+        // Small delay to ensure position is settled, then re-enable inputs
+        yield return null;
+        if (playerController)
+        {
+            playerController.inputsLocked = false;
+            playerController.attackLocked = false;
+        }
+
+        if (postRespawnIFrames > 0f && playerStats)
+        {
+            yield return new WaitForSeconds(postRespawnIFrames);
+            playerStats.SetInvincible(false);
+        }
+
+        isDying = false;
+    }
+
+    private void RestoreFull(PlayerStats stats)
+    {
+        // Top up to max without exceeding it
+        float missingHealth = Mathf.Max(0f, stats.GetMaxHealth() - stats.GetCurrentHealth());
+        if (missingHealth > 0f)
+        {
+            stats.TakeDamage(-missingHealth);
+        }
+
+        float missingStamina = Mathf.Max(0f, stats.GetMaxStamina() - stats.GetCurrentStamina());
+        if (missingStamina > 0f)
+        {
+            stats.ConsumeStamina(-missingStamina);
+        }
+    }
+}

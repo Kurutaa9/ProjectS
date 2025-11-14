@@ -1973,7 +1973,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7582084291591181332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62dc0505bcf539947aa4914eb4dad6a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 773078afa694ff04081f0d14fb9443cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerParent: {fileID: 8824110412222569498}
@@ -2686,6 +2686,10 @@ MonoBehaviour:
   inputsLocked: 0
   isSprinting: 0
   sprintSpeedMultiplier: 1.75
+  sprintStaminaDrain: 10
+  jumpStaminaCost: 15
+  exhaustionRecoverPercent: 0.2
+  isExhausted: 0
   playerCombat: {fileID: 8824110412222569697}
   IsAttacking: 0
   attackLocked: 0
@@ -2740,6 +2744,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 674c606fea44ff943a16379adbbd429c, type: 2}
+  isInvincible: 0
+  staminaRegenDelay: 0.75
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
