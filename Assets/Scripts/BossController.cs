@@ -39,6 +39,11 @@ public class BossController : MonoBehaviour
     [Tooltip("Extra distance required to resume chase after being in attack range")]
     public float attackHysteresis = 0.5f;
 
+    [Header("Jump Attack Landing VFX")]
+    public ParticleSystem earthquakePrefab;      // assign particle prefab
+    public float earthquakeDestroyDelay = 5f;    // auto-destroy seconds (optional)
+    public bool spawnAtJumpTarget = true;        // use jumpTarget instead of current position
+
     [HideInInspector] public bool isChasing; // public flag for UI
 
     void Start()
@@ -150,7 +155,7 @@ public class BossController : MonoBehaviour
 
         if (Time.time - lastAttackTime >= attackCooldown)
         {
-            anim.SetTrigger("Attack"); 
+            anim.SetTrigger("AttackLight"); 
             lastAttackTime = Time.time;
             ChangeState(BossState.Recover);
         }
@@ -170,6 +175,17 @@ public class BossController : MonoBehaviour
         anim.SetTrigger("JumpAttack"); // play jump animation
 
         ChangeState(BossState.JumpAttack);
+    }
+
+    // Animation Event: place at landing frame of Jump Attack clip
+    public void AE_JumpLandImpact()
+    {
+        if (!earthquakePrefab) return;
+        Vector3 spawnPos = spawnAtJumpTarget ? jumpTarget : transform.position;
+        var ps = Instantiate(earthquakePrefab, spawnPos, Quaternion.identity);
+        ps.Play();
+        if (earthquakeDestroyDelay > 0f)
+            Destroy(ps.gameObject, earthquakeDestroyDelay);
     }
 
     void HandleJumpAttack()
