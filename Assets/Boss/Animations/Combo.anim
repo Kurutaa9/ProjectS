@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Combo 1
+  m_Name: Combo
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -135320,6 +135320,13 @@ AnimationClip:
     messageOptions: 0
   - time: 3.1666667
     functionName: weaponCanDamageFalse
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 4.2
+    functionName: AE_AttackEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
