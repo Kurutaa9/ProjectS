@@ -46,6 +46,22 @@ public class BossController : MonoBehaviour
 
     [HideInInspector] public bool isChasing; // public flag for UI
 
+    public class AttackOption
+    {
+        public string name;      // for debugging
+        public string trigger;   // Animator trigger to fire
+    }
+
+    // Fill this in the Inspector with as many attacks as you want
+    public AttackOption[] meleeAttacks = new AttackOption[]
+    {
+        new AttackOption { name = "Attack 2",  trigger = "AttackLight" },
+        new AttackOption { name = "360",  trigger = "AttackHeavy" },
+        new AttackOption { name = "Combo", trigger = "AttackSpecial" },
+    };
+
+    private bool isPerformingAttack = false;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -148,18 +164,47 @@ public class BossController : MonoBehaviour
 
     void HandleAttack()
     {
-        agent.isStopped = true;
-        agent.enabled = false;
-        FacePlayer(); // ensure boss faces player while attacking
+        // Stop moving while attacking
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.enabled = false; // you’re already doing this
+        }
+
+        FacePlayer();
         anim.SetBool("isMoving", false);
 
-        if (Time.time - lastAttackTime >= attackCooldown)
+        // If already mid‑attack animation, just let it play
+        if (isPerformingAttack)
+            return;
+
+        // Only start a melee attack when in range
+        float dist = Vector3.Distance(transform.position, player.position);
+        if (dist > attackRange)
         {
-            anim.SetTrigger("AttackLight"); 
-            lastAttackTime = Time.time;
-            ChangeState(BossState.Recover);
+            // out of range → go back to chase
+            ChangeState(BossState.Chase);
+            return;
         }
+
+        // Pick a random attack and fire its trigger
+        AttackOption opt = PickRandomMeleeAttack();
+        if (opt == null)
+        {
+            // fallback to your original single attack
+            anim.SetTrigger("AttackLight");
+        }
+        else
+        {
+            ResetMeleeAttackTriggers();
+            anim.SetTrigger(opt.trigger);
+        }
+
+        isPerformingAttack = true;
+        // no cooldown: Recover can be kept simple or removed
+        ChangeState(BossState.Recover);
     }
+
 
     void StartJumpAttack()
     {
@@ -325,5 +370,53 @@ public class BossController : MonoBehaviour
         if (dir.sqrMagnitude < 0.0001f) return;
         Quaternion targetRot = Quaternion.LookRotation(dir);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, attackTurnSpeed * Time.deltaTime);
+    }
+
+    private AttackOption PickRandomMeleeAttack()
+    {
+        if (meleeAttacks == null || meleeAttacks.Length == 0) return null;
+        // pick a random index uniformly
+        int idx = Random.Range(0, meleeAttacks.Length);
+        // simple safety: ensure trigger is not empty
+        for (int i = 0; i < meleeAttacks.Length; i++)
+        {
+            var opt = meleeAttacks[idx];
+            if (opt != null && !string.IsNullOrEmpty(opt.trigger))
+                return opt;
+            idx = (idx + 1) % meleeAttacks.Length;
+        }
+        return null;
+    }
+
+    private void ResetMeleeAttackTriggers()
+    {
+        if (anim == null || meleeAttacks == null) return;
+        foreach (var opt in meleeAttacks)
+        {
+            if (opt != null && !string.IsNullOrEmpty(opt.trigger))
+                anim.ResetTrigger(opt.trigger);
+        }
+    }
+    
+    // Animation Event: call on the last frame of each melee attack clip
+    public void AE_AttackEnd()
+    {
+        isPerformingAttack = false;
+
+        // Re‑enable agent so boss can move again
+        if (agent != null)
+        {
+            agent.enabled = true;
+            if (agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.ResetPath();
+            }
+        }
+
+        float dist = player ? Vector3.Distance(transform.position, player.position) : Mathf.Infinity;
+        // if still in range, go back to Attack (which will pick another random attack),
+        // otherwise chase again
+        ChangeState(dist <= attackRange ? BossState.Attack : BossState.Chase);
     }
 }
