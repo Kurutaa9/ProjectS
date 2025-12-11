@@ -10,6 +10,11 @@ public class EnemyHealthBar : MonoBehaviour
 
     [SerializeField] private BossController bossController; // optional reference
 
+    [Header("Health Bar Animation")]
+    [SerializeField] private float lerpSpeed = 5f;
+    private float targetHealthValue;
+    private float currentDisplayedHealth;
+
     void Start()
     {
         if (!bossController) bossController = GetComponentInParent<BossController>();
@@ -20,6 +25,20 @@ public class EnemyHealthBar : MonoBehaviour
 
         UpdateHealthBar(enemyStats.GetCurrentHealth());
         ToggleVisibility(enemyStats.HasTakenDamage());
+        
+        // Initialize displayed health to current (no lerp on first frame)
+        currentDisplayedHealth = enemyStats.GetCurrentHealth() / enemyStats.GetMaxHealth();
+        healthBar.value = currentDisplayedHealth;
+    }
+
+    void Update()
+    {
+        // Smoothly lerp health bar to target value
+        if (Mathf.Abs(currentDisplayedHealth - targetHealthValue) > 0.001f)
+        {
+            currentDisplayedHealth = Mathf.Lerp(currentDisplayedHealth, targetHealthValue, Time.deltaTime * lerpSpeed);
+            healthBar.value = currentDisplayedHealth;
+        }
     }
 
     void LateUpdate()
@@ -36,7 +55,7 @@ public class EnemyHealthBar : MonoBehaviour
 
     private void UpdateHealthBar(float currentHealth)
     {
-        healthBar.value = currentHealth / enemyStats.GetMaxHealth();
+        targetHealthValue = currentHealth / enemyStats.GetMaxHealth();
     }
 
     private void ToggleVisibility(bool hasTakenDamage)
