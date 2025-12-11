@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4071390273635838}
   - component: {fileID: 205829865164112152}
+  - component: {fileID: 3561988154853227176}
   m_Layer: 0
   m_Name: PF Conifer Medium BOTD
   m_TagString: Untagged
@@ -62,6 +63,20 @@ LODGroup:
     renderers:
     - renderer: {fileID: 227131698251642430}
   m_Enabled: 1
+--- !u!136 &3561988154853227176
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214657917099862}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 5
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1487772876627174
 GameObject:
   m_ObjectHideFlags: 0
