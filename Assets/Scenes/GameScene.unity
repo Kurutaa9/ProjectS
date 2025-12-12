@@ -1663,10 +1663,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boss
       objectReference: {fileID: 0}
-    - target: {fileID: 4835261831838420305, guid: 780563870272f4608b515958962a9714, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5211119588993636331, guid: 780563870272f4608b515958962a9714, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -1715,26 +1711,6 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 403134789}
-    - target: {fileID: 5934736488825338457, guid: 780563870272f4608b515958962a9714, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5934736488825338457, guid: 780563870272f4608b515958962a9714, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5934736488825338457, guid: 780563870272f4608b515958962a9714, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5934736489861566604, guid: 780563870272f4608b515958962a9714, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5934736489861566604, guid: 780563870272f4608b515958962a9714, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 780563870272f4608b515958962a9714, type: 3}
 --- !u!1001 &8101270792521414932
