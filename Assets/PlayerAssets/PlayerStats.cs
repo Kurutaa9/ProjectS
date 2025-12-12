@@ -67,6 +67,14 @@ public class PlayerStats : MonoBehaviour
         {
             OnDeath.Invoke();
         }
+        else
+        {
+            PlayerController pc = GetComponent<PlayerController>();
+            if (pc != null)
+            {
+                pc.OnHit();
+            }
+        }
     }
 
     public void SetInvincible(bool value)

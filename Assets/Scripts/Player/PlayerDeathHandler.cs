@@ -69,7 +69,21 @@ public class PlayerDeathHandler : MonoBehaviour
             playerController.inputsLocked = true;
             playerController.attackLocked = true;
             playerController.isSprinting = false;
+
+            // Interrupt combo and restore base animator controller
+            if (playerController.playerCombat != null)
+            {
+                playerController.playerCombat.InterruptCombo();
+            }
+            if (playerAnimator != null && playerController != null)
+            {
+                var baseCtrl = playerController.GetComponent<PlayerController>();
+                // PlayerController caches base in baseAnimatorController; use it
+                // (Animator is the same instance referenced by PlayerController)
+                // Ensure override from combo is removed so "Death" state exists
+            }
         }
+
 
         // Immediately disable CharacterController movement so physics/move calls stop
         if (cachedCC != null)
@@ -92,16 +106,30 @@ public class PlayerDeathHandler : MonoBehaviour
             playerAnimator.applyRootMotion = false;
         }
 
-        // Force death animation
-        if (playerAnimator && !string.IsNullOrEmpty(deathStateName))
+        if (playerAnimator != null && playerController != null)
         {
-            foreach (var p in playerAnimator.parameters)
+            var pc = playerController;
+            // set animator to base controller cached by PlayerController
+            if (pc != null)
             {
-                if (p.type == AnimatorControllerParameterType.Trigger)
-                    playerAnimator.ResetTrigger(p.name);
+                // safe restore
+                var baseCtrl = pc.GetComponent<PlayerController>();
+                if (baseCtrl != null)
+                {
+                    // use the cached baseAnimatorController
+                    if (baseCtrl.anim != null)
+                    {
+                        var baseAC = baseCtrl.GetType()
+                            .GetField("baseAnimatorController", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                            ?.GetValue(baseCtrl) as RuntimeAnimatorController;
+                        if (baseAC != null)
+                            playerAnimator.runtimeAnimatorController = baseAC;
+                    }
+                }
             }
-            playerAnimator.Play(deathStateName, animatorLayer, 0f);
         }
+
+        playerAnimator.Play(deathStateName, animatorLayer, 0f);
 
         StartCoroutine(DeathThenRespawnRoutine());
     }

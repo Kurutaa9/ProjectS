@@ -28,14 +28,21 @@ public class LockOnIndicator : MonoBehaviour
 
     private void Update()
     {
+        if (playercontroller.lockedOnTarget && (playercontroller.currentTarget == null || !playercontroller.currentTarget))
+        {
+            playercontroller.lockedOnTarget = false;
+            playercontroller.currentTarget = null;
+        }
+
         currentIndicator.SetActive(playercontroller.lockedOnTarget && playercontroller.currentTarget != null);
 
         if (currentIndicator.activeSelf)
         {
-            Vector3 targetPos = playercontroller.currentTarget.transform.position;
-            
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(targetPos);
+            var target = playercontroller.currentTarget;
+            if (target == null) { currentIndicator.SetActive(false); return; }
 
+            Vector3 targetPos = target.transform.position;
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(targetPos);
             indicatorRect.position = new Vector3(screenPos.x, screenPos.y, 0);
         }
     }

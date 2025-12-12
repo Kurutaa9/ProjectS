@@ -117,7 +117,10 @@ public class PlayerCombat : MonoBehaviour
             lastCompletedAttackIndex = currentExecutingAttackIndex;
             Invoke("EndCombo", 0.2f); //end combo after 0.2 of animation finishing
             playerController.IsAttacking = false;
-            playerController.inputsLocked = false;
+            if (!playerController.inputsLocked)
+            {
+                playerController.inputsLocked = false;
+            }
         }
     }
 
@@ -145,5 +148,23 @@ public class PlayerCombat : MonoBehaviour
         // reset temporary trackers
         currentExecutingAttackIndex = -1;
         lastCompletedAttackIndex = -1;
+    }
+
+    public void InterruptCombo()
+    {
+        // clear combo state and apply a short finish cooldown so player can quickly resume
+        comboCounter = 0;
+        lastCompletedAttackIndex = -1;
+        currentExecutingAttackIndex = -1;
+        lastComboEnd = Time.time;
+        lastComboCooldown = shortFinishCooldown;
+        attackbuffer = false;
+
+        // release player input/attack locks (controller may override during GetHit)
+        if (playerController != null)
+        {
+            playerController.IsAttacking = false;
+            playerController.inputsLocked = false;
+        }
     }
 }

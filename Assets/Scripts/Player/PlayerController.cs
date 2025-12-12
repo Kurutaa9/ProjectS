@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SocialPlatforms.Impl;
@@ -27,6 +28,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Animation")]
     public Animator anim;
+    private RuntimeAnimatorController baseAnimatorController;
 
     [Header("Layer masks")]
     public LayerMask ground;
@@ -81,6 +83,8 @@ public class PlayerController : MonoBehaviour
     public bool IsAttacking = false;
     public bool attackLocked = false;
 
+    public bool isTakingHit = false;
+
 
     private void OnEnable()
     {
@@ -90,6 +94,13 @@ public class PlayerController : MonoBehaviour
         AttackAction.action.Enable();
         sprintAction.action.Enable();
         rollAction.action.Enable();
+
+        baseAnimatorController = anim.runtimeAnimatorController;
+
+        if (playerStats != null)
+        {
+            playerStats.OnDeath.AddListener(HandlePlayerDeath);
+        }
     }
 
     private void OnDisable()
@@ -100,6 +111,11 @@ public class PlayerController : MonoBehaviour
         AttackAction.action.Disable();
         sprintAction.action.Disable();
         rollAction.action.Disable();
+
+        if (playerStats != null)
+        {
+            playerStats.OnDeath.RemoveListener(HandlePlayerDeath);
+        }
     }
 
     void Update()
@@ -161,16 +177,24 @@ public class PlayerController : MonoBehaviour
         }
         else if (lockedOnTarget)
         {
-            Vector3 targetDirection = currentTarget.transform.position - playerObj.transform.position;
-            targetDirection.y = 0;
-
-            if (targetDirection != Vector3.zero)
+            if(currentTarget == null || !currentTarget)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-                playerObj.transform.rotation = Quaternion.Slerp(playerObj.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                lockedOnTarget = false;
+                currentTarget = null;
             }
+            else
+            {
+                Vector3 targetDirection = currentTarget.transform.position - playerObj.transform.position;
+                targetDirection.y = 0;
 
-            CheckForTargetSwitch();
+                if (targetDirection != Vector3.zero)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+                    playerObj.transform.rotation = Quaternion.Slerp(playerObj.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                }
+
+                CheckForTargetSwitch();
+            }
         }
         else if (moveDir.magnitude > 0.1f && !lockedOnTarget)
         {
@@ -231,6 +255,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (isTakingHit)
+        {
+            move = Vector3.zero;
+            moveDir = Vector3.zero;
+        }
+
         if (isRolling)
         {
             finalMove = (rollDirection * playerSpeed * rollSpeedMultiplier) + (playerVelocity.y * Vector3.up);
@@ -239,6 +269,8 @@ public class PlayerController : MonoBehaviour
         {
             finalMove = (moveDir * playerSpeed * speedMultiplier) + (playerVelocity.y * Vector3.up);
         }
+
+        
 
         controller.Move(finalMove * Time.deltaTime);
         combatControls();
@@ -399,6 +431,14 @@ public class PlayerController : MonoBehaviour
 
     private void updateAnimations()
     {
+        if (isTakingHit)
+        {
+            anim.SetBool("lockedOnTarget", lockedOnTarget);
+            anim.SetBool("isSprinting", false);
+            anim.SetBool("walkForward", false);
+            return;
+        }
+
         anim.SetBool("lockedOnTarget", lockedOnTarget);
         anim.SetBool("isSprinting", isSprinting);
         if (lockedOnTarget)
@@ -418,5 +458,76 @@ public class PlayerController : MonoBehaviour
                 anim.SetBool("walkForward", false);
             }
         }
+    }
+
+    public void OnHit()
+    {
+        if (isTakingHit) return;
+
+        if (playerCombat != null && IsAttacking)
+        {
+            playerCombat.InterruptCombo();
+        }
+
+        // Clear ongoing actions
+        isRolling = false;
+        isSprinting = false;
+        IsAttacking = false;
+        attackLocked = true;
+        inputsLocked = true;
+        isTakingHit = true;
+
+        // Immediately play GetHit
+        anim.Play("getHit", 0, 0f);
+
+        // Stop movement
+        playerVelocity = Vector3.zero;
+
+        // Run a coroutine to restore control after the animation ends
+        StartCoroutine(RestoreAfterGetHit());
+    }
+
+    private IEnumerator RestoreAfterGetHit()
+    {
+        // Wait until we enter the GetHit state
+        while (!IsInState(anim, "getHit")) yield return null;
+        // Then wait until it finishes
+        while (IsInState(anim, "getHit")) yield return null;
+
+        // Restore control; Animator transitions to Idle via your state machine
+        inputsLocked = false;
+        attackLocked = false;
+        isTakingHit = false;
+    }
+
+    private bool IsInState(Animator a, string stateName)
+    {
+        AnimatorStateInfo info = a.GetCurrentAnimatorStateInfo(0);
+        return info.IsName(stateName);
+    }
+
+    private void HandlePlayerDeath()
+    {
+        if (playerCombat != null)
+        {
+            playerCombat.InterruptCombo();
+        }
+        if (anim != null && baseAnimatorController != null)
+        {
+            anim.runtimeAnimatorController = baseAnimatorController;
+        }
+        
+        inputsLocked = false;
+        attackLocked = false;
+        isTakingHit = false;
+        isRolling = false;
+        isSprinting = false;
+        IsAttacking = false;
+        lockedOnTarget = false;
+        currentTarget = null;
+
+        playerVelocity = Vector3.zero;
+        move = Vector3.zero;
+        moveDir = Vector3.zero;
     }
 }
