@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TtMTP : MonoBehaviour
 {
@@ -15,8 +16,46 @@ public class TtMTP : MonoBehaviour
     [Tooltip("Tag name used to identify the player GameObject.")]
     public string playerTag = "Player";
 
-    [Tooltip("How long the player inputs stay locked after teleporting.")]
+    [Tooltip("How long the player inputs stay locked after teleporting (seconds).")]
     public float lockDuration = 0.1f;
+
+    [Header("Screen glow transition")]
+    [Tooltip("Full-screen UI Image used as a white overlay. Assign a screen-sized Image (Color white) and set Raycast Target = false.")]
+    public Image glowImage;
+
+    [Tooltip("Total time of the glow transition in seconds (grow then fade).")]
+    public float glowDuration = 0.6f;
+
+    [Tooltip("Peak alpha for the glow overlay.")]
+    [Range(0f, 1f)]
+    public float glowPeakAlpha = 1f;
+
+    [Tooltip("Optional curve for glow intensity over time. Null will use linear ease in/out.")]
+    public AnimationCurve glowCurve;
+
+    // Prevent re-entrant teleports / overlapping glow animations.
+    private bool isTeleporting;
+
+    private void OnValidate()
+    {
+        if (glowCurve == null)
+        {
+            // simple ease in/out if inspector left curve empty
+            glowCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+        }
+    }
+
+    private void Start()
+    {
+        // Ensure the overlay is hidden by default so it only appears during teleport.
+        if (glowImage != null)
+        {
+            glowImage.gameObject.SetActive(false);
+            var c = glowImage.color;
+            c.a = 0f;
+            glowImage.color = c;
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -35,26 +74,102 @@ public class TtMTP : MonoBehaviour
         // Quick check by tag or by presence of PlayerController
         if (!other.CompareTag(playerTag) && other.GetComponent<PlayerController>() == null) return;
 
+        // If already teleporting, ignore additional contacts
+        if (isTeleporting) return;
+
         Transform playerTransform = other.transform;
         PlayerController playerController = other.GetComponent<PlayerController>();
         CharacterController charController = other.GetComponent<CharacterController>();
 
         Vector3 destination = targetTransform != null ? targetTransform.position : targetPosition;
 
-        // Disable CharacterController before changing transform to avoid unwanted collision/physics snaps
-        if (charController != null) charController.enabled = false;
+        // If we have a PlayerController run the teleport via coroutine (with glow if assigned).
+        if (playerController != null)
+        {
+            StartCoroutine(TeleportWithGlowRoutine(playerTransform, destination, playerController, charController));
+        }
+        else
+        {
+            // fallback immediate teleport (preserve previous safe-charactercontroller handling)
+            if (charController != null) charController.enabled = false;
+            playerTransform.position = destination;
+            if (charController != null) charController.enabled = true;
+        }
+    }
 
-        // Lock inputs (if PlayerController available) so the player doesn't fight the teleport
-        if (playerController != null) playerController.inputsLocked = true;
+    private IEnumerator TeleportWithGlowRoutine(Transform playerTransform, Vector3 destination, PlayerController pc, CharacterController cc)
+    {
+        if (isTeleporting) yield break;
+        isTeleporting = true;
 
-        // Teleport
+        // Lock inputs immediately
+        pc.inputsLocked = true;
+
+        // If no glow image assigned, do a short wait and teleport
+        if (glowImage == null)
+        {
+            if (cc != null) cc.enabled = false;
+            yield return new WaitForSeconds(lockDuration);
+            playerTransform.position = destination;
+            if (cc != null) cc.enabled = true;
+            pc.inputsLocked = false;
+            isTeleporting = false;
+            yield break;
+        }
+
+        // Ensure the overlay is active and guaranteed visible
+        glowImage.gameObject.SetActive(true);
+        Color baseColor = glowImage.color;
+        baseColor.a = 0f;
+        glowImage.color = baseColor;
+
+        float half = Mathf.Max(0.001f, glowDuration * 0.5f);
+        float t = 0f;
+
+        // Grow phase (0 -> peak)
+        while (t < half)
+        {
+            t += Time.deltaTime;
+            float norm = Mathf.Clamp01(t / half);
+            float curveVal = glowCurve != null ? glowCurve.Evaluate(norm) : norm;
+            Color c = glowImage.color;
+            c.a = Mathf.Lerp(0f, glowPeakAlpha, curveVal);
+            glowImage.color = c;
+            yield return null;
+        }
+
+        // Teleport while overlay at peak
+        if (cc != null) cc.enabled = false; // disable CC before moving to avoid physics snapbacks
         playerTransform.position = destination;
+        yield return null; // ensure transform updated on next frame
 
-        // Re-enable CharacterController
-        if (charController != null) charController.enabled = true;
+        // Fade phase (peak -> 0)
+        t = 0f;
+        while (t < half)
+        {
+            t += Time.deltaTime;
+            float norm = Mathf.Clamp01(t / half);
+            float curveVal = glowCurve != null ? glowCurve.Evaluate(1f - norm) : (1f - norm);
+            Color c = glowImage.color;
+            c.a = Mathf.Lerp(0f, glowPeakAlpha, curveVal);
+            glowImage.color = c;
+            yield return null;
+        }
 
-        // Unlock inputs after a short delay
-        if (playerController != null) StartCoroutine(UnlockInputsAfterDelay(playerController));
+        // Ensure fully transparent and hide overlay so it only appears during teleport
+        Color endColor = glowImage.color;
+        endColor.a = 0f;
+        glowImage.color = endColor;
+        glowImage.gameObject.SetActive(false);
+
+        if (cc != null) cc.enabled = true;
+
+        // small extra wait to match original lockDuration behavior (optional)
+        if (lockDuration > 0f)
+            yield return new WaitForSeconds(lockDuration);
+
+        pc.inputsLocked = false;
+        isTeleporting = false;
     }
 
     private IEnumerator UnlockInputsAfterDelay(PlayerController pc)
