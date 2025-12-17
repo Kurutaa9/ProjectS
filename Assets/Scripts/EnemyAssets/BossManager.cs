@@ -10,6 +10,8 @@ public class BossManager : MonoBehaviour
     public NavMeshAgent agent;
     public Animator anim;
     public BossCombat combat;
+    [SerializeField] private EnemyStatController stats;
+    [SerializeField] private EnemyHitHandler hitHandler;
 
     [Header("Distances (meters)")]
     public float detectionRange = 30f; // start engaging when within this range
@@ -21,8 +23,8 @@ public class BossManager : MonoBehaviour
     public Vector3 chestOffset = new Vector3(0, 1.2f, 0);
 
     [Header("Attack cadence")]
-    public float minAttackCooldown = 0.4f;
-    public float maxAttackCooldown = 0.9f;
+    public float minAttackCooldown = 1.0f;
+    public float maxAttackCooldown = 2.0f;
 
     private float cooldownTimer = 0f;
     private bool prevAttacking = false;
@@ -35,6 +37,25 @@ public class BossManager : MonoBehaviour
         if (!agent) agent = GetComponent<NavMeshAgent>();
         if (!anim) anim = GetComponentInChildren<Animator>();
         if (!combat) combat = GetComponent<BossCombat>();
+        if (!stats) stats = GetComponent<EnemyStatController>();
+        if (!hitHandler) hitHandler = GetComponent<EnemyHitHandler>();
+    }
+
+    void OnEnable()
+    {
+        if (stats) stats.OnTakeDamage.AddListener(OnDamageReceived);
+    }
+
+    void OnDisable()
+    {
+        if (stats) stats.OnTakeDamage.RemoveListener(OnDamageReceived);
+    }
+
+    private void OnDamageReceived()
+    {
+        if (combat) combat.StopAttack();
+        cooldownTimer = 0f;
+        prevAttacking = false;
     }
 
     void Start()
@@ -55,14 +76,21 @@ public class BossManager : MonoBehaviour
     void Update()
     {
         if (!target) return;
+        if (anim && anim.GetCurrentAnimatorStateInfo(0).IsName("GetHit")) return;
+        if (hitHandler != null && hitHandler.isHit) return;
+
+
+        bool isAttackingNow = combat != null && combat.IsAttacking;
+        if (prevAttacking && !isAttackingNow)
+        {
+            cooldownTimer = combat.LastRecovery;
+        }
+        prevAttacking = isAttackingNow;
 
         float dist = Vector3.Distance(transform.position, target.position);
 
-        // Cooldown countdown
         if (cooldownTimer > 0f)
             cooldownTimer -= Time.deltaTime;
-
-        bool isAttackingNow = combat != null && combat.IsAttacking;
 
         // While attacking, prevent NavMeshAgent from snapping the transform back to
         // its stopping position. Re-enable after the attack and resync the agent.
@@ -137,13 +165,6 @@ public class BossManager : MonoBehaviour
                 HandleAttacking();
                 break;
         }
-
-        // Detect when attack finishes to start cooldown
-        if (prevAttacking && combat && !combat.IsAttacking)
-        {
-            cooldownTimer = Random.Range(minAttackCooldown, maxAttackCooldown);
-        }
-        prevAttacking = combat ? combat.IsAttacking : false;
     }
 
     private void HandleAttacking()

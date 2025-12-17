@@ -2694,6 +2694,7 @@ MonoBehaviour:
   playerCombat: {fileID: 8824110412222569697}
   IsAttacking: 0
   attackLocked: 0
+  isTakingHit: 0
 --- !u!114 &8824110412222569696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2787,10 +2788,7 @@ MonoBehaviour:
   playerAnimator: {fileID: 3788377233913091284}
   playerController: {fileID: 8824110412222569703}
   deathStateName: Death
-  animatorLayer: 0
   respawnDelay: 0.25
-  idleStateName: Idle
-  postRespawnIFrames: 1
 --- !u!1 &8944377135854447402
 GameObject:
   m_ObjectHideFlags: 0

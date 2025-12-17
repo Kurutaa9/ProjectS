@@ -10,8 +10,9 @@ public class EnemyStatController : MonoBehaviour
     private float currentHealth;
     private bool hasTakenDamage;
     public UnityEvent<bool> OnDamageStateChanged;
-
     public UnityEvent<float> OnHealthChanged;
+
+    public UnityEvent OnTakeDamage;
     public UnityEvent OnDeath;
 
     void Start()
@@ -29,17 +30,22 @@ public class EnemyStatController : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        Debug.Log($"enemy take {amount} damage");
+        //Debug.Log($"enemy take {amount} damage");
         if (!hasTakenDamage)
         {
             hasTakenDamage = true;
             OnDamageStateChanged.Invoke(hasTakenDamage);
-            Debug.Log($"invoked {hasTakenDamage}");
+            //Debug.Log($"invoked {hasTakenDamage}");
         }
 
         currentHealth = Mathf.Max(currentHealth - amount, 0f);
         OnHealthChanged.Invoke(currentHealth);
-        if (currentHealth <= 0f)
+
+        if (currentHealth > 0f)
+        {
+            OnTakeDamage.Invoke();
+        }
+        else
         {
             OnDeath.Invoke();
         }

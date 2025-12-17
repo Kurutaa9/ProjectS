@@ -58,7 +58,7 @@ public class PlayerRotateController : MonoBehaviour
 
         combinedDelta = mouseDelta + controllerDelta;
 
-        if (playerController.lockedOnTarget)
+        if (playerController.lockedOnTarget && playerController.currentTarget != null)
         {
             Vector3 targetDirection = playerController.currentTarget.transform.position - transform.position;
             targetDirection.y -= 2f;
