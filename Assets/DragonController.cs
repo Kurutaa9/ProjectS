@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.AI;
-
+using System.Collections;
+using System.Collections.Generic;
 public class DragonController : MonoBehaviour
 {
-    public enum BossState { Idle, Chase, Attack, Recover, Enraged, Dead, JumpAttack }
+    public enum BossState { Idle, Chase, Attack, Recover, Enraged, Dead, JumpAttack, Intro } // added Intro
     private BossState currentState;
 
     [Header("References")]
@@ -16,8 +17,9 @@ public class DragonController : MonoBehaviour
     private float currentHealth;
     public float chaseRange = 50f;
     public float attackRange = 1000f;
-    public float attackCooldown = 3f;
+    public float attackCooldown = 10f;
     private float lastAttackTime;
+    private bool isScream = false;
 
     [Header("Rotation")]
     public float attackTurnSpeed = 8f; // rotation speed while attacking
@@ -33,6 +35,25 @@ public class DragonController : MonoBehaviour
     public ParticleSystem earthquakePrefab;      // assign particle prefab
     public float earthquakeDestroyDelay = 5f;    // auto-destroy seconds (optional)
     public bool spawnAtJumpTarget = true;        // use jumpTarget instead of current position
+
+    [Header("Intro Roar")]
+    public string roarTrigger = "Scream";            // Animator trigger to play roar
+    public string roarStateName = "Scream";          // Exact state name of the roar clip
+    public bool showHealthBarOnRoar = true;        // Force show HP UI when roaring
+    private bool hasRoared = false;
+
+    [Header("Flame Attack")]
+    public DragonFlameHitbox flameHitbox;            // Assign the flame hitbox in Inspector
+
+    [Header("Heavy Attack Lunge")]
+    [Tooltip("Forward distance the dragon moves during the heavy attack animation.")]
+    public float heavyLungeDistance = 8f;
+    [Tooltip("Time (seconds) to cover the heavy lunge distance.")]
+    public float heavyLungeDuration = 0.45f;
+    private Coroutine heavyLungeRoutine;
+
+    [Header("UI (optional)")]
+    [SerializeField] private EnemyHealthBar enemyHealthBar; // assign in Inspector or auto-find
 
     [HideInInspector] public bool isChasing; // public flag for UI
 
@@ -62,37 +83,23 @@ public class DragonController : MonoBehaviour
         {
             agent.stoppingDistance = attackRange; // stop at attack range
         }
+        if (!enemyHealthBar) enemyHealthBar = GetComponentInChildren<EnemyHealthBar>(true);
     }
 
     void Update()
     {
         if (!agent.isOnNavMesh)
-        Debug.LogError("Dragon is NOT on the NavMesh!");
+            Debug.LogError("Dragon is NOT on the NavMesh!");
 
         switch (currentState)
         {
-            case BossState.Idle:
-                HandleIdle();
-                break;
-
-            case BossState.Chase:
-                HandleChase();
-                break;
-
-            case BossState.Attack:
-                HandleAttack();
-                break;
-
-            case BossState.Recover:
-                HandleRecover();
-                break;
-
-            case BossState.Enraged:
-                HandleEnraged();
-                break;
-
-            case BossState.Dead:
-                break;
+            case BossState.Idle:       HandleIdle(); break;
+            case BossState.Chase:      HandleChase(); break;
+            case BossState.Attack:     HandleAttack(); break;
+            case BossState.Recover:    HandleRecover(); break;
+            case BossState.Enraged:    HandleEnraged(); break;
+            case BossState.Intro:      HandleIntroRoar(); break; // new
+            case BossState.Dead:       break;
         }
 
         // Check enrage condition
@@ -104,10 +111,60 @@ public class DragonController : MonoBehaviour
 
     // ------------------- STATE HANDLERS -------------------
 
+    void HandleIntroRoar()
+    {
+        FacePlayer();
+
+        // Wait until the roar animation finishes
+        var st = anim.GetCurrentAnimatorStateInfo(0);
+        bool inRoar = st.IsName(roarStateName); // tag optional
+        if (inRoar && st.normalizedTime < 0.98f)
+            return;
+
+        // End of roar -> mark as done and resume normal logic
+        hasRoared = true;
+        if (agent && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
+
+        float dist = Vector3.Distance(transform.position, player.position);
+        ChangeState(dist <= attackRange ? BossState.Attack : BossState.Chase);
+    }
+
+    private void StartIntroRoar()
+    {
+        hasRoared = false; // ensure not flagged yet
+        if (agent && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+        anim.SetBool("isMoving", false);
+
+        // Fire roar animation immediately
+        anim.ResetTrigger(roarTrigger);
+        anim.SetTrigger(roarTrigger);
+
+        // Force-show health bar on roar
+        if (showHealthBarOnRoar && enemyHealthBar)
+        {
+            enemyHealthBar.ForceShow(true);
+        }
+
+        ChangeState(BossState.Intro);
+    }
+
     void HandleIdle()
     {
         anim.SetBool("isMoving", false);
-        if (Vector3.Distance(transform.position, player.position) < chaseRange)
+        float dist = Vector3.Distance(transform.position, player.position);
+        if (!hasRoared && dist < chaseRange)
+        {
+            StartIntroRoar();
+            return;
+        }
+        if (dist < chaseRange)
         {
             ChangeState(BossState.Chase);
         }
@@ -120,6 +177,13 @@ public class DragonController : MonoBehaviour
 
         anim.SetBool("isMoving", true);
         float dist = Vector3.Distance(transform.position, player.position);
+
+        // First-time roar gate
+        if (!hasRoared && dist <= chaseRange)
+        {
+            StartIntroRoar();
+            return;
+        }
 
         // If within melee range -> attack
         if (dist <= attackRange)
@@ -145,7 +209,8 @@ public class DragonController : MonoBehaviour
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = true;
-            agent.enabled = false; // you’re already doing this
+            agent.updatePosition = false;
+            agent.updateRotation = false;
         }
 
         FacePlayer();
@@ -186,26 +251,26 @@ public class DragonController : MonoBehaviour
     void HandleRecover()
     {
         float dist = Vector3.Distance(transform.position, player.position);
-        agent.enabled = true;
-        // Hold position and keep facing while in attack range
-        if (dist <= attackRange)
-        {
-            if (agent != null && agent.isOnNavMesh)
-            {
-                agent.isStopped = true;
-            }
-            anim.SetBool("isMoving", false);
-            FacePlayer(); // keep oriented during recovery
+        float timeSinceAttack = Time.time - lastAttackTime;
+        bool cooldownDone = timeSinceAttack >= attackCooldown;
 
-            if (Time.time - lastAttackTime >= attackCooldown)
-            {
-                ChangeState(BossState.Attack);
-            }
+        // Always keep facing and stop moving during cooldown
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+        }
+        anim.SetBool("isMoving", false);
+        FacePlayer();
+
+        // If cooldown is done and player is in attack range, go back to attacking
+        if (cooldownDone && dist <= attackRange)
+        {
+            ChangeState(BossState.Attack);
             return;
         }
 
-        // If player moved out of attack range + hysteresis, resume chase
-        if (dist > attackRange + attackHysteresis)
+        // If cooldown is done and player is out of range (+ hysteresis), resume chase
+        if (cooldownDone && dist > attackRange + attackHysteresis)
         {
             anim.SetBool("isMoving", true);
             if (agent != null && agent.isOnNavMesh)
@@ -213,12 +278,11 @@ public class DragonController : MonoBehaviour
                 agent.isStopped = false;
                 agent.SetDestination(player.position);
             }
-
-            if (Time.time - lastAttackTime >= attackCooldown)
-            {
-                ChangeState(BossState.Chase);
-            }
+            ChangeState(BossState.Chase);
+            return;
         }
+
+        // If still in cooldown, just hold and wait
     }
 
     void HandleEnraged()
@@ -243,6 +307,7 @@ public class DragonController : MonoBehaviour
             anim.SetBool("isMoving", true);
         }
     }
+
 
     // ------------------- STATE CHANGES -------------------
 
@@ -319,20 +384,37 @@ public class DragonController : MonoBehaviour
     {
         isPerformingAttack = false;
 
-        // Re‑enable agent so boss can move again
-        if (agent != null)
+        // Re‑enable agent position/rotation updates
+        if (agent != null && agent.isOnNavMesh)
         {
-            agent.enabled = true;
-            if (agent.isOnNavMesh)
-            {
-                agent.isStopped = false;
-                agent.ResetPath();
-            }
+            agent.updatePosition = true;
+            agent.updateRotation = true;
+            agent.Warp(transform.position); // sync position after attack
+            agent.isStopped = false;
+            agent.ResetPath();
         }
 
-        float dist = player ? Vector3.Distance(transform.position, player.position) : Mathf.Infinity;
-        // if still in range, go back to Attack (which will pick another random attack),
-        // otherwise chase again
-        ChangeState(dist <= attackRange ? BossState.Attack : BossState.Chase);
+        // Don't change state here - let HandleRecover() enforce cooldown
+        // Just mark that the attack animation finished
+    }
+
+    // ------------------- FLAME ATTACK ANIMATION EVENTS -------------------
+    
+    // Call this at the frame where the dragon starts breathing fire
+    public void AE_FlameStart()
+    {
+        if (flameHitbox != null)
+        {
+            flameHitbox.ActivateFlame();
+        }
+    }
+
+    // Call this if you want to manually stop the flame early (optional)
+    public void AE_FlameEnd()
+    {
+        if (flameHitbox != null)
+        {
+            flameHitbox.DeactivateFlame();
+        }
     }
 }

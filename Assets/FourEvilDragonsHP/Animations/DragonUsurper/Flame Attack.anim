@@ -80446,6 +80446,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.6666667
+    functionName: AE_FlameStart
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 2.6
     functionName: AE_AttackEnd
     data: 
@@ -80455,6 +80462,13 @@ AnimationClip:
     messageOptions: 0
   - time: 2.6
     functionName: weaponCanDamageFalse
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2.6
+    functionName: AE_FlameEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

@@ -15,6 +15,16 @@ public class EnemyHealthBar : MonoBehaviour
     private float targetHealthValue;
     private float currentDisplayedHealth;
 
+    // NEW: allow external systems (e.g., dragon roar) to force-show the bar
+    private bool forcedVisible = false;
+
+    public void ForceShow(bool value = true)
+    {
+        forcedVisible = value;
+        if (canvas)
+            canvas.enabled = forcedVisible || enemyStats.HasTakenDamage() || (bossController && bossController.isChasing);
+    }
+
     void Start()
     {
         if (!bossController) bossController = GetComponentInParent<BossController>();
@@ -46,10 +56,11 @@ public class EnemyHealthBar : MonoBehaviour
         transform.position = enemyStats.gameObject.transform.position + offset;
         transform.rotation = Camera.main.transform.rotation;
 
-        // keep visibility updated if chase state changes
-        if (bossController)
+        if (canvas)
         {
-            canvas.enabled = enemyStats.HasTakenDamage() || bossController.isChasing;
+            // forcedVisible overrides the usual conditions
+            bool chaseVisible = bossController && bossController.isChasing;
+            canvas.enabled = forcedVisible || enemyStats.HasTakenDamage() || chaseVisible;
         }
     }
 
@@ -60,11 +71,11 @@ public class EnemyHealthBar : MonoBehaviour
 
     private void ToggleVisibility(bool hasTakenDamage)
     {
-        // broaden condition to include chase
-        if (bossController)
-            canvas.enabled = hasTakenDamage || bossController.isChasing;
-        else
-            canvas.enabled = hasTakenDamage;
+        if (canvas)
+        {
+            bool chaseVisible = bossController && bossController.isChasing;
+            canvas.enabled = forcedVisible || hasTakenDamage || chaseVisible;
+        }
     }
 
     private void OnEnemyDeath()
