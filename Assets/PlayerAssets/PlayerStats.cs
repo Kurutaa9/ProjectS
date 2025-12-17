@@ -116,4 +116,14 @@ public class PlayerStats : MonoBehaviour
     {
         return currentStamina >= staminaCost;
     }
+
+    public void ResetStats()
+    {
+        currentHealth = baseStats.maxHealth;
+        currentStamina = baseStats.maxStamina;
+        isInvincible = false;
+        
+        OnHealthChanged.Invoke(currentHealth);
+        OnStaminaChanged.Invoke(currentStamina);
+    }
 }

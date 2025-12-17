@@ -814,7 +814,7 @@ AnimatorStateMachine:
     m_Position: {x: -120, y: 300, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2118084007517926821}
-    m_Position: {x: -460, y: -40, z: 0}
+    m_Position: {x: 50, y: -180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -86422077706710354}
     m_Position: {x: -210, y: 0, z: 0}
@@ -864,7 +864,7 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: 955f06ee2b0a71340a190ab063c964dc, type: 2}
-  m_Tag: 
+  m_Tag: Death
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 

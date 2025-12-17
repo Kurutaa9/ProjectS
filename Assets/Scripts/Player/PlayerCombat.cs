@@ -117,7 +117,7 @@ public class PlayerCombat : MonoBehaviour
             lastCompletedAttackIndex = currentExecutingAttackIndex;
             Invoke("EndCombo", 0.2f); //end combo after 0.2 of animation finishing
             playerController.IsAttacking = false;
-            if (!playerController.inputsLocked)
+            if (!playerController.isTakingHit)
             {
                 playerController.inputsLocked = false;
             }

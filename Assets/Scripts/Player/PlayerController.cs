@@ -96,11 +96,6 @@ public class PlayerController : MonoBehaviour
         rollAction.action.Enable();
 
         baseAnimatorController = anim.runtimeAnimatorController;
-
-        if (playerStats != null)
-        {
-            playerStats.OnDeath.AddListener(HandlePlayerDeath);
-        }
     }
 
     private void OnDisable()
@@ -111,11 +106,6 @@ public class PlayerController : MonoBehaviour
         AttackAction.action.Disable();
         sprintAction.action.Disable();
         rollAction.action.Disable();
-
-        if (playerStats != null)
-        {
-            playerStats.OnDeath.RemoveListener(HandlePlayerDeath);
-        }
     }
 
     void Update()
@@ -506,8 +496,10 @@ public class PlayerController : MonoBehaviour
         return info.IsName(stateName);
     }
 
-    private void HandlePlayerDeath()
+    public void HandlePlayerDeath()
     {
+        StopAllCoroutines();
+        
         if (playerCombat != null)
         {
             playerCombat.InterruptCombo();
@@ -516,7 +508,25 @@ public class PlayerController : MonoBehaviour
         {
             anim.runtimeAnimatorController = baseAnimatorController;
         }
+
+        inputsLocked = true;
+        attackLocked = true;
         
+        isTakingHit = false;
+        isRolling = false;
+        isSprinting = false;
+        IsAttacking = false;
+        lockedOnTarget = false;
+        currentTarget = null;
+
+        playerVelocity = Vector3.zero;
+        move = Vector3.zero;
+        moveDir = Vector3.zero;
+
+    }
+
+    public void RespawnPlayer()
+    {
         inputsLocked = false;
         attackLocked = false;
         isTakingHit = false;
@@ -529,5 +539,11 @@ public class PlayerController : MonoBehaviour
         playerVelocity = Vector3.zero;
         move = Vector3.zero;
         moveDir = Vector3.zero;
+
+        if (anim != null)
+        {
+            anim.Rebind();
+            anim.Update(0f);
+        }
     }
 }
