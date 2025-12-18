@@ -90,12 +90,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1094704890}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.27, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.076412596, y: -0.702966, z: -0.076412596, w: 0.702966}
+  m_LocalPosition: {x: -171.99364, y: -179.47954, z: 126.9989}
+  m_LocalScale: {x: 99.999985, y: 100, z: 99.999985}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1143808057638907776}
+  m_Father: {fileID: 1143808057638848184}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1094704892
@@ -2848,6 +2848,7 @@ Transform:
   - {fileID: 1143808057638883368}
   - {fileID: 1143808057638894138}
   - {fileID: 1143808057638793360}
+  - {fileID: 1094704891}
   m_Father: {fileID: 1143808057638907776}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2987,7 +2988,6 @@ Transform:
   - {fileID: 1143808057638848184}
   - {fileID: 2127756973967804787}
   - {fileID: 1863149537}
-  - {fileID: 1094704891}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3112,6 +3112,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamage:
     m_PersistentCalls:
       m_Calls: []
   OnDeath:
