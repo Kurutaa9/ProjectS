@@ -35,6 +35,12 @@ public class EnemyDeathHandler : MonoBehaviour
         if (stats) stats.OnDeath.RemoveListener(HandleDeath);
     }
 
+    public void ResetDeathHandler()
+    {
+        isDying = false;
+        StopAllCoroutines();
+    }
+
     private void HandleDeath()
     {
         if (isDying) return;
@@ -81,7 +87,17 @@ public class EnemyDeathHandler : MonoBehaviour
         if (destroyDelay > 0f)
             yield return new WaitForSeconds(destroyDelay);
 
-        Destroy(gameObject);
+        // Check for RespawnManager
+        var respawnManager = GetComponent<EnemyRespawnManager>();
+        if (respawnManager != null)
+        {
+            respawnManager.SetDead(true);
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void StopAllOtherSystems()

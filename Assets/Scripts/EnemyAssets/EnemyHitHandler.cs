@@ -53,6 +53,14 @@ public class EnemyHitHandler : MonoBehaviour
         StopAllCoroutines(); // Stop any recovery routines so we don't wake up after death
     }
 
+    // Called by EnemyRespawnManager to reset state
+    public void ResetHitHandler()
+    {
+        isDead = false;
+        isHit = false;
+        StopAllCoroutines();
+    }
+
     private void PlayGetHit()
     {
         // Don't play hit animation if already dead or currently being hit

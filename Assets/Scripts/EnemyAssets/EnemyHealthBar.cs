@@ -80,6 +80,16 @@ public class EnemyHealthBar : MonoBehaviour
 
     private void OnEnemyDeath()
     {
-        Destroy(gameObject);
+        // Check if the enemy has a respawn manager and is respawnable
+        var respawnManager = enemyStats.GetComponent<EnemyRespawnManager>();
+        if (respawnManager != null && respawnManager.respawnType == EnemyRespawnManager.RespawnType.Respawnable)
+        {
+            // Do not destroy. The canvas will be hidden by ToggleVisibility when stats are reset.
+            if (canvas) canvas.enabled = false;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

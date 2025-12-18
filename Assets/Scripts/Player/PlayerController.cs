@@ -174,7 +174,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (lockedOnTarget)
         {
-            if(currentTarget == null || !currentTarget)
+            if(currentTarget == null || !currentTarget || !currentTarget.activeInHierarchy)
             {
                 lockedOnTarget = false;
                 currentTarget = null;
@@ -625,5 +625,29 @@ public class PlayerController : MonoBehaviour
             anim.Rebind();
             anim.Update(0f);
         }
+
+        // Respawn all enemies
+        EnemyRespawnManager.RespawnAllEnemies();
+    }
+
+    public void RestAtSaveSpot()
+    {
+        // 1. Reset Player Stats (Full Health/Stamina)
+        if (playerStats != null)
+        {
+            playerStats.ResetStats();
+        }
+
+        // 2. Reset Inputs/States (Just in case)
+        inputsLocked = false;
+        attackLocked = false;
+        isTakingHit = false;
+        isExhausted = false;
+        IsAttacking = false;
+        
+        // 3. Respawn/Reset all enemies
+        EnemyRespawnManager.RespawnAllEnemies();
+
+        Debug.Log("Rested at save spot. Enemies respawned and stats reset.");
     }
 }

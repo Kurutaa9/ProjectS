@@ -29,7 +29,9 @@ public class BossManager : MonoBehaviour
     private float cooldownTimer = 0f;
     private bool prevAttacking = false;
 
-    private enum BossState { Idle, Chasing, InRange }
+    private Vector3 startPosition;
+
+    private enum BossState { Idle, Chasing, InRange, Returning }
     private BossState state = BossState.Idle;
 
     void Awake()
@@ -60,6 +62,8 @@ public class BossManager : MonoBehaviour
 
     void Start()
     {
+        startPosition = transform.position;
+
         if (target == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
@@ -121,7 +125,7 @@ public class BossManager : MonoBehaviour
         }
         else if (dist > detectionRange)
         {
-            SetState(BossState.Idle);
+            SetState(BossState.Returning);
         }
         else if (dist > attackRange)
         {
@@ -144,6 +148,7 @@ public class BossManager : MonoBehaviour
             case BossState.Chasing:
                 if (agent)
                 {
+                    agent.updateRotation = false; // We handle rotation manually to face target
                     if (!isAttackingNow)
                     {
                         agent.isStopped = false;
@@ -159,10 +164,30 @@ public class BossManager : MonoBehaviour
             case BossState.InRange:
                 if (agent)
                 {
+                    agent.updateRotation = false; // We handle rotation manually to face target
                     agent.isStopped = true; // stop and fight
                 }
                 FaceTarget();
                 HandleAttacking();
+                break;
+            case BossState.Returning:
+                if (agent)
+                {
+                    agent.updateRotation = true; // Let agent handle rotation to face movement direction
+                    if (!isAttackingNow)
+                    {
+                        agent.isStopped = false;
+                        if (agent.isOnNavMesh) agent.SetDestination(startPosition);
+                    }
+                }
+
+                // Check if we have arrived at start position
+                float distToStart = Vector3.Distance(transform.position, startPosition);
+                if (distToStart < 1.0f)
+                {
+                    SetState(BossState.Idle);
+                    if (stats) stats.ResetStats(); 
+                }
                 break;
         }
     }
@@ -192,8 +217,8 @@ public class BossManager : MonoBehaviour
         state = s;
         if (anim)
         {
-            anim.SetBool("IsMoving", state == BossState.Chasing);
-            anim.SetBool("InCombat", state != BossState.Idle);
+            anim.SetBool("IsMoving", state == BossState.Chasing || state == BossState.Returning);
+            anim.SetBool("InCombat", state != BossState.Idle && state != BossState.Returning);
         }
     }
 }

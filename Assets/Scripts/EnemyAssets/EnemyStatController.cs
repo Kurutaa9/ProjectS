@@ -70,4 +70,12 @@ public class EnemyStatController : MonoBehaviour
     {
         return hasTakenDamage;
     }
+
+    public void ResetStats()
+    {
+        currentHealth = baseStats.maxHealth;
+        hasTakenDamage = false;
+        OnHealthChanged.Invoke(currentHealth);
+        OnDamageStateChanged.Invoke(hasTakenDamage);
+    }
 }

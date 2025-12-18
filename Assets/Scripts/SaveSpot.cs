@@ -83,6 +83,7 @@ public class SaveSpot : MonoBehaviour
             // triggered is true only on the frame performed
             if (interactAction.action.triggered)
             {
+                playerController.RestAtSaveSpot();
                 if (isOpen) ClosePopup(); else OpenPopup();
             }
         }
