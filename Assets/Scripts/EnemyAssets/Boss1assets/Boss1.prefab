@@ -81,6 +81,7 @@ GameObject:
   - component: {fileID: 1433385202581581170}
   - component: {fileID: 30742593}
   - component: {fileID: 282715404}
+  - component: {fileID: 1515683965}
   m_Layer: 0
   m_Name: Boss1
   m_TagString: Enemy
@@ -147,7 +148,7 @@ MonoBehaviour:
   combat: {fileID: 2831172965067239933}
   stats: {fileID: 0}
   hitHandler: {fileID: 0}
-  detectionRange: 30
+  detectionRange: 10
   attackRange: 1.1
   stopDistanceBuffer: 0.2
   faceTargetSpeed: 10
@@ -276,6 +277,19 @@ MonoBehaviour:
   animatorLayer: 0
   defaultStunDuration: 0.5
   isHit: 0
+--- !u!114 &1515683965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168022619153831306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a91e8060ad2ec4f9875449d7de57ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnType: 0
 --- !u!1 &288698329951756986
 GameObject:
   m_ObjectHideFlags: 0

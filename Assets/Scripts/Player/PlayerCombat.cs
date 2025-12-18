@@ -8,10 +8,12 @@ public class PlayerCombat : MonoBehaviour
     public PlayerController playerController;
 
     public List<AttackSO> combo;
+    public AttackSO heavyAttack; // New Heavy Attack
     float lastClickedTime;
     float lastComboEnd;
     int comboCounter;
     public bool attackbuffer = false;
+    public bool heavyAttackBuffer = false; // New Buffer for Heavy Attack
 
     // index of attack currently executing (set when attack starts)
     int currentExecutingAttackIndex = -1;
@@ -42,7 +44,81 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {
         ExitAttack();
-        Attack();
+        HandleAttacks();
+    }
+
+    public void HandleAttacks()
+    {
+        // Priority: Heavy Attack > Light Attack (or whatever preference)
+        // Check Heavy Attack first
+        if (heavyAttackBuffer)
+        {
+            PerformHeavyAttack();
+            return;
+        }
+
+        // Check Light Attack
+        if (attackbuffer)
+        {
+            Attack();
+        }
+    }
+
+    public void PerformHeavyAttack()
+    {
+        // Basic checks: cooldowns, animation state
+        if (Time.time - lastClickedTime <= 0.2f || Time.time - lastComboEnd <= lastComboCooldown)
+        {
+            return;
+        }
+
+        // If already attacking (light or heavy), wait until near end
+        if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.9f)
+        {
+            return;
+        }
+
+        CancelInvoke("EndCombo");
+
+        // Check Stamina
+        float staminaCost = (heavyAttack != null) ? heavyAttack.staminaCost : 0f;
+        if (playerController != null && playerController.playerStats != null)
+        {
+            if (!playerController.playerStats.CanPerformAction(staminaCost))
+            {
+                heavyAttackBuffer = false;
+                return;
+            }
+            else
+            {
+                playerController.playerStats.ConsumeStamina(staminaCost);
+            }
+        }
+
+        heavyAttackBuffer = false;
+        playerController.IsAttacking = true;
+        playerController.inputsLocked = true;
+
+        // Reset combo counter because heavy attack breaks the light combo chain
+        comboCounter = 0;
+        currentExecutingAttackIndex = -1; // Not part of the combo list
+
+        if (heavyAttack != null)
+        {
+            anim.runtimeAnimatorController = heavyAttack.animatorOV;
+            weapon.damage = heavyAttack.damage;
+        }
+        
+        anim.Play("Attack", 0, 0);
+        weapon.StartAttack();
+
+        lastClickedTime = Time.time;
+        
+        // We treat heavy attack as a "full commit", so we might want a longer cooldown after it
+        // For now, we rely on ExitAttack -> EndCombo logic. 
+        // Since currentExecutingAttackIndex is -1, EndCombo will treat it as "not full combo" (short cooldown)
+        // unless we modify EndCombo. Let's modify EndCombo to handle this if needed.
+        // Actually, let's set a flag or just let it be short cooldown for now.
     }
 
     public void Attack()
@@ -159,6 +235,14 @@ public class PlayerCombat : MonoBehaviour
         lastComboEnd = Time.time;
         lastComboCooldown = shortFinishCooldown;
         attackbuffer = false;
+        heavyAttackBuffer = false;
+
+        // Ensure weapon damage is disabled
+        if (weapon != null)
+        {
+            weapon.canDamage = false;
+            weapon.EndAttack();
+        }
 
         // release player input/attack locks (controller may override during GetHit)
         if (playerController != null)

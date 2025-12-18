@@ -2661,6 +2661,7 @@ MonoBehaviour:
   moveAction: {fileID: -3130217082136603544, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   jumpAction: {fileID: -7633424460605379354, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   AttackAction: {fileID: -4553274764285300186, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  heavyAttackAction: {fileID: -7701180366908285886, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   sprintAction: {fileID: -3463504297877522698, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   rollAction: {fileID: 5912490216897630189, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   lockOnTargetAction: {fileID: -8217979969292354152, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
@@ -2694,6 +2695,7 @@ MonoBehaviour:
   jumpStaminaCost: 15
   exhaustionRecoverPercent: 0.2
   isExhausted: 0
+  attackBufferWindow: 0.7
   playerCombat: {fileID: 8824110412222569697}
   IsAttacking: 0
   attackLocked: 0
@@ -2732,7 +2734,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b5524132cd8d514fabaac1da83dd4d8, type: 2}
   - {fileID: 11400000, guid: bac14b6f973ad1e408d8f1d943c4c02b, type: 2}
   - {fileID: 11400000, guid: cfd88c882bf66534593911a13d39ca5b, type: 2}
+  heavyAttack: {fileID: 11400000, guid: 2c8c0034ad383004ca300ae679ddf1a7, type: 2}
   attackbuffer: 0
+  heavyAttackBuffer: 0
   shortFinishCooldown: 0.01
   fullFinishCooldown: 0.05
   anim: {fileID: 3788377233913091284}
@@ -2753,10 +2757,17 @@ MonoBehaviour:
   isInvincible: 0
   staminaRegenDelay: 1
   healAmount: 30
+  maxFlasks: 3
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
   OnStaminaChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnFlasksChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSoulsChanged:
     m_PersistentCalls:
       m_Calls: []
   OnDeath:
@@ -2777,6 +2788,8 @@ MonoBehaviour:
   playerStats: {fileID: 8824110412222569699}
   healthBar: {fileID: 0}
   staminaBar: {fileID: 0}
+  soulsText: {fileID: 0}
+  flaskText: {fileID: 0}
 --- !u!114 &440394917
 MonoBehaviour:
   m_ObjectHideFlags: 0

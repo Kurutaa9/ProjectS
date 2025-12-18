@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acfa019fbcd94034ebf8a824adbca743, type: 3}
-  m_Name: Attack3
+  m_Name: AttackHeavy
   m_EditorClassIdentifier: 
-  animatorOV: {fileID: 22100000, guid: ddc77aa3111b70c45b30212fc90d1831, type: 2}
-  damage: 30
+  animatorOV: {fileID: 22100000, guid: 1782f49c525e4fa4498ff4afbc001a9a, type: 2}
+  damage: 40
   staminaCost: 20

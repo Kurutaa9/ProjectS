@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public InputActionReference moveAction;
     public InputActionReference jumpAction;
     public InputActionReference AttackAction;
+    public InputActionReference heavyAttackAction;
     public InputActionReference sprintAction;
     public InputActionReference rollAction;
     public InputActionReference lockOnTargetAction;
@@ -83,6 +84,9 @@ public class PlayerController : MonoBehaviour
     public bool isExhausted = false;
 
     //Attacking
+    [Header("Combat Settings")]
+    [Tooltip("Normalized time (0-1) of the attack animation after which input buffering is allowed.")]
+    public float attackBufferWindow = 0.7f;
     public PlayerCombat playerCombat;
     public bool IsAttacking = false;
     public bool attackLocked = false;
@@ -97,6 +101,7 @@ public class PlayerController : MonoBehaviour
         if (jumpAction != null) jumpAction.action.Enable();
         if (lockOnTargetAction != null) lockOnTargetAction.action.Enable();
         if (AttackAction != null) AttackAction.action.Enable();
+        if (heavyAttackAction != null) heavyAttackAction.action.Enable();
         if (sprintAction != null) sprintAction.action.Enable();
         if (rollAction != null) rollAction.action.Enable();
         if (healAction != null) healAction.action.Enable();
@@ -117,6 +122,12 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Prevent stamina regen while attacking
+        if (IsAttacking && playerStats != null)
+        {
+            playerStats.ResetRegenTimer();
+        }
+
         grounded = Physics.Raycast(transform.position + controller.center, Vector3.down, controller.height / 2f + 0.1f, ground);
         //if player hits ground and is falling, stop falling...
         if (grounded && playerVelocity.y < 0)
@@ -299,7 +310,19 @@ public class PlayerController : MonoBehaviour
         //attacking
         if (AttackAction.action.triggered && !attackLocked)
         {
-            playerCombat.attackbuffer = true;
+            if (CanBufferAttack())
+            {
+                playerCombat.attackbuffer = true;
+            }
+        }
+
+        //heavy attack
+        if (heavyAttackAction != null && heavyAttackAction.action.triggered && !attackLocked)
+        {
+            if (CanBufferAttack())
+            {
+                playerCombat.heavyAttackBuffer = true;
+            }
         }
 
         //healing
@@ -317,6 +340,19 @@ public class PlayerController : MonoBehaviour
             playerStats.ConsumeStamina(playerStats.GetRollStaminaCost());
             StartRoll();
         }
+    }
+
+    private bool CanBufferAttack()
+    {
+        // If we are currently attacking, check if we are far enough into the animation
+        if (IsAttacking && anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
+        {
+            if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < attackBufferWindow)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void StartRoll()

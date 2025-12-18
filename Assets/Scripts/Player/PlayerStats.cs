@@ -70,6 +70,11 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    public void ResetRegenTimer()
+    {
+        regenBlockedUntil = Time.time + staminaRegenDelay;
+    }
+
     public void Heal(float amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, baseStats.maxHealth);

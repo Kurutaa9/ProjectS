@@ -73,6 +73,14 @@ public class EnemyHitHandler : MonoBehaviour
     {
         isHit = true;
 
+        // Disable weapons immediately
+        var weapons = GetComponentsInChildren<Weapon>(true);
+        foreach (var w in weapons)
+        {
+            w.canDamage = false;
+            w.EndAttack();
+        }
+
         // Stop Movement
         if (agent && agent.isActiveAndEnabled)
         {
