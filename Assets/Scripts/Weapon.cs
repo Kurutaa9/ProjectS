@@ -23,6 +23,32 @@ public class Weapon : MonoBehaviour
     [SerializeField]
     private float attackStaminaCost;
 
+    [Header("Visual Effects")]
+    [SerializeField] private TrailRenderer normalTrail;
+    [SerializeField] private TrailRenderer heavyTrail;
+    [SerializeField] private Transform vfxSpawnPoint;
+
+    [System.Serializable]
+    public class WeaponVFXConfig
+    {
+        public GameObject vfxPrefab;
+        public Vector3 positionOffset;
+        public Vector3 rotationOffset;
+        public Vector3 scale = Vector3.one;
+        [Tooltip("Delay in seconds before the VFX actually spawns.")]
+        public float startDelay = 0f;
+        [Tooltip("Duration in seconds before the VFX is destroyed. If 0, uses the ParticleSystem's duration.")]
+        public float lifeTime = 0f;
+        [Tooltip("If greater than 0, stops the particle emission after this many seconds.")]
+        public float stopEmissionAfter = 0f;
+        [Tooltip("Normalized time (0.0 to 1.0) of the attack animation when the VFX should trigger.")]
+        [Range(0f, 1f)]
+        public float triggerPoint = 0.9f;
+    }
+
+    [Header("VFX Configurations")]
+    public WeaponVFXConfig heavyAttackVFX;
+    public WeaponVFXConfig lightAttackVFX;
 
     void Awake()
     {
@@ -36,6 +62,10 @@ public class Weapon : MonoBehaviour
             if (ownerRoot.CompareTag("Enemy")) ownerTeam = Team.Enemy;
             else if (ownerRoot.CompareTag("Player")) ownerTeam = Team.Player;
         }
+
+        // Ensure trails are off at start
+        if (normalTrail) normalTrail.emitting = false;
+        if (heavyTrail) heavyTrail.emitting = false;
     }
 
     public void StartAttack()
@@ -43,9 +73,105 @@ public class Weapon : MonoBehaviour
         hitVictimIds.Clear();
     }
 
+    public void EnableTrail(bool isHeavy)
+    {
+        if (isHeavy)
+        {
+            if (heavyTrail) heavyTrail.emitting = true;
+            if (normalTrail) normalTrail.emitting = false;
+        }
+        else
+        {
+            if (normalTrail) normalTrail.emitting = true;
+            if (heavyTrail) heavyTrail.emitting = false;
+        }
+    }
+
+    public void DisableTrails()
+    {
+        if (normalTrail) normalTrail.emitting = false;
+        if (heavyTrail) heavyTrail.emitting = false;
+    }
+
+    public void PlayAttackVFX(bool isHeavy)
+    {
+        WeaponVFXConfig config = isHeavy ? heavyAttackVFX : lightAttackVFX;
+        
+        if (config != null && config.vfxPrefab != null)
+        {
+            StartCoroutine(SpawnVFXRoutine(config));
+        }
+    }
+
+    // Keep old method for compatibility if needed, but redirect it
+    public void PlayHeavyParticle()
+    {
+        PlayAttackVFX(true);
+    }
+
+    private IEnumerator SpawnVFXRoutine(WeaponVFXConfig config)
+    {
+        if (config.startDelay > 0)
+        {
+            yield return new WaitForSeconds(config.startDelay);
+        }
+
+        // Determine base position and rotation
+        Vector3 basePos = (vfxSpawnPoint != null) ? vfxSpawnPoint.position : transform.position;
+        Quaternion baseRot = (vfxSpawnPoint != null) ? vfxSpawnPoint.rotation : transform.rotation;
+
+        // Apply offsets
+        // Position offset is applied relative to the rotation
+        Vector3 finalPos = basePos + (baseRot * config.positionOffset);
+        // Rotation offset is applied on top of the base rotation
+        Quaternion finalRot = baseRot * Quaternion.Euler(config.rotationOffset);
+
+        // Instantiate the VFX prefab
+        GameObject vfx = Instantiate(config.vfxPrefab, finalPos, finalRot);
+        
+        // Apply scale
+        vfx.transform.localScale = config.scale;
+
+        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+
+        // Handle early emission stop if requested
+        if (config.stopEmissionAfter > 0 && ps != null)
+        {
+            StartCoroutine(StopEmissionRoutine(ps, config.stopEmissionAfter));
+        }
+
+        // Determine destruction time
+        float destroyTime = 2.0f; // Default fallback
+
+        if (config.lifeTime > 0)
+        {
+            destroyTime = config.lifeTime;
+        }
+        else
+        {
+            // Attempt to calculate from ParticleSystem
+            if (ps != null)
+            {
+                destroyTime = ps.main.duration + ps.main.startLifetime.constantMax;
+            }
+        }
+
+        Destroy(vfx, destroyTime);
+    }
+
+    private IEnumerator StopEmissionRoutine(ParticleSystem ps, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (ps != null)
+        {
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
+
     public void EndAttack()
     {
         hitVictimIds.Clear();
+        DisableTrails();
     }
 
     private void OnTriggerEnter(Collider other)

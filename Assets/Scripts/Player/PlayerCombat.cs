@@ -34,6 +34,9 @@ public class PlayerCombat : MonoBehaviour
 
     public Animator anim;
     [SerializeField] public Weapon weapon;
+    
+    // Track if VFX has been played for the current attack to avoid duplicates
+    private bool hasPlayedVFX = false;
 
     void Start()
     {
@@ -43,8 +46,39 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+        CheckVFXTrigger();
         ExitAttack();
         HandleAttacks();
+    }
+
+    void CheckVFXTrigger()
+    {
+        if (playerController.IsAttacking && !hasPlayedVFX && weapon != null)
+        {
+            // Check if we are in an attack state
+            if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
+            {
+                if (Time.time - lastClickedTime < 0.1f) return;
+
+                // Determine which config to use based on attack type
+                // Heavy Attack (-1) uses heavy config
+                // Combo Attack (>= 2) uses light/combo config
+                bool isHeavy = (currentExecutingAttackIndex == -1);
+                bool isComboFinisher = (currentExecutingAttackIndex >= 2);
+
+                if (!isHeavy && !isComboFinisher) return;
+
+                // Get the appropriate trigger point
+                float triggerPoint = isHeavy ? weapon.heavyAttackVFX.triggerPoint : weapon.lightAttackVFX.triggerPoint;
+
+                // Check if we passed the trigger point
+                if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= triggerPoint)
+                {
+                    weapon.PlayAttackVFX(isHeavy);
+                    hasPlayedVFX = true;
+                }
+            }
+        }
     }
 
     public void HandleAttacks()
@@ -111,6 +145,13 @@ public class PlayerCombat : MonoBehaviour
         
         anim.Play("Attack", 0, 0);
         weapon.StartAttack();
+        hasPlayedVFX = false; // Reset VFX flag
+        
+        // Enable Heavy Trail
+        if (weapon != null)
+        {
+            weapon.EnableTrail(true);
+        }
 
         lastClickedTime = Time.time;
         
@@ -176,6 +217,21 @@ public class PlayerCombat : MonoBehaviour
         anim.Play("Attack", 0, 0); // play the attack animation that has been overwritten
         weapon.damage = combo[comboCounter].damage; //set the weapon damage according to the current combo
         weapon.StartAttack();
+        hasPlayedVFX = false; // Reset VFX flag
+
+        // Handle Trails and Effects
+        if (weapon != null)
+        {
+            // If it's the 3rd attack (index 2) or later
+            if (comboCounter >= 2)
+            {
+                weapon.EnableTrail(true);
+            }
+            else
+            {
+                weapon.EnableTrail(false);
+            }
+        }
 
         comboCounter++;
         lastClickedTime = Time.time;
@@ -187,7 +243,7 @@ public class PlayerCombat : MonoBehaviour
 
     void ExitAttack()
     {
-        if(anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f && anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
+        if(playerController.IsAttacking && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f && anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
         {
             // record which attack just finished so EndCombo can choose the proper cooldown
             lastCompletedAttackIndex = currentExecutingAttackIndex;

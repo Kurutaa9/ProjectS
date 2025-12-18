@@ -158,4 +158,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   canDamage: 0
+  ownerTeam: 0
+  ownerRoot: {fileID: 0}
+  autoAssignTeamFromRootTag: 1
   attackStaminaCost: 0
+  normalTrail: {fileID: 0}
+  heavyTrail: {fileID: 0}
+  vfxSpawnPoint: {fileID: 0}
+  heavyAttackVFX:
+    vfxPrefab: {fileID: 0}
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    startDelay: 0
+    lifeTime: 0
+    stopEmissionAfter: 0
+    triggerPoint: 0.9
+  lightAttackVFX:
+    vfxPrefab: {fileID: 0}
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    startDelay: 0
+    lifeTime: 0
+    stopEmissionAfter: 0
+    triggerPoint: 0.9

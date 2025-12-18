@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: AttackHeavy
   m_EditorClassIdentifier: 
   animatorOV: {fileID: 22100000, guid: 1782f49c525e4fa4498ff4afbc001a9a, type: 2}
-  damage: 40
-  staminaCost: 20
+  damage: 50
+  staminaCost: 40
