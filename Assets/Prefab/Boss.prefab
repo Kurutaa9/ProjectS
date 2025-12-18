@@ -1404,6 +1404,7 @@ GameObject:
   - component: {fileID: 5754233446189405554}
   - component: {fileID: 5754233446189405555}
   - component: {fileID: 5754233446189405552}
+  - component: {fileID: 373533458}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Enemy
@@ -1629,9 +1630,25 @@ MonoBehaviour:
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
+  OnTakeDamage:
+    m_PersistentCalls:
+      m_Calls: []
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &373533458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4835261831838420305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a91e8060ad2ec4f9875449d7de57ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnType: 1
 --- !u!1 &5187739635032449902
 GameObject:
   m_ObjectHideFlags: 0
@@ -3257,8 +3274,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 10.936862, y: 4.4059157, z: 27.972761}
-  m_Center: {x: 0.43420842, y: 0.06945502, z: 0.10052562}
+  m_Size: {x: 21.103584, y: 14.316545, z: 33.92585}
+  m_Center: {x: 1.18007, y: -0.7110028, z: 3.0770917}
 --- !u!65 &5754233446750686071
 BoxCollider:
   m_ObjectHideFlags: 0
