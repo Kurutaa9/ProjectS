@@ -1,0 +1,9 @@
+To install and execute the demo scenes:
+
+1) Double click on Standard Assets package to import it (ONLY REQUIRED FOR DEMO SCENES)
+2) Double click on Demos package to import demo scenes
+3) The demos are now available inside Demos folder
+
+Note!
+You can delete the Demos folder once you don't need the demo scenes anymore
+
