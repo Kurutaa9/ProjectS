@@ -18,6 +18,9 @@ public class PlayerStats : MonoBehaviour
     public float staminaRegenDelay = 0.75f;
     private float regenBlockedUntil = 0f;
 
+    [Header("Healing")]
+    public float healAmount = 30f;
+
     public UnityEvent<float> OnHealthChanged;
     public UnityEvent<float> OnStaminaChanged;
     public UnityEvent OnDeath;
@@ -53,6 +56,12 @@ public class PlayerStats : MonoBehaviour
         {
             OnStaminaChanged.Invoke(currentStamina);
         }
+    }
+
+    public void Heal(float amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, baseStats.maxHealth);
+        OnHealthChanged.Invoke(currentHealth);
     }
 
     public void TakeDamage(float amount)

@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public InputActionReference sprintAction;
     public InputActionReference rollAction;
     public InputActionReference lockOnTargetAction;
+    public InputActionReference healAction;
 
     [Header("orientation")]
     public Camera cam;
@@ -25,6 +26,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Object")]
     public GameObject playerObj;
+    [Header("VFX")]
+    public GameObject healVFX;
+    public Vector3 healVFXOffset = new Vector3(0f, 0.5f, 0f);
 
     [Header("Animation")]
     public Animator anim;
@@ -84,6 +88,7 @@ public class PlayerController : MonoBehaviour
     public bool attackLocked = false;
 
     public bool isTakingHit = false;
+    public bool isHealing = false;
 
 
     private void OnEnable()
@@ -94,6 +99,7 @@ public class PlayerController : MonoBehaviour
         AttackAction.action.Enable();
         sprintAction.action.Enable();
         rollAction.action.Enable();
+        healAction.action.Enable();
 
         baseAnimatorController = anim.runtimeAnimatorController;
     }
@@ -106,6 +112,7 @@ public class PlayerController : MonoBehaviour
         AttackAction.action.Disable();
         sprintAction.action.Disable();
         rollAction.action.Disable();
+        healAction.action.Disable();
     }
 
     void Update()
@@ -295,6 +302,11 @@ public class PlayerController : MonoBehaviour
             playerCombat.attackbuffer = true;
         }
 
+        //healing
+        if (healAction.action.triggered && !isHealing && grounded && !inputsLocked && !IsAttacking && !isRolling)
+        {
+            StartCoroutine(HealRoutine());
+        }
 
         //roll
         if (rollAction.action.triggered && !isRolling && grounded && !inputsLocked && playerStats.CanPerformAction(playerStats.GetRollStaminaCost()))
@@ -490,6 +502,72 @@ public class PlayerController : MonoBehaviour
         isTakingHit = false;
     }
 
+    private IEnumerator HealRoutine()
+    {
+        isHealing = true;
+        inputsLocked = true;
+        attackLocked = true;
+        anim.Play("Heal", 0, 0f);
+
+        // Wait for transition to Heal state
+        yield return new WaitForSeconds(0.1f);
+
+        // Wait until we are in "Heal" state
+        float timeout = 0f;
+        while (!IsInState(anim, "Heal") && timeout < 1f)
+        {
+            timeout += Time.deltaTime;
+            yield return null;
+        }
+
+        if (timeout >= 1f)
+        {
+            Debug.LogWarning("Heal animation state not found or took too long.");
+            isHealing = false;
+            inputsLocked = false;
+            attackLocked = false;
+            yield break;
+        }
+
+        bool healed = false;
+        while (IsInState(anim, "Heal"))
+        {
+            AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
+            if (!healed && info.normalizedTime >= 0.5f)
+            {
+                if (playerStats != null)
+                    playerStats.Heal(playerStats.healAmount);
+
+                if (healVFX != null)
+                {
+                    GameObject vfx = Instantiate(healVFX, transform.position + healVFXOffset, Quaternion.identity);
+                    ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+                    if (ps != null)
+                    {
+                        Destroy(vfx, ps.main.duration + ps.main.startLifetime.constantMax);
+                    }
+                    else
+                    {
+                        Destroy(vfx, 2f);
+                    }
+                }
+
+                healed = true;
+            }
+            yield return null;
+        }
+
+        if (!healed)
+        {
+            if (playerStats != null)
+                playerStats.Heal(playerStats.healAmount);
+        }
+
+        isHealing = false;
+        inputsLocked = false;
+        attackLocked = false;
+    }
+
     private bool IsInState(Animator a, string stateName)
     {
         AnimatorStateInfo info = a.GetCurrentAnimatorStateInfo(0);
@@ -516,6 +594,7 @@ public class PlayerController : MonoBehaviour
         isRolling = false;
         isSprinting = false;
         IsAttacking = false;
+        isHealing = false;
         lockedOnTarget = false;
         currentTarget = null;
 
@@ -533,6 +612,7 @@ public class PlayerController : MonoBehaviour
         isRolling = false;
         isSprinting = false;
         IsAttacking = false;
+        isHealing = false;
         lockedOnTarget = false;
         currentTarget = null;
 

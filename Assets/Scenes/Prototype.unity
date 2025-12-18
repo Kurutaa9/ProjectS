@@ -337,6 +337,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 325867109}
     - target: {fileID: 8824110412222569703, guid: 41b13935e4026114287f27c735bf842b, type: 3}
+      propertyPath: healAction
+      value: 
+      objectReference: {fileID: 4917344766067524477, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+    - target: {fileID: 8824110412222569703, guid: 41b13935e4026114287f27c735bf842b, type: 3}
       propertyPath: currentTarget
       value: 
       objectReference: {fileID: 0}
