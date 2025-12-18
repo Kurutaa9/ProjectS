@@ -93,13 +93,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        moveAction.action.Enable();
-        jumpAction.action.Enable();
-        lockOnTargetAction.action.Enable();
-        AttackAction.action.Enable();
-        sprintAction.action.Enable();
-        rollAction.action.Enable();
-        healAction.action.Enable();
+        if (moveAction != null) moveAction.action.Enable();
+        if (jumpAction != null) jumpAction.action.Enable();
+        if (lockOnTargetAction != null) lockOnTargetAction.action.Enable();
+        if (AttackAction != null) AttackAction.action.Enable();
+        if (sprintAction != null) sprintAction.action.Enable();
+        if (rollAction != null) rollAction.action.Enable();
+        if (healAction != null) healAction.action.Enable();
 
         baseAnimatorController = anim.runtimeAnimatorController;
     }
@@ -305,7 +305,10 @@ public class PlayerController : MonoBehaviour
         //healing
         if (healAction.action.triggered && !isHealing && grounded && !inputsLocked && !IsAttacking && !isRolling)
         {
-            StartCoroutine(HealRoutine());
+            if (playerStats != null && playerStats.CanHeal())
+            {
+                StartCoroutine(HealRoutine());
+            }
         }
 
         //roll
@@ -536,7 +539,10 @@ public class PlayerController : MonoBehaviour
             if (!healed && info.normalizedTime >= 0.5f)
             {
                 if (playerStats != null)
+                {
                     playerStats.Heal(playerStats.healAmount);
+                    playerStats.ConsumeFlask();
+                }
 
                 if (healVFX != null)
                 {

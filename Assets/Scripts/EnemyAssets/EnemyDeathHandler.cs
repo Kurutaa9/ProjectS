@@ -87,6 +87,24 @@ public class EnemyDeathHandler : MonoBehaviour
         if (destroyDelay > 0f)
             yield return new WaitForSeconds(destroyDelay);
 
+        // Reward Souls to Player
+        if (stats != null)
+        {
+            // Find player (assuming single player)
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player)
+            {
+                var pStats = player.GetComponent<PlayerStats>();
+                if (pStats)
+                {
+                    // You need to add a way to get souls reward from enemy stats
+                    // For now, assuming a fixed value or reading from SO if you added it there
+                    // Let's assume you added 'soulsReward' to CharacterStatsSO as requested
+                    pStats.AddSouls(stats.GetSoulsReward());
+                }
+            }
+        }
+
         // Check for RespawnManager
         var respawnManager = GetComponent<EnemyRespawnManager>();
         if (respawnManager != null)

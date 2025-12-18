@@ -13,4 +13,7 @@ public class CharacterStatsSO : ScriptableObject
 
     [Header("Combat")]
     public float baseDamage = 10f;
+
+    [Header("Currency")]
+    public int soulsReward = 100;
 }

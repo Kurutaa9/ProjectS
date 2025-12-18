@@ -20,17 +20,29 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Healing")]
     public float healAmount = 30f;
+    public int maxFlasks = 3;
+    private int currentFlasks;
+
+    [Header("Currency")]
+    private int currentSouls = 0;
 
     public UnityEvent<float> OnHealthChanged;
     public UnityEvent<float> OnStaminaChanged;
+    public UnityEvent<int> OnFlasksChanged;
+    public UnityEvent<int> OnSoulsChanged;
     public UnityEvent OnDeath;
 
     void Start()
     {
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
+        currentFlasks = maxFlasks;
+        currentSouls = 0;
+
         OnHealthChanged.Invoke(currentHealth);
         OnStaminaChanged.Invoke(currentStamina);
+        OnFlasksChanged.Invoke(currentFlasks);
+        OnSoulsChanged.Invoke(currentSouls);
     }
 
     void Update()
@@ -62,6 +74,31 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, baseStats.maxHealth);
         OnHealthChanged.Invoke(currentHealth);
+    }
+
+    public bool CanHeal()
+    {
+        return currentFlasks > 0 && currentHealth < baseStats.maxHealth;
+    }
+
+    public void ConsumeFlask()
+    {
+        if (currentFlasks > 0)
+        {
+            currentFlasks--;
+            OnFlasksChanged.Invoke(currentFlasks);
+        }
+    }
+
+    public void AddSouls(int amount)
+    {
+        currentSouls += amount;
+        OnSoulsChanged.Invoke(currentSouls);
+    }
+
+    public int GetCurrentSouls()
+    {
+        return currentSouls;
     }
 
     public void TakeDamage(float amount)
@@ -126,13 +163,20 @@ public class PlayerStats : MonoBehaviour
         return currentStamina >= staminaCost;
     }
 
+    public int GetCurrentFlasks()
+    {
+        return currentFlasks;
+    }
+
     public void ResetStats()
     {
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
+        currentFlasks = maxFlasks;
         isInvincible = false;
         
         OnHealthChanged.Invoke(currentHealth);
         OnStaminaChanged.Invoke(currentStamina);
+        OnFlasksChanged.Invoke(currentFlasks);
     }
 }

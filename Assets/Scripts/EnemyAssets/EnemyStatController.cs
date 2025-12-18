@@ -66,6 +66,11 @@ public class EnemyStatController : MonoBehaviour
         return baseStats.baseDamage;
     }
 
+    public int GetSoulsReward()
+    {
+        return baseStats.soulsReward;
+    }
+
     public bool HasTakenDamage()
     {
         return hasTakenDamage;
