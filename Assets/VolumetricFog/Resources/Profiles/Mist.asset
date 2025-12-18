@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -16,16 +17,20 @@ MonoBehaviour:
   density: 0.3
   noiseStrength: 0.6
   height: 6
+  heightFallOff: 0.6
   baselineHeight: 0
   distance: 0
   distanceFallOff: 0
   maxFogLength: 1000
-  maxFogLengthFallOff: 0
+  maxFogLengthFallOff: 0.5
   baselineRelativeToCamera: 0
   baselineRelativeToCameraDelay: 0
   noiseScale: 1
+  noiseSparse: 0
+  noiseFinalMultiplier: 1
   alpha: 1
   color: {r: 0.89, g: 0.89, b: 0.89, a: 1}
+  deepObscurance: 1
   specularColor: {r: 1, g: 1, b: 0.8, a: 1}
   specularThreshold: 0.6
   specularIntensity: 0.1
@@ -33,22 +38,43 @@ MonoBehaviour:
   lightIntensity: 0.12
   lightColor: {r: 1, g: 1, b: 1, a: 1}
   speed: 0.01
+  useRealTime: 0
   windDirection: {x: 1, y: 0, z: 0}
-  fogAreaCenter: {fileID: 0}
-  fogAreaFallOff: 1
-  fogAreaTopology: 1
-  fogAreaRadius: 0
-  fogAreaPosition: {x: 0, y: 0, z: 0}
-  fogAreaDepth: 0
-  fogAreaHeight: 0
   turbulenceStrength: 0
   useXYPlane: 0
-  skyColor: {r: 0.89, g: 0.89, b: 0.89, a: 0.8}
+  skyColor: {r: 0.81, g: 0.81, b: 0.81, a: 1}
   skyHaze: 15
   skySpeed: 0.3
   skyNoiseStrength: 0.1
+  skyNoiseScale: 1
   skyAlpha: 0.8
+  skyDepth: 0.999
   stepping: 8
   steppingNear: 0
   dithering: 1
   ditherStrength: 1
+  downsamplingOverride: 0
+  downsampling: 1
+  forceComposition: 0
+  edgeImprove: 0
+  edgeThreshold: 0.0005
+  lightScatteringOverride: 0
+  lightScatteringEnabled: 0
+  lightScatteringDiffusion: 0.7
+  lightDiffusionSpread: 8
+  lightScatteringSpread: 0.686
+  lightScatteringSamples: 16
+  lightScatteringWeight: 1.9
+  lightScatteringIllumination: 18
+  lightScatteringDecay: 0.986
+  lightScatteringExposure: 0
+  lightScatteringTint: {r: 1, g: 1, b: 1, a: 0}
+  lightScatteringJittering: 0.5
+  lightScatteringBlurDownscale: 1
+  fogVoidOverride: 0
+  fogVoidTopology: 0
+  fogVoidFallOff: 1
+  fogVoidRadius: 0
+  fogVoidPosition: {x: 0, y: 0, z: 0}
+  fogVoidDepth: 0
+  fogVoidHeight: 0

@@ -128,11 +128,15 @@ public class PlayerController : MonoBehaviour
             playerStats.ResetRegenTimer();
         }
 
-        grounded = Physics.Raycast(transform.position + controller.center, Vector3.down, controller.height / 2f + 0.1f, ground);
+        // SphereCast for better ground detection on uneven terrain
+        float radius = controller.radius * 0.9f;
+        float castDistance = (controller.height / 2f) - radius + 0.2f;
+        grounded = Physics.SphereCast(transform.position + controller.center, radius, Vector3.down, out _, castDistance, ground);
+        Debug.Log(grounded);
         //if player hits ground and is falling, stop falling...
         if (grounded && playerVelocity.y < 0)
         {
-            playerVelocity.y = 0f;
+            playerVelocity.y = -2f;
         }
 
         // Read input   
