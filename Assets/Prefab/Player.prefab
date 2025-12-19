@@ -2260,6 +2260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerParent: {fileID: 8824110412222569498}
   anim: {fileID: 3788377233913091284}
+  useRootMotion: 1
 --- !u!114 &595728128246800074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3022,7 +3023,8 @@ MonoBehaviour:
   shortFinishCooldown: 0.01
   fullFinishCooldown: 0.05
   anim: {fileID: 3788377233913091284}
-  weapon: {fileID: 2295006213808430432}
+  weapons:
+  - {fileID: 2295006213808430432}
 --- !u!114 &8824110412222569699
 MonoBehaviour:
   m_ObjectHideFlags: 0

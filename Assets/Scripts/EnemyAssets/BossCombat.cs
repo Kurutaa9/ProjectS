@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BossCombat : MonoBehaviour
@@ -14,7 +15,7 @@ public class BossCombat : MonoBehaviour
     }
 
     public Animator anim;
-    public Weapon weapon;
+    public List<Weapon> weapons = new List<Weapon>();
 
     [Header("Animator Sync")]
     [Tooltip("Keep IsAttacking true until the Animator exits this tag (helps when an attack is a chain of multiple clips/states)")]
@@ -38,7 +39,11 @@ public class BossCombat : MonoBehaviour
     void Awake()
     {
         if (!anim) anim = GetComponentInChildren<Animator>();
-        if (!weapon) weapon = GetComponentInChildren<Weapon>();
+        if (weapons == null || weapons.Count == 0)
+        {
+            Weapon w = GetComponentInChildren<Weapon>();
+            if (w) weapons.Add(w);
+        }
     }
 
     public void StartRandomAttack()
@@ -54,10 +59,16 @@ public class BossCombat : MonoBehaviour
         StopAllCoroutines();
         IsAttacking = false;
 
-        if (weapon)
+        if (weapons != null)
         {
-            weapon.canDamage = false;
-            weapon.EndAttack();
+            foreach (var w in weapons)
+            {
+                if (w)
+                {
+                    w.canDamage = false;
+                    w.EndAttack();
+                }
+            }
         }
 
         if (anim)
@@ -92,11 +103,15 @@ public class BossCombat : MonoBehaviour
 
         // Determine damage per hit
         float resolvedDamage = data.damagePerHit;
-        if (weapon)
+        if (ReferenceEquals(data, shortCombo) && shortAttackSO != null) resolvedDamage = shortAttackSO.damage;
+        else if (ReferenceEquals(data, special) && specialAttackSO != null) resolvedDamage = specialAttackSO.damage;
+
+        if (weapons != null)
         {
-            if (ReferenceEquals(data, shortCombo) && shortAttackSO != null) resolvedDamage = shortAttackSO.damage;
-            else if (ReferenceEquals(data, special) && specialAttackSO != null) resolvedDamage = specialAttackSO.damage;
-            weapon.damage = resolvedDamage;
+            foreach (var w in weapons)
+            {
+                if (w) w.damage = resolvedDamage;
+            }
         }
 
 
