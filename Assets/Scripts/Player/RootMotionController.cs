@@ -47,11 +47,7 @@ public class RootMotionController : MonoBehaviour
             else
             {
                 navMeshAgent.updatePosition = true;
-                // Apply rotation from animation even if position is handled by agent?
-                // Usually we want the agent to handle rotation too if it's driving, 
-                // but BossManager handles rotation manually.
-                // Let's apply deltaRotation just in case, or ignore it.
-                // If we ignore it, we rely on BossManager.FaceTarget.
+
                 playerParent.transform.rotation *= anim.deltaRotation;
             }
         }

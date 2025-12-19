@@ -47,7 +47,7 @@ public class animEvents : MonoBehaviour
         }
     }
 
-    // Called by Animation Event at start of hit window
+    // Called by Animation Event at start of hit window (weapon index start at 0)
     public void weaponCanDamageTrue()
     {
         weaponCanDamageTrue(0);
