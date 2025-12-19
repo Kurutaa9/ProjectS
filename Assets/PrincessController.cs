@@ -258,13 +258,6 @@ public class PrincessController : MonoBehaviour
         float dist = Vector3.Distance(transform.position, player.position);
         agent.enabled = true;
 
-        // If player got too close during recovery, retreat immediately
-        if (dist < retreatRange)
-        {
-            ChangeState(BossState.Retreat);
-            return;
-        }
-
         // Hold position and keep facing player during cooldown
         if (agent != null && agent.isOnNavMesh)
         {
@@ -280,6 +273,14 @@ public class PrincessController : MonoBehaviour
         }
 
         // Cooldown done - decide next action
+
+        // If player got too close during recovery, retreat now
+        if (dist < retreatRange)
+        {
+            ChangeState(BossState.Retreat);
+            return;
+        }
+
         if (dist <= attackRange)
         {
             // In range, attack again
@@ -440,16 +441,7 @@ public class PrincessController : MonoBehaviour
             }
         }
 
-        float dist = player ? Vector3.Distance(transform.position, player.position) : Mathf.Infinity;
-
-        // If player is too close, retreat immediately
-        if (dist < retreatRange)
-        {
-            ChangeState(BossState.Retreat);
-            return;
-        }
-
-        // Otherwise go to Recover (3-second idle before next attack)
+        // Always go to Recover (3-second idle before next attack)
         lastAttackTime = Time.time;
         ChangeState(BossState.Recover);
     }

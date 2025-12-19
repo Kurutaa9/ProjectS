@@ -132,3 +132,6 @@ MonoBehaviour:
   maxLifetime: 10
   hitVFX: {fileID: 0}
   vfxDestroyDelay: 2
+  speed: 20
+  homingDuration: 1
+  turnSpeed: 5

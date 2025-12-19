@@ -20,6 +20,12 @@ public class MageAnimEvents : MonoBehaviour
     public int projectileCount = 3;
     public float spreadAngle = 30f; // degrees between projectiles
 
+    [Header("Rune Attack Settings")]
+    public GameObject runePrefab;
+    public float runeDamage = 20f;
+    public float runeRadius = 3f;
+    public float runeDelay = 1.5f;
+
     void Awake()
     {
         if (!mageTransform) mageTransform = transform;
@@ -101,5 +107,31 @@ public class MageAnimEvents : MonoBehaviour
     {
         // Stop charging VFX, etc.
         Debug.Log("Spell casting ended");
+    }
+
+    public void SpawnRuneAtPlayer()
+    {
+        if (!runePrefab || !player) return;
+
+        Vector3 spawnPos = player.position;
+        
+        // Raycast to find ground level so rune sits flat
+        // Start raycast from slightly above player to hit ground below
+        if (Physics.Raycast(player.position + Vector3.up * 1f, Vector3.down, out RaycastHit hit, 5f))
+        {
+            spawnPos = hit.point + Vector3.up * 0.05f; // Slight offset to avoid z-fighting
+        }
+        else
+        {
+            // Fallback if raycast fails (e.g. player jumping high): just use player Y or ground level
+            spawnPos.y = transform.position.y + 0.05f; 
+        }
+
+        GameObject rune = Instantiate(runePrefab, spawnPos, Quaternion.identity);
+        var runeScript = rune.GetComponent<GroundRune>();
+        if (runeScript)
+        {
+            runeScript.Initialize(runeDamage, runeRadius, runeDelay);
+        }
     }
 }
