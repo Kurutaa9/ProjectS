@@ -145,6 +145,17 @@ public class EnemyRespawnManager : MonoBehaviour
             w.EndAttack(); // Clear any hit lists if your weapon script has this
         }
 
+        // NEW: Reset Boss logic/state if this is a boss
+        var boss = GetComponent<BossController>();
+        if (boss) boss.ResetBossOnRespawn();
+
+        var dragon = GetComponent<DragonController>();
+        if (dragon) dragon.ResetBossOnRespawn();
+
+        // Reset Princess boss
+        var princess = GetComponent<PrincessController>();
+        if (princess) princess.ResetBossOnRespawn();
+
         // 6. Reset Flags
         isDead = false;
     }

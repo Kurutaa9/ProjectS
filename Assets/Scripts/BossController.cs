@@ -419,4 +419,49 @@ public class BossController : MonoBehaviour
         // otherwise chase again
         ChangeState(dist <= attackRange ? BossState.Attack : BossState.Chase);
     }
+
+    // Reset all runtime state so the boss can behave after player respawn
+    public void ResetBossOnRespawn()
+    {
+        // Health/state
+        currentHealth = maxHealth;
+        isEnraged = false;
+        isPerformingAttack = false;
+        isJumping = false;
+        isChasing = false;
+        currentState = BossState.Idle;
+
+        // Cooldown so boss can act immediately
+        lastAttackTime = Time.time - attackCooldown;
+
+        // Agent
+        if (!agent) agent = GetComponent<NavMeshAgent>();
+        if (agent)
+        {
+            agent.enabled = true;
+            if (agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.ResetPath();
+            }
+        }
+
+        // Animator cleanup
+        if (!anim) anim = GetComponent<Animator>();
+        if (anim)
+        {
+            anim.ResetTrigger("AttackLight");
+            anim.ResetTrigger("AttackHeavy");
+            anim.ResetTrigger("AttackSpecial");
+            anim.ResetTrigger("Enrage");
+            anim.ResetTrigger("EnrageAttack");
+            anim.ResetTrigger("Die");
+            anim.ResetTrigger("JumpAttack");
+            anim.SetBool("isMoving", false);
+        }
+
+        // Hide health bar until engaged again
+        var hb = GetComponentInChildren<EnemyHealthBar>(true);
+        if (hb) hb.ForceShow(false);
+    }
 }

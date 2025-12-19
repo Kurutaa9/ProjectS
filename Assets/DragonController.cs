@@ -417,4 +417,67 @@ public class DragonController : MonoBehaviour
             flameHitbox.DeactivateFlame();
         }
     }
+
+    // ------------------- RESPAWN RESET -------------------
+
+    // Reset all runtime state so the dragon behaves correctly after player respawn
+    public void ResetBossOnRespawn()
+    {
+        // Health/state
+        currentHealth = maxHealth;
+        isEnraged = false;
+        isPerformingAttack = false;
+        isChasing = false;
+        hasRoared = false;
+        isScream = false;
+        ChangeState(BossState.Idle);
+
+        // Cooldown so dragon can act immediately after reset
+        lastAttackTime = Time.time - attackCooldown;
+
+        // Agent reset
+        if (!agent) agent = GetComponent<NavMeshAgent>();
+        if (agent)
+        {
+            agent.enabled = true;
+            if (agent.isOnNavMesh)
+            {
+                agent.updatePosition = true;
+                agent.updateRotation = true;
+                agent.isStopped = false;
+                agent.ResetPath();
+            }
+        }
+
+        // Animator cleanup
+        if (!anim) anim = GetComponent<Animator>();
+        if (anim)
+        {
+            anim.ResetTrigger("AttackLight");
+            anim.ResetTrigger("AttackHeavy");
+            anim.ResetTrigger("AttackSpecial");
+            anim.ResetTrigger("Enrage");
+            anim.ResetTrigger("EnrageAttack");
+            anim.ResetTrigger("Die");
+            anim.ResetTrigger(roarTrigger);
+            anim.SetBool("isMoving", false);
+        }
+
+        // Stop any running lunge coroutine
+        if (heavyLungeRoutine != null)
+        {
+            StopCoroutine(heavyLungeRoutine);
+            heavyLungeRoutine = null;
+        }
+
+        // Ensure flame is off
+        if (flameHitbox != null)
+        {
+            flameHitbox.DeactivateFlame();
+        }
+
+        // Hide health bar until engaged again
+        if (!enemyHealthBar) enemyHealthBar = GetComponentInChildren<EnemyHealthBar>(true);
+        if (enemyHealthBar) enemyHealthBar.ForceShow(false);
+    }
 }
