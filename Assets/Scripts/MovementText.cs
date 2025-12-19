@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class MovementText : MonoBehaviour
 {
     [Header("Overlay")]
     [SerializeField] private GameObject overlay;
-    [Tooltip("Optional: assign the UI Text component directly (overrides searching the overlay).")]
-    [SerializeField] private Text overlayText;
-    [Tooltip("If a UnityEngine.UI.Text is found, this message will be applied.")]
+    [Tooltip("Optional: assign the TextMeshPro UGUI component directly (overrides searching the overlay).")]
+    [SerializeField] private TMP_Text overlayText;
+    [Tooltip("Used only if the assigned TMP component's text is empty.")]
     [SerializeField] private string message = "Use WASD to walk. Hold Shift to run.";
     [Tooltip("Horizontal offset in pixels from the left edge when positioned at middle-left.")]
     [SerializeField] private float horizontalOffset = 50f;
@@ -25,20 +25,25 @@ public class MovementText : MonoBehaviour
             return;
         }
 
-        // If Text not assigned directly, try to find one under the overlay (including inactive).
+        // If TMP_Text not assigned directly, try to find one under the overlay (including inactive).
         if (overlayText == null && overlay != null)
         {
-            overlayText = overlay.GetComponentInChildren<Text>(true);
+            overlayText = overlay.GetComponentInChildren<TMP_Text>(true);
         }
 
         if (overlayText != null)
         {
-            overlayText.text = message;
+            // Respect text set directly on the TextMeshProUGUI component.
+            // Only apply the fallback `message` if the TMP text is empty or whitespace.
+            if (string.IsNullOrWhiteSpace(overlayText.text))
+            {
+                overlayText.text = message;
+            }
 
-            // Make sure the Text won't wrap/truncate unexpectedly and aligns left-middle.
-            overlayText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            overlayText.verticalOverflow = VerticalWrapMode.Overflow;
-            overlayText.alignment = TextAnchor.MiddleLeft;
+            // Prevent unwanted wrapping/clipping and align middle-left
+            overlayText.overflowMode = TextOverflowModes.Overflow;
+            overlayText.enableWordWrapping = false;
+            overlayText.alignment = TextAlignmentOptions.MidlineLeft;
 
             // Force layout update so preferredWidth is accurate, then expand rects as needed.
             Canvas.ForceUpdateCanvases();
@@ -83,7 +88,7 @@ public class MovementText : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"{nameof(MovementText)}: No UnityEngine.UI.Text found in overlay '{overlay?.name ?? "null"}'.");
+            Debug.LogWarning($"{nameof(MovementText)}: No TMPro.TMP_Text found in overlay '{overlay?.name ?? "null"}'.");
             if (overlay != null) overlay.SetActive(false);
         }
     }
@@ -131,11 +136,11 @@ public class MovementText : MonoBehaviour
         if (overlayText != null) overlayText.gameObject.SetActive(false);
     }
 
-    // Position the UI Text RectTransform to the middle-left of the parent rect.
-    private void PositionTextMiddleLeft(Text uiText, float offsetFromLeft)
+    // Position the TMP_Text RectTransform to the middle-left of the parent rect.
+    private void PositionTextMiddleLeft(TMP_Text tmpText, float offsetFromLeft)
     {
-        if (uiText == null) return;
-        var rt = uiText.rectTransform;
+        if (tmpText == null) return;
+        var rt = tmpText.rectTransform;
         if (rt == null) return;
 
         // Anchor to the left center of the parent canvas / parent rect
