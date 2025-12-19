@@ -93,7 +93,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: e3cc149c7cce9b64f80f76adacbcecf4, type: 2}
+  m_Motion: {fileID: 7400000, guid: afb257deac66d974d9870bf9e7805223, type: 2}
   m_Tag: Attack
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -164,7 +164,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 6af178628231b834090bfa4a0b73677f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 6f36574261b30d14f95d8638614d5ecb, type: 2}
   m_Tag: Attack
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -216,7 +216,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 060ea949eeadaf14c9b9796c26136db6, type: 2}
+  m_Motion: {fileID: 7400000, guid: 6aa17786e2cb4d248ad17ea070bbeaf2, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -242,7 +242,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 955f06ee2b0a71340a190ab063c964dc, type: 2}
+  m_Motion: {fileID: 7400000, guid: 8eb9038da686a1f46b39a3571aaf682c, type: 2}
   m_Tag: Death
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -269,7 +269,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 4e97a68934f887044a69ffdec37a7d6e, type: 2}
+  m_Motion: {fileID: 7400000, guid: 57c4c3ad69f46034595d037500aaa426, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -281,7 +281,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: boss1 anim controller
+  m_Name: mutantspiderAnim
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: AttackShort
@@ -413,7 +413,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 9dbb1038b0b709f46b81c0ce28b44911, type: 2}
+  m_Motion: {fileID: 7400000, guid: 3acea2a09fa1eec4abfe9ef376e6a482, type: 2}
   m_Tag: GetHit
   m_SpeedParameter: 
   m_MirrorParameter: 

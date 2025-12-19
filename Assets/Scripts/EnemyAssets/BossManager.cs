@@ -28,6 +28,7 @@ public class BossManager : MonoBehaviour
 
     private float cooldownTimer = 0f;
     private bool prevAttacking = false;
+    private RootMotionController rootMotionController;
 
     private Vector3 startPosition;
 
@@ -63,6 +64,8 @@ public class BossManager : MonoBehaviour
     void Start()
     {
         startPosition = transform.position;
+        rootMotionController = GetComponent<RootMotionController>();
+        if (rootMotionController == null) rootMotionController = GetComponentInChildren<RootMotionController>();
 
         if (target == null)
         {
@@ -103,11 +106,16 @@ public class BossManager : MonoBehaviour
             if (isAttackingNow)
             {
                 agent.velocity = Vector3.zero;
-                if (agent.updatePosition) agent.updatePosition = false;
+                if (rootMotionController) rootMotionController.useRootMotion = true;
+                else if (agent.updatePosition) agent.updatePosition = false;
             }
             else
             {
-                if (!agent.updatePosition)
+                if (rootMotionController)
+                {
+                    rootMotionController.useRootMotion = false;
+                }
+                else if (!agent.updatePosition)
                 {
                     agent.updatePosition = true;
                     if (agent.isOnNavMesh)
