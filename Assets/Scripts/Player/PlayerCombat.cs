@@ -33,7 +33,7 @@ public class PlayerCombat : MonoBehaviour
     int debugCounter = 0;
 
     public Animator anim;
-    [SerializeField] public Weapon weapon;
+    [SerializeField] public List<Weapon> weapons = new List<Weapon>();
     
     // Track if VFX has been played for the current attack to avoid duplicates
     private bool hasPlayedVFX = false;
@@ -53,7 +53,7 @@ public class PlayerCombat : MonoBehaviour
 
     void CheckVFXTrigger()
     {
-        if (playerController.IsAttacking && !hasPlayedVFX && weapon != null)
+        if (playerController.IsAttacking && !hasPlayedVFX && weapons != null && weapons.Count > 0)
         {
             // Check if we are in an attack state
             if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
@@ -68,13 +68,22 @@ public class PlayerCombat : MonoBehaviour
 
                 if (!isHeavy && !isComboFinisher) return;
 
-                // Get the appropriate trigger point
-                float triggerPoint = isHeavy ? weapon.heavyAttackVFX.triggerPoint : weapon.lightAttackVFX.triggerPoint;
-
-                // Check if we passed the trigger point
-                if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= triggerPoint)
+                foreach (var w in weapons)
                 {
-                    weapon.PlayAttackVFX(isHeavy);
+                    if (w == null) continue;
+                    // Get the appropriate trigger point
+                    float triggerPoint = isHeavy ? w.heavyAttackVFX.triggerPoint : w.lightAttackVFX.triggerPoint;
+
+                    // Check if we passed the trigger point
+                    if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= triggerPoint)
+                    {
+                        w.PlayAttackVFX(isHeavy);
+                    }
+                }
+                // Assume if we checked one, we checked all. 
+                // Ideally we should track per weapon, but for now let's just set flag true.
+                if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= (isHeavy ? weapons[0].heavyAttackVFX.triggerPoint : weapons[0].lightAttackVFX.triggerPoint))
+                {
                     hasPlayedVFX = true;
                 }
             }
@@ -140,17 +149,32 @@ public class PlayerCombat : MonoBehaviour
         if (heavyAttack != null)
         {
             anim.runtimeAnimatorController = heavyAttack.animatorOV;
-            weapon.damage = heavyAttack.damage;
+            if (weapons != null)
+            {
+                foreach (var w in weapons)
+                {
+                    if (w) w.damage = heavyAttack.damage;
+                }
+            }
         }
         
         anim.Play("Attack", 0, 0);
-        weapon.StartAttack();
+        if (weapons != null)
+        {
+            foreach (var w in weapons)
+            {
+                if (w) w.StartAttack();
+            }
+        }
         hasPlayedVFX = false; // Reset VFX flag
         
         // Enable Heavy Trail
-        if (weapon != null)
+        if (weapons != null)
         {
-            weapon.EnableTrail(true);
+            foreach (var w in weapons)
+            {
+                if (w) w.EnableTrail(true);
+            }
         }
 
         lastClickedTime = Time.time;
@@ -215,21 +239,37 @@ public class PlayerCombat : MonoBehaviour
 
         anim.runtimeAnimatorController = combo[comboCounter].animatorOV; //overirdes current animator with the new animations for that specific combo
         anim.Play("Attack", 0, 0); // play the attack animation that has been overwritten
-        weapon.damage = combo[comboCounter].damage; //set the weapon damage according to the current combo
-        weapon.StartAttack();
+        
+        if (weapons != null)
+        {
+            foreach (var w in weapons)
+            {
+                if (w)
+                {
+                    w.damage = combo[comboCounter].damage; //set the weapon damage according to the current combo
+                    w.StartAttack();
+                }
+            }
+        }
         hasPlayedVFX = false; // Reset VFX flag
 
         // Handle Trails and Effects
-        if (weapon != null)
+        if (weapons != null)
         {
-            // If it's the 3rd attack (index 2) or later
-            if (comboCounter >= 2)
+            foreach (var w in weapons)
             {
-                weapon.EnableTrail(true);
-            }
-            else
-            {
-                weapon.EnableTrail(false);
+                if (w)
+                {
+                    // If it's the 3rd attack (index 2) or later
+                    if (comboCounter >= 2)
+                    {
+                        w.EnableTrail(true);
+                    }
+                    else
+                    {
+                        w.EnableTrail(false);
+                    }
+                }
             }
         }
 
@@ -294,10 +334,16 @@ public class PlayerCombat : MonoBehaviour
         heavyAttackBuffer = false;
 
         // Ensure weapon damage is disabled
-        if (weapon != null)
+        if (weapons != null)
         {
-            weapon.canDamage = false;
-            weapon.EndAttack();
+            foreach (var w in weapons)
+            {
+                if (w)
+                {
+                    w.canDamage = false;
+                    w.EndAttack();
+                }
+            }
         }
 
         // release player input/attack locks (controller may override during GetHit)
