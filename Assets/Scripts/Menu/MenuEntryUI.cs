@@ -54,4 +54,9 @@ public class MenuEntryUI : MonoBehaviour, IPointerEnterHandler, IPointerClickHan
         owner.SelectByItem(this);
         owner.ActivateCurrent();
     }
+
+    public void SetFullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+    }
 }

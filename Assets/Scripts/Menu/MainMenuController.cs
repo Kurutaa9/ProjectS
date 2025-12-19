@@ -37,6 +37,9 @@ public class MainMenuController : MonoBehaviour
 
     [Header("Save (temp)")]
     public bool hasSaveFile = false; // set false for now (disables Continue)
+    
+    [Header("Panels")]
+    public MainMenuPanels panels;
 
     int index = 0;
     RectTransform barRect;
@@ -121,6 +124,7 @@ public class MainMenuController : MonoBehaviour
 
     void OnNavigate(InputAction.CallbackContext ctx)
     {
+        if (panels != null && panels.InputLocked) return;
         Vector2 v = ctx.ReadValue<Vector2>();
 
         if (v.y > deadzone) StartMoveRepeat(-1);
@@ -150,7 +154,19 @@ public class MainMenuController : MonoBehaviour
 
     void StopMoveRepeat() => lastMoveDir = 0;
 
-    void OnSubmit(InputAction.CallbackContext ctx) => ActivateCurrent();
+    void OnSubmit(InputAction.CallbackContext ctx)
+    {
+        if (panels != null && panels.InputLocked) return;
+        if (!ctx.performed) return;
+        StartCoroutine(ActivateNextFrame());
+    }
+
+    System.Collections.IEnumerator ActivateNextFrame()
+    {
+        yield return null;
+        ActivateCurrent();
+    }
+
 
     int FindFirstInteractableIndex()
     {
@@ -208,6 +224,19 @@ public class MainMenuController : MonoBehaviour
             }
         }
     }
+    public void DisableInput()
+    {
+        if (navigate?.action != null) navigate.action.Disable();
+        if (submit?.action != null) submit.action.Disable();
+    }
+
+    public void EnableInput()
+    {
+        if (navigate?.action != null) navigate.action.Enable();
+        if (submit?.action != null) submit.action.Enable();
+    }
+
+
 
     public void ActivateCurrent()
     {
@@ -224,12 +253,16 @@ public class MainMenuController : MonoBehaviour
                 break;
 
             case MenuAction.Options:
-                Debug.Log("Open Options panel here.");
+                if (panels != null) panels.OpenOptions();
                 break;
 
             case MenuAction.ExitGame:
-                Application.Quit();
-                break;
+                #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+                #else
+                    Application.Quit();
+                #endif
+                    break;
         }
     }
 }
