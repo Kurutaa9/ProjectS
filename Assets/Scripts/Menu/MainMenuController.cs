@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class MainMenuController : MonoBehaviour
 {
-    public enum MenuAction { NewGame, Continue, Options, ExitGame }
+    public enum MenuAction { NewGame, Continue, ExitGame }
 
     [System.Serializable]
     public class Entry
@@ -24,7 +24,7 @@ public class MainMenuController : MonoBehaviour
     public float moveSpeed = 18f;
 
     [Header("Scenes")]
-    public string gameplaySceneName = "Game";
+    public Object newGameScene;
 
     [Header("Input System")]
     public InputActionReference navigate; // Vector2
@@ -37,9 +37,6 @@ public class MainMenuController : MonoBehaviour
 
     [Header("Save (temp)")]
     public bool hasSaveFile = false; // set false for now (disables Continue)
-    
-    [Header("Panels")]
-    public MainMenuPanels panels;
 
     int index = 0;
     RectTransform barRect;
@@ -89,13 +86,10 @@ public class MainMenuController : MonoBehaviour
             if (e.item) e.item.owner = this;
 
         // Disable Continue for now
-        if (!hasSaveFile)
+        for (int i = 0; i < entries.Count; i++)
         {
-            for (int i = 0; i < entries.Count; i++)
-            {
-                if (entries[i].action == MenuAction.Continue && entries[i].item)
-                    entries[i].item.SetInteractable(false);
-            }
+            if (entries[i].action == MenuAction.Continue && entries[i].item)
+                entries[i].item.SetInteractable(false);
         }
 
         index = FindFirstInteractableIndex();
@@ -124,7 +118,6 @@ public class MainMenuController : MonoBehaviour
 
     void OnNavigate(InputAction.CallbackContext ctx)
     {
-        if (panels != null && panels.InputLocked) return;
         Vector2 v = ctx.ReadValue<Vector2>();
 
         if (v.y > deadzone) StartMoveRepeat(-1);
@@ -156,7 +149,6 @@ public class MainMenuController : MonoBehaviour
 
     void OnSubmit(InputAction.CallbackContext ctx)
     {
-        if (panels != null && panels.InputLocked) return;
         if (!ctx.performed) return;
         StartCoroutine(ActivateNextFrame());
     }
@@ -245,15 +237,10 @@ public class MainMenuController : MonoBehaviour
         switch (entries[index].action)
         {
             case MenuAction.NewGame:
-                SceneManager.LoadScene(gameplaySceneName);
+                LoadSceneSafe(newGameScene);
                 break;
 
             case MenuAction.Continue:
-                SceneManager.LoadScene(gameplaySceneName);
-                break;
-
-            case MenuAction.Options:
-                if (panels != null) panels.OpenOptions();
                 break;
 
             case MenuAction.ExitGame:
@@ -265,4 +252,16 @@ public class MainMenuController : MonoBehaviour
                     break;
         }
     }
+
+    void LoadSceneSafe(Object sceneObj)
+    {
+        if (!sceneObj)
+        {
+            Debug.LogWarning("[MainMenu] New Game scene not assigned.");
+            return;
+        }
+
+        SceneManager.LoadScene(sceneObj.name);
+    }
+
 }
