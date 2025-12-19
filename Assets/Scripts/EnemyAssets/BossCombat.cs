@@ -14,10 +14,24 @@ public class BossCombat : MonoBehaviour
         public float selectionWeight = 1f;
         [Tooltip("If assigned, the AttackSO damage overrides damagePerHit for this attack.")]
         public AttackSO attackSO;
+        
+        [System.Serializable]
+        public class SoundEffect
+        {
+            public AudioClip clip;
+            public float delay;
+        }
+
+        [Header("Audio")]
+        public AudioClip attackSound;
+        [Tooltip("Delay in seconds before playing the sound")]
+        public float soundDelay = 0f;
+        public List<SoundEffect> soundEffects = new List<SoundEffect>();
     }
 
     public Animator anim;
     public List<Weapon> weapons = new List<Weapon>();
+    public AudioSource audioSource;
 
     [Header("Animator Sync")]
     [Tooltip("Keep IsAttacking true until the Animator exits this tag (helps when an attack is a chain of multiple clips/states)")]
@@ -40,6 +54,7 @@ public class BossCombat : MonoBehaviour
             Weapon w = GetComponentInChildren<Weapon>();
             if (w) weapons.Add(w);
         }
+        if (!audioSource) audioSource = GetComponent<AudioSource>();
 
         // Default initialization if list is empty (for backward compatibility/testing)
         if (attacks.Count == 0)
@@ -131,6 +146,9 @@ public class BossCombat : MonoBehaviour
             }
         }
 
+        // Play Sound
+        PlayAttackSounds(data);
+
 
         if (endOnAnimatorTagExit && anim)
         {
@@ -154,5 +172,62 @@ public class BossCombat : MonoBehaviour
         }
 
         IsAttacking = false;
+    }
+
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void PlayAttackSounds(AttackData data)
+    {
+        if (audioSource == null) return;
+
+        // 1. Play sounds from AttackSO (if assigned)
+        if (data.attackSO != null)
+        {
+            // New list of sounds
+            if (data.attackSO.soundEffects != null)
+            {
+                foreach (var sfx in data.attackSO.soundEffects)
+                {
+                    if (sfx.clip != null)
+                    {
+                        if (sfx.delay > 0)
+                            StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                        else
+                            audioSource.PlayOneShot(sfx.clip);
+                    }
+                }
+            }
+        }
+
+        // 2. Play sounds from AttackData (BossCombat inspector)
+        // Legacy single sound
+        if (data.attackSound != null)
+        {
+            if (data.soundDelay > 0)
+                StartCoroutine(PlaySoundDelayed(data.attackSound, data.soundDelay));
+            else
+                audioSource.PlayOneShot(data.attackSound);
+        }
+        // New list of sounds
+        if (data.soundEffects != null)
+        {
+            foreach (var sfx in data.soundEffects)
+            {
+                if (sfx.clip != null)
+                {
+                    if (sfx.delay > 0)
+                        StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                    else
+                        audioSource.PlayOneShot(sfx.clip);
+                }
+            }
+        }
     }
 }

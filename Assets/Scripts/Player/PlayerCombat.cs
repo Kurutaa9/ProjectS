@@ -34,13 +34,14 @@ public class PlayerCombat : MonoBehaviour
 
     public Animator anim;
     [SerializeField] public List<Weapon> weapons = new List<Weapon>();
+    public AudioSource audioSource;
     
     // Track if VFX has been played for the current attack to avoid duplicates
     private bool hasPlayedVFX = false;
 
     void Start()
     {
-        
+        if (!audioSource) audioSource = GetComponent<AudioSource>();
     }
 
 
@@ -156,6 +157,9 @@ public class PlayerCombat : MonoBehaviour
                     if (w) w.damage = heavyAttack.damage;
                 }
             }
+            
+            // Play Sound
+            PlayAttackSounds(heavyAttack);
         }
         
         anim.Play("Attack", 0, 0);
@@ -238,6 +242,10 @@ public class PlayerCombat : MonoBehaviour
         currentExecutingAttackIndex = comboCounter;
 
         anim.runtimeAnimatorController = combo[comboCounter].animatorOV; //overirdes current animator with the new animations for that specific combo
+        
+        // Play Sound
+        PlayAttackSounds(combo[comboCounter]);
+
         anim.Play("Attack", 0, 0); // play the attack animation that has been overwritten
         
         if (weapons != null)
@@ -324,6 +332,9 @@ public class PlayerCombat : MonoBehaviour
 
     public void InterruptCombo()
     {
+        // Stop any delayed attack sounds
+        StopAllCoroutines();
+
         // clear combo state and apply a short finish cooldown so player can quickly resume
         comboCounter = 0;
         lastCompletedAttackIndex = -1;
@@ -351,6 +362,35 @@ public class PlayerCombat : MonoBehaviour
         {
             playerController.IsAttacking = false;
             playerController.inputsLocked = false;
+        }
+    }
+
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void PlayAttackSounds(AttackSO attack)
+    {
+        if (attack == null || audioSource == null) return;
+
+        // Play new list of sounds
+        if (attack.soundEffects != null)
+        {
+            foreach (var sfx in attack.soundEffects)
+            {
+                if (sfx.clip != null)
+                {
+                    if (sfx.delay > 0)
+                        StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                    else
+                        audioSource.PlayOneShot(sfx.clip);
+                }
+            }
         }
     }
 }

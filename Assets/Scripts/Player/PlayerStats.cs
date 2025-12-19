@@ -12,6 +12,7 @@ public class PlayerStats : MonoBehaviour
     [Header("Status Flags")]
     [Tooltip("When true, incoming damage is ignored (used for dodge i-frames).")]
     public bool isInvincible = false;
+    public bool isDead = false;
 
     [Header("Stamina Regen Control")]
     [Tooltip("Seconds to wait after any stamina usage before regen starts again.")]
@@ -26,6 +27,19 @@ public class PlayerStats : MonoBehaviour
     [Header("Currency")]
     private int currentSouls = 0;
 
+    [System.Serializable]
+    public class SoundEffect
+    {
+        public AudioClip clip;
+        public float delay;
+    }
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public List<SoundEffect> healSounds = new List<SoundEffect>();
+    public List<SoundEffect> damageSounds = new List<SoundEffect>();
+    public List<SoundEffect> deathSounds = new List<SoundEffect>();
+
     public UnityEvent<float> OnHealthChanged;
     public UnityEvent<float> OnStaminaChanged;
     public UnityEvent<int> OnFlasksChanged;
@@ -34,6 +48,8 @@ public class PlayerStats : MonoBehaviour
 
     void Start()
     {
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
         currentFlasks = maxFlasks;
@@ -79,6 +95,7 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, baseStats.maxHealth);
         OnHealthChanged.Invoke(currentHealth);
+        PlaySounds(healSounds);
     }
 
     public bool CanHeal()
@@ -108,18 +125,26 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        // Ignore damage while invincible (e.g., during dodge i-frames)
-        if (isInvincible)
+        // Ignore damage while invincible (e.g., during dodge i-frames) or if already dead
+        if (isInvincible || isDead)
             return;
 
         currentHealth = Mathf.Max(currentHealth - amount, 0f);
         OnHealthChanged.Invoke(currentHealth);
+
+        // Stop all player SFX and pending delayed sounds
+        if (audioSource != null) audioSource.Stop();
+        StopAllCoroutines();
+
         if (currentHealth <= 0f)
         {
+            isDead = true;
+            PlaySounds(deathSounds);
             OnDeath.Invoke();
         }
         else
         {
+            PlaySounds(damageSounds);
             PlayerController pc = GetComponent<PlayerController>();
             if (pc != null)
             {
@@ -179,9 +204,34 @@ public class PlayerStats : MonoBehaviour
         currentStamina = baseStats.maxStamina;
         currentFlasks = maxFlasks;
         isInvincible = false;
+        isDead = false;
         
         OnHealthChanged.Invoke(currentHealth);
         OnStaminaChanged.Invoke(currentStamina);
         OnFlasksChanged.Invoke(currentFlasks);
+    }
+
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void PlaySounds(List<SoundEffect> sounds)
+    {
+        if (audioSource == null || sounds == null) return;
+        foreach (var sfx in sounds)
+        {
+            if (sfx.clip != null)
+            {
+                if (sfx.delay > 0)
+                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                else
+                    audioSource.PlayOneShot(sfx.clip);
+            }
+        }
     }
 }

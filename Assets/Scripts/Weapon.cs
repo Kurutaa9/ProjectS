@@ -32,6 +32,14 @@ public class Weapon : MonoBehaviour
     public class WeaponVFXConfig
     {
         public GameObject vfxPrefab;
+        [Tooltip("Optional prefab with a collider/damage script to spawn alongside the VFX.")]
+        public GameObject hitBoxPrefab;
+        [Tooltip("Delay in seconds (relative to VFX spawn) before the hitbox spawns.")]
+        public float hitBoxDelay = 0f;
+        [Tooltip("Duration in seconds for the hitbox to remain active.")]
+        public float hitBoxDuration = 0.5f;
+        [Tooltip("Multiplier applied to the weapon's damage for this hitbox (e.g. 0.5 for half damage, 2.0 for double).")]
+        public float damageMultiplier = 1.0f;
         public Vector3 positionOffset;
         public Vector3 rotationOffset;
         public Vector3 scale = Vector3.one;
@@ -132,6 +140,19 @@ public class Weapon : MonoBehaviour
         // Apply scale
         vfx.transform.localScale = config.scale;
 
+        // Instantiate the HitBox prefab if assigned
+        if (config.hitBoxPrefab != null)
+        {
+            if (config.hitBoxDelay > 0)
+            {
+                StartCoroutine(SpawnHitBoxDelayed(config, finalPos, finalRot));
+            }
+            else
+            {
+                CreateHitBox(config, finalPos, finalRot);
+            }
+        }
+
         ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
 
         // Handle early emission stop if requested
@@ -157,6 +178,39 @@ public class Weapon : MonoBehaviour
         }
 
         Destroy(vfx, destroyTime);
+    }
+
+    private IEnumerator SpawnHitBoxDelayed(WeaponVFXConfig config, Vector3 pos, Quaternion rot)
+    {
+        yield return new WaitForSeconds(config.hitBoxDelay);
+        CreateHitBox(config, pos, rot);
+    }
+
+    private void CreateHitBox(WeaponVFXConfig config, Vector3 pos, Quaternion rot)
+    {
+        GameObject hitBox = Instantiate(config.hitBoxPrefab, pos, rot);
+        hitBox.transform.localScale = config.scale;
+        
+        // Try to configure the hitbox with damage info if it has a compatible component
+        var damageDealer = hitBox.GetComponent<DamageHitbox>();
+        if (damageDealer != null)
+        {
+            damageDealer.Setup(this.damage * config.damageMultiplier, this.ownerRoot, this.ownerTeam);
+        }
+        else
+        {
+            // Fallback for other types if needed, or legacy support
+            var dragonHitbox = hitBox.GetComponent<DragonFlameHitbox>();
+            if (dragonHitbox != null)
+            {
+                dragonHitbox.damage = this.damage * config.damageMultiplier;
+                dragonHitbox.ownerRoot = this.ownerRoot;
+                dragonHitbox.ActivateFlame(); // Assuming we want to activate it immediately
+            }
+        }
+        
+        // If the hitbox doesn't destroy itself, destroy it after the specified duration
+        Destroy(hitBox, config.hitBoxDuration > 0 ? config.hitBoxDuration : 0.5f);
     }
 
     private IEnumerator StopEmissionRoutine(ParticleSystem ps, float delay)

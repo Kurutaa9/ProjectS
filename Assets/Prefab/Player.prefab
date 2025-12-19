@@ -2124,6 +2124,134 @@ Transform:
   m_Father: {fileID: 8465535526132982061}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7304741864655990654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8522920391914269204}
+  - component: {fileID: 3529758422027121835}
+  m_Layer: 0
+  m_Name: playeraudiosouce
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8522920391914269204
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7304741864655990654}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8824110412222569700}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &3529758422027121835
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7304741864655990654}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7338903377143162812
 GameObject:
   m_ObjectHideFlags: 0
@@ -2874,6 +3002,7 @@ Transform:
   m_Children:
   - {fileID: 518714140054880408}
   - {fileID: 7094059816803159726}
+  - {fileID: 8522920391914269204}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3025,6 +3154,7 @@ MonoBehaviour:
   anim: {fileID: 3788377233913091284}
   weapons:
   - {fileID: 2295006213808430432}
+  audioSource: {fileID: 3529758422027121835}
 --- !u!114 &8824110412222569699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3131,6 +3261,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 8956600169667384973}
     m_Modifications:
     - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: damage
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: ownerRoot
+      value: 
+      objectReference: {fileID: 8824110412222569700}
+    - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
       propertyPath: heavyTrail
       value: 
       objectReference: {fileID: 1972694378}
@@ -3147,16 +3285,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7647375919561907788, guid: 035ce8c9cfc34104991ce416daf8aebe, type: 3}
     - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: lightAttackVFX.hitBoxDelay
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
       propertyPath: heavyAttackVFX.triggerPoint
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: lightAttackVFX.hitBoxPrefab
+      value: 
+      objectReference: {fileID: 357009369271225876, guid: beaa260da4a74c24d832791614937838, type: 3}
     - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
       propertyPath: lightAttackVFX.triggerPoint
       value: 0.69
       objectReference: {fileID: 0}
     - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: lightAttackVFX.hitBoxDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
       propertyPath: heavyAttackVFX.positionOffset.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
+      propertyPath: lightAttackVFX.damageMultiplier
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2295006213391195519, guid: edccbf15fadd9704cb7a2020a492b120, type: 3}
       propertyPath: lightAttackVFX.positionOffset.y

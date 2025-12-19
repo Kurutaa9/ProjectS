@@ -327,7 +327,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1856098470250988325}
-  - component: {fileID: 1856098470250988323}
+  - component: {fileID: 3287057168242493652}
   - component: {fileID: 1856098470250988324}
   m_Layer: 0
   m_Name: rightFist
@@ -351,8 +351,8 @@ Transform:
   m_Father: {fileID: 5718231893509134365}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1856098470250988323
-SphereCollider:
+--- !u!136 &3287057168242493652
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -361,9 +361,10 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.46716473
-  m_Center: {x: -0.000000016241325, y: -0.03283517, z: 0.0000000025029903}
+  m_Radius: 0.271414
+  m_Height: 1.1606755
+  m_Direction: 1
+  m_Center: {x: -0.07120379, y: -0.08033689, z: -0.0000000046471964}
 --- !u!114 &1856098470250988324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,6 +388,10 @@ MonoBehaviour:
   vfxSpawnPoint: {fileID: 0}
   heavyAttackVFX:
     vfxPrefab: {fileID: 0}
+    hitBoxPrefab: {fileID: 0}
+    hitBoxDelay: 0
+    hitBoxDuration: 0.5
+    damageMultiplier: 1
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -396,6 +401,10 @@ MonoBehaviour:
     triggerPoint: 0.9
   lightAttackVFX:
     vfxPrefab: {fileID: 0}
+    hitBoxPrefab: {fileID: 0}
+    hitBoxDelay: 0
+    hitBoxDuration: 0.5
+    damageMultiplier: 1
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -412,7 +421,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1856098471268798753}
-  - component: {fileID: 1856098471268798767}
+  - component: {fileID: 4931714336129581960}
   - component: {fileID: 1856098471268798752}
   m_Layer: 0
   m_Name: LeftFist
@@ -436,8 +445,8 @@ Transform:
   m_Father: {fileID: 924070810893857302}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1856098471268798767
-SphereCollider:
+--- !u!136 &4931714336129581960
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -446,9 +455,10 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.46716473
-  m_Center: {x: -0.000000016241325, y: -0.03283517, z: 0.0000000025029903}
+  m_Radius: 0.27818695
+  m_Height: 1.386728
+  m_Direction: 1
+  m_Center: {x: 0.000000014819895, y: -0.16165003, z: 0.01971472}
 --- !u!114 &1856098471268798752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,6 +482,10 @@ MonoBehaviour:
   vfxSpawnPoint: {fileID: 0}
   heavyAttackVFX:
     vfxPrefab: {fileID: 0}
+    hitBoxPrefab: {fileID: 0}
+    hitBoxDelay: 0
+    hitBoxDuration: 0.5
+    damageMultiplier: 1
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -481,6 +495,10 @@ MonoBehaviour:
     triggerPoint: 0.9
   lightAttackVFX:
     vfxPrefab: {fileID: 0}
+    hitBoxPrefab: {fileID: 0}
+    hitBoxDelay: 0
+    hitBoxDuration: 0.5
+    damageMultiplier: 1
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -641,6 +659,7 @@ MonoBehaviour:
   weapons:
   - {fileID: 1856098470250988324}
   - {fileID: 1856098471268798752}
+  audioSource: {fileID: 0}
   endOnAnimatorTagExit: 1
   attackTag: Attack
   attacks:
@@ -650,12 +669,18 @@ MonoBehaviour:
     damagePerHit: 40
     selectionWeight: 0.5
     attackSO: {fileID: 0}
+    attackSound: {fileID: 0}
+    soundDelay: 0
+    soundEffects: []
   - name: comboAttack
     animatorTrigger: AttackLong
     recovery: 2.5
     damagePerHit: 70
     selectionWeight: 1
     attackSO: {fileID: 0}
+    attackSound: {fileID: 0}
+    soundDelay: 0
+    soundEffects: []
   logAttacks: 0
 --- !u!136 &1856098472256327772
 CapsuleCollider:
