@@ -21,6 +21,8 @@ public class BossManager : MonoBehaviour
     [Header("Behaviour")]
     public float faceTargetSpeed = 10f;
     public Vector3 chestOffset = new Vector3(0, 1.2f, 0);
+    [Tooltip("If true, uses Root Motion for movement during Chase state (prevents foot sliding).")]
+    public bool useRootMotionForChasing = false;
 
     [Header("Attack cadence")]
     public float minAttackCooldown = 1.0f;
@@ -28,6 +30,7 @@ public class BossManager : MonoBehaviour
 
     private float cooldownTimer = 0f;
     private bool prevAttacking = false;
+    private RootMotionController rootMotionController;
 
     private Vector3 startPosition;
 
@@ -63,6 +66,8 @@ public class BossManager : MonoBehaviour
     void Start()
     {
         startPosition = transform.position;
+        rootMotionController = GetComponent<RootMotionController>();
+        if (rootMotionController == null) rootMotionController = GetComponentInChildren<RootMotionController>();
 
         if (target == null)
         {
@@ -103,11 +108,16 @@ public class BossManager : MonoBehaviour
             if (isAttackingNow)
             {
                 agent.velocity = Vector3.zero;
-                if (agent.updatePosition) agent.updatePosition = false;
+                if (rootMotionController) rootMotionController.useRootMotion = true;
+                else if (agent.updatePosition) agent.updatePosition = false;
             }
             else
             {
-                if (!agent.updatePosition)
+                if (rootMotionController)
+                {
+                    rootMotionController.useRootMotion = useRootMotionForChasing;
+                }
+                else if (!agent.updatePosition)
                 {
                     agent.updatePosition = true;
                     if (agent.isOnNavMesh)
@@ -158,7 +168,16 @@ public class BossManager : MonoBehaviour
                         }
                     }
                 }
-                FaceTarget();
+                
+                // If using root motion for movement, face the path direction to avoid sliding sideways
+                if (useRootMotionForChasing && agent && agent.hasPath)
+                {
+                    FacePosition(agent.steeringTarget);
+                }
+                else
+                {
+                    FaceTarget();
+                }
                 break;
 
             case BossState.InRange:
@@ -167,7 +186,7 @@ public class BossManager : MonoBehaviour
                     agent.updateRotation = false; // We handle rotation manually to face target
                     agent.isStopped = true; // stop and fight
                 }
-                FaceTarget();
+                if (!isAttackingNow) FaceTarget();
                 HandleAttacking();
                 break;
             case BossState.Returning:
@@ -205,7 +224,12 @@ public class BossManager : MonoBehaviour
 
     private void FaceTarget()
     {
-        Vector3 to = (target.position + chestOffset) - (transform.position + chestOffset);
+        FacePosition(target.position);
+    }
+
+    private void FacePosition(Vector3 targetPos)
+    {
+        Vector3 to = targetPos - transform.position;
         to.y = 0f;
         if (to.sqrMagnitude < 0.0001f) return;
         Quaternion look = Quaternion.LookRotation(to.normalized, Vector3.up);

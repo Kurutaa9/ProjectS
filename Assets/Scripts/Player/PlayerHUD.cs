@@ -37,11 +37,13 @@ public class PlayerHUD : MonoBehaviour
 
     private void UpdateSoulsText(int souls)
     {
-        if (soulsText) soulsText.text = "Sols: " + souls.ToString();
+        // if (soulsText) soulsText.text = "Sols: " + souls.ToString();
+        if (soulsText) soulsText.text = souls.ToString();
     }
 
     private void UpdateFlaskText(int flasks)
     {
-        if (flaskText) flaskText.text = "Flasks: " + flasks.ToString();
+        // if (flaskText) flaskText.text = "Flasks: " + flasks.ToString();
+        if (flaskText) flaskText.text = flasks.ToString();
     }
 }

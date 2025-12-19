@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BossCombat : MonoBehaviour
@@ -10,11 +11,13 @@ public class BossCombat : MonoBehaviour
         [Tooltip("Animator trigger name to fire for this attack")] public string animatorTrigger = "";
         [Tooltip("Recovery time after last hit")] public float recovery = 0.6f;
         [Tooltip("Optional damage applied per hit if using Weapon component")] public float damagePerHit = 10f;
-        [Range(0f, 1f)] public float selectionWeight = 1f;
+        public float selectionWeight = 1f;
+        [Tooltip("If assigned, the AttackSO damage overrides damagePerHit for this attack.")]
+        public AttackSO attackSO;
     }
 
     public Animator anim;
-    public Weapon weapon;
+    public List<Weapon> weapons = new List<Weapon>();
 
     [Header("Animator Sync")]
     [Tooltip("Keep IsAttacking true until the Animator exits this tag (helps when an attack is a chain of multiple clips/states)")]
@@ -22,13 +25,7 @@ public class BossCombat : MonoBehaviour
     [Tooltip("Animator state tag used by all boss attack states")] public string attackTag = "Attack";
 
     [Header("Attacks")] 
-    public AttackData shortCombo = new AttackData { name = "Short Combo", animatorTrigger = "AttackShort", recovery = 0.5f, damagePerHit = 10f, selectionWeight = 0.5f };
-    public AttackData special    = new AttackData { name = "Special",     animatorTrigger = "AttackSpecial", recovery = 0.9f, damagePerHit = 20f, selectionWeight = 0.15f };
-
-    [Header("Attack Scriptables (optional damage override)")]
-    [Tooltip("If assigned, the AttackSO damage overrides damagePerHit for the corresponding attack.")]
-    public AttackSO shortAttackSO;
-    public AttackSO specialAttackSO;
+    public List<AttackData> attacks = new List<AttackData>();
 
     [Header("Debug")] public bool logAttacks = false;
 
@@ -38,13 +35,25 @@ public class BossCombat : MonoBehaviour
     void Awake()
     {
         if (!anim) anim = GetComponentInChildren<Animator>();
-        if (!weapon) weapon = GetComponentInChildren<Weapon>();
+        if (weapons == null || weapons.Count == 0)
+        {
+            Weapon w = GetComponentInChildren<Weapon>();
+            if (w) weapons.Add(w);
+        }
+
+        // Default initialization if list is empty (for backward compatibility/testing)
+        if (attacks.Count == 0)
+        {
+            attacks.Add(new AttackData { name = "Short Combo", animatorTrigger = "AttackShort", recovery = 0.5f, damagePerHit = 10f, selectionWeight = 0.5f });
+            attacks.Add(new AttackData { name = "Special",     animatorTrigger = "AttackSpecial", recovery = 0.9f, damagePerHit = 20f, selectionWeight = 0.15f });
+        }
     }
 
     public void StartRandomAttack()
     {
         if (IsAttacking) return;
         AttackData data = PickAttack();
+        if (data == null) return;
         if (logAttacks) Debug.Log($"Boss starting attack: {data.name}");
         StartCoroutine(AttackRoutine(data));
     }
@@ -54,29 +63,46 @@ public class BossCombat : MonoBehaviour
         StopAllCoroutines();
         IsAttacking = false;
 
-        if (weapon)
+        if (weapons != null)
         {
-            weapon.canDamage = false;
-            weapon.EndAttack();
+            foreach (var w in weapons)
+            {
+                if (w)
+                {
+                    w.canDamage = false;
+                    w.EndAttack();
+                }
+            }
         }
 
         if (anim)
         {
             // Reset triggers so they don't fire after the hit animation
-            anim.ResetTrigger("AttackShort");
-            anim.ResetTrigger("AttackSpecial");
+            foreach (var attack in attacks)
+            {
+                if (!string.IsNullOrEmpty(attack.animatorTrigger))
+                    anim.ResetTrigger(attack.animatorTrigger);
+            }
         }
     }
 
     private AttackData PickAttack()
     {
-        float w1 = Mathf.Max(0f, shortCombo.selectionWeight);
-        float w3 = Mathf.Max(0f, special.selectionWeight);
-        float total = w1 + w3;
-        if (total <= 0.0001f) return shortCombo; // fallback
-        float r = Random.value * total;
-        if (r < w1) return shortCombo;
-        return special;
+        if (attacks == null || attacks.Count == 0) return null;
+
+        float totalWeight = 0f;
+        foreach (var a in attacks) totalWeight += Mathf.Max(0f, a.selectionWeight);
+
+        if (totalWeight <= 0.0001f) return attacks[0]; // fallback
+
+        float r = Random.value * totalWeight;
+        float current = 0f;
+        foreach (var a in attacks)
+        {
+            current += Mathf.Max(0f, a.selectionWeight);
+            if (r < current) return a;
+        }
+        return attacks[attacks.Count - 1];
     }
 
     private IEnumerator AttackRoutine(AttackData data)
@@ -85,18 +111,24 @@ public class BossCombat : MonoBehaviour
         LastRecovery = data.recovery;
         if (anim && !string.IsNullOrEmpty(data.animatorTrigger))
         {
-            anim.ResetTrigger("AttackShort");
-            anim.ResetTrigger("AttackSpecial");
+            foreach (var attack in attacks)
+            {
+                if (!string.IsNullOrEmpty(attack.animatorTrigger))
+                    anim.ResetTrigger(attack.animatorTrigger);
+            }
             anim.SetTrigger(data.animatorTrigger);
         }
 
         // Determine damage per hit
         float resolvedDamage = data.damagePerHit;
-        if (weapon)
+        if (data.attackSO != null) resolvedDamage = data.attackSO.damage;
+
+        if (weapons != null)
         {
-            if (ReferenceEquals(data, shortCombo) && shortAttackSO != null) resolvedDamage = shortAttackSO.damage;
-            else if (ReferenceEquals(data, special) && specialAttackSO != null) resolvedDamage = specialAttackSO.damage;
-            weapon.damage = resolvedDamage;
+            foreach (var w in weapons)
+            {
+                if (w) w.damage = resolvedDamage;
+            }
         }
 
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class animEvents : MonoBehaviour
 {
-    public Weapon weapon;
+    public List<Weapon> weapons = new List<Weapon>();
 
     [Header("Slash Trail VFX (Particle)")]
     public ParticleSystem slashTrail;
@@ -22,10 +22,11 @@ public class animEvents : MonoBehaviour
 
     void Awake()
     {
-        if (!weapon)
+        if (weapons == null || weapons.Count == 0)
         {
-            weapon = GetComponentInParent<Weapon>();
-            if (!weapon) weapon = GetComponentInChildren<Weapon>();
+            Weapon w = GetComponentInParent<Weapon>();
+            if (!w) w = GetComponentInChildren<Weapon>();
+            if (w) weapons.Add(w);
         }
         // Optional auto-find if child named "SlashTrail"
         if (!slashTrail)
@@ -46,13 +47,18 @@ public class animEvents : MonoBehaviour
         }
     }
 
-    // Called by Animation Event at start of hit window
+    // Called by Animation Event at start of hit window (weapon index start at 0)
     public void weaponCanDamageTrue()
     {
-        if (weapon)
+        weaponCanDamageTrue(0);
+    }
+
+    public void weaponCanDamageTrue(int index)
+    {
+        if (weapons != null && index >= 0 && index < weapons.Count && weapons[index] != null)
         {
-            weapon.StartAttack();
-            weapon.canDamage = true;
+            weapons[index].StartAttack();
+            weapons[index].canDamage = true;
         }
 
         // Particle trail
@@ -74,10 +80,15 @@ public class animEvents : MonoBehaviour
     // Called by Animation Event at end of hit window
     public void weaponCanDamageFalse()
     {
-        if (weapon)
+        weaponCanDamageFalse(0);
+    }
+
+    public void weaponCanDamageFalse(int index)
+    {
+        if (weapons != null && index >= 0 && index < weapons.Count && weapons[index] != null)
         {
-            weapon.canDamage = false;
-            weapon.EndAttack();
+            weapons[index].canDamage = false;
+            weapons[index].EndAttack();
         }
 
         // Particle trail
