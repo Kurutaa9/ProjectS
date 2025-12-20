@@ -3221,6 +3221,7 @@ MonoBehaviour:
   attackCooldown: 5
   attackTurnSpeed: 8
   enrageThreshold: 0.5
+  deathMessagePrefab: {fileID: 7139995912448578565, guid: b339d4aae42d642099988a06907120a7, type: 3}
   attackHysteresis: 0.5
   earthquakePrefab: {fileID: 0}
   earthquakeDestroyDelay: 5
@@ -3309,6 +3310,7 @@ MonoBehaviour:
   - clip: {fileID: 8300000, guid: c4d4c41c1cdcbd64d9ec6a85f22cbe03, type: 3}
     delay: 0
     volume: 0.89
+  currentHealth: 0
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []

@@ -1,5 +1,133 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &191204248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 191204250}
+  - component: {fileID: 191204249}
+  m_Layer: 0
+  m_Name: AudioSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &191204250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191204248}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7864059869897546516}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &191204249
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191204248}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &964448643
 GameObject:
   m_ObjectHideFlags: 0
@@ -2689,6 +2817,7 @@ Transform:
   - {fileID: 6285558924826857600}
   - {fileID: 4014933013293035496}
   - {fileID: 3040114449723589025}
+  - {fileID: 191204250}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -2756,9 +2885,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 5a23850d2de3f4f388da89333400b62c, type: 2}
-  audioSource: {fileID: 0}
-  hitSounds: []
-  deathSounds: []
+  audioSource: {fileID: 191204249}
+  hitSounds:
+  - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
+    delay: 0
+    volume: 1
+  deathSounds:
+  - clip: {fileID: 8300000, guid: f0e453ceb16d447fe86ffff4dd3af629, type: 3}
+    delay: 0
+    volume: 1
+  currentHealth: 0
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2845,14 +2981,45 @@ MonoBehaviour:
   attackCooldown: 5
   retreatRange: 8
   safeDistance: 15
-  retreatSpeed: 5
+  retreatSpeed: 8
   obstacleMask:
     serializedVersion: 2
     m_Bits: 1
   attackTurnSpeed: 8
   enrageThreshold: 0.5
+  deathMessagePrefab: {fileID: 7139995912448578565, guid: b339d4aae42d642099988a06907120a7, type: 3}
   attackHysteresis: 0.5
   isChasing: 0
+  meleeAttacks:
+  - name: Attack 2
+    trigger: AttackLight
+    soundEffects:
+    - clip: {fileID: 8300000, guid: 23497a12a6ec57743ba2eac7013ead17, type: 3}
+      delay: 1.5
+      duration: 2
+      volume: 1
+    - clip: {fileID: 8300000, guid: 40c2008912d75483a89f7899d253afbe, type: 3}
+      delay: 2.5
+      duration: 0
+      volume: 1
+  - name: 360
+    trigger: AttackHeavy
+    soundEffects:
+    - clip: {fileID: 8300000, guid: 6e236e7d5484e40b69ff67e6def9145c, type: 3}
+      delay: 0
+      duration: 6
+      volume: 1
+    - clip: {fileID: 8300000, guid: 5e6d038ae916c46dbb6b1229d7fd7670, type: 3}
+      delay: 1
+      duration: 6
+      volume: 1
+  - name: Combo
+    trigger: AttackSpecial
+    soundEffects:
+    - clip: {fileID: 8300000, guid: 9990b3b3fc9554ddf9734aa057ae35f5, type: 3}
+      delay: 1.5
+      duration: 0
+      volume: 1
 --- !u!114 &4014933012859913101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2879,7 +3046,7 @@ MonoBehaviour:
   runeRadius: 3
   runeDelay: 1.5
   wallPrefab: {fileID: 2079008771633437194, guid: 118acd0aecc874172b59bef026a48807, type: 3}
-  wallSpawnDistance: 7
+  wallSpawnDistance: 5
   wallSpeed: 8
   wallDamage: 25
   wallStartDelay: 1

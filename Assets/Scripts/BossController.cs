@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
-
+using System.Collections;
+using System.Collections.Generic;
 public class BossController : MonoBehaviour
 {
     public enum BossState { Idle, Chase, Attack, Recover, Enraged, Dead, JumpAttack }
@@ -24,6 +25,7 @@ public class BossController : MonoBehaviour
     public float jumpHeight = 5f;           // max height of the arc
     public AnimationCurve jumpCurve;        // controls jump arc
     public float jumpAttackRange = 10f;
+    public SoundEffectConfig[] jumpAttackSounds; // SFX for jump attack
     private bool isJumping = false;
     private Vector3 jumpStart;
     private Vector3 jumpTarget;
@@ -36,6 +38,9 @@ public class BossController : MonoBehaviour
     public float enrageThreshold = 0.5f; // 50% HP
     private bool isEnraged = false;
 
+    [Header("Death Settings")]
+    public GameObject deathMessagePrefab; // Prefab to spawn on death
+
     [Tooltip("Extra distance required to resume chase after being in attack range")]
     public float attackHysteresis = 0.5f;
 
@@ -46,10 +51,21 @@ public class BossController : MonoBehaviour
 
     [HideInInspector] public bool isChasing; // public flag for UI
 
+    [System.Serializable]
+    public class SoundEffectConfig
+    {
+        public AudioClip clip;
+        public float delay; // Delay from the start of the attack
+        public float duration; // Duration to play (0 = full length)
+        [Range(0, 1)] public float volume = 1f;
+    }
+
+    [System.Serializable]
     public class AttackOption
     {
         public string name;      // for debugging
         public string trigger;   // Animator trigger to fire
+        public SoundEffectConfig[] soundEffects;
     }
 
     // Fill this in the Inspector with as many attacks as you want
@@ -61,12 +77,44 @@ public class BossController : MonoBehaviour
     };
 
     private bool isPerformingAttack = false;
+    private AudioSource audioSource;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        currentHealth = maxHealth;
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        // Hook into EnemyStatController if it exists
+        var stats = GetComponent<EnemyStatController>();
+        if (stats != null)
+        {
+            stats.OnDeath.AddListener(Die);
+            
+            // Fix: If stats.currentHealth is 0, it likely hasn't initialized yet. Use maxHealth instead.
+            if (stats.currentHealth > 0)
+            {
+                currentHealth = stats.currentHealth;
+            }
+            else
+            {
+                // Fallback to stats.GetMaxHealth(), or local maxHealth if that's also 0
+                float statMax = stats.GetMaxHealth();
+                currentHealth = statMax > 0 ? statMax : maxHealth;
+            }
+            
+            // Sync local maxHealth to match stats
+            if (stats.GetMaxHealth() > 0) maxHealth = stats.GetMaxHealth();
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+
         ChangeState(BossState.Idle);
         if (agent != null)
         {
@@ -198,11 +246,68 @@ public class BossController : MonoBehaviour
         {
             ResetMeleeAttackTriggers();
             anim.SetTrigger(opt.trigger);
+            PlayAttackSounds(opt.soundEffects);
         }
 
         isPerformingAttack = true;
         // no cooldown: Recover can be kept simple or removed
         ChangeState(BossState.Recover);
+    }
+
+    void PlayAttackSounds(SoundEffectConfig[] sounds)
+    {
+        if (sounds == null || audioSource == null) return;
+
+        foreach (var sfx in sounds)
+        {
+            if (sfx.clip != null)
+            {
+                StartCoroutine(PlaySoundDelayed(sfx));
+            }
+        }
+    }
+
+    IEnumerator PlaySoundDelayed(SoundEffectConfig sfx)
+    {
+        if (sfx.delay > 0)
+            yield return new WaitForSeconds(sfx.delay);
+        
+        if (sfx.clip == null) yield break;
+
+        if (sfx.duration > 0)
+        {
+            // Create a temporary AudioSource to allow stopping after duration
+            GameObject tempGO = new GameObject("TempSFX_" + sfx.clip.name);
+            tempGO.transform.position = transform.position;
+            tempGO.transform.SetParent(transform); // Move with boss
+            
+            AudioSource tempSource = tempGO.AddComponent<AudioSource>();
+            // Copy basic settings from main audio source if available
+            if (audioSource != null)
+            {
+                tempSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+                tempSource.spatialBlend = audioSource.spatialBlend;
+                tempSource.rolloffMode = audioSource.rolloffMode;
+                tempSource.minDistance = audioSource.minDistance;
+                tempSource.maxDistance = audioSource.maxDistance;
+            }
+            else
+            {
+                tempSource.spatialBlend = 1f; // Default to 3D
+            }
+
+            tempSource.clip = sfx.clip;
+            tempSource.volume = sfx.volume;
+            tempSource.Play();
+
+            Destroy(tempGO, sfx.duration);
+        }
+        else
+        {
+            // Play fully
+            if (audioSource != null)
+                audioSource.PlayOneShot(sfx.clip, sfx.volume);
+        }
     }
 
 
@@ -218,6 +323,7 @@ public class BossController : MonoBehaviour
         Vector3 forwardOffset = player.forward * 2f; // 2 units in front of player
         jumpTarget = player.position + forwardOffset; // snapshot target in front
         anim.SetTrigger("JumpAttack"); // play jump animation
+        PlayAttackSounds(jumpAttackSounds); // Play jump SFX
 
         ChangeState(BossState.JumpAttack);
     }
@@ -355,10 +461,18 @@ public class BossController : MonoBehaviour
 
     void Die()
     {
+        if (currentState == BossState.Dead) return;
+
         ChangeState(BossState.Dead);
-        agent.isStopped = true;
-        anim.SetTrigger("Die");
+        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        if (anim != null) anim.SetTrigger("Die");
+        
+        if (deathMessagePrefab != null)
+        {
+            Instantiate(deathMessagePrefab, transform.position, Quaternion.identity);
+        }
         // Disable boss logic here
+        this.enabled = false;
     }
 
     // Smooth horizontal facing toward player
@@ -423,6 +537,8 @@ public class BossController : MonoBehaviour
     // Reset all runtime state so the boss can behave after player respawn
     public void ResetBossOnRespawn()
     {
+        this.enabled = true;
+
         // Health/state
         currentHealth = maxHealth;
         isEnraged = false;

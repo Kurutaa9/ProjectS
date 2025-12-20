@@ -311,6 +311,134 @@ TrailRenderer:
   m_MinVertexDistance: 0.025
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!1 &2129971427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2129971429}
+  - component: {fileID: 2129971428}
+  m_Layer: 0
+  m_Name: AudioSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2129971429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2129971427}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5211119588993636331}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &2129971428
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2129971427}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &27224155417106306
 GameObject:
   m_ObjectHideFlags: 0
@@ -1429,6 +1557,7 @@ Transform:
   - {fileID: 5754233446811104558}
   - {fileID: 5934736490182215847}
   - {fileID: 1216150529}
+  - {fileID: 2129971429}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -1545,13 +1674,53 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   jumpAttackRange: 10
+  jumpAttackSounds:
+  - clip: {fileID: 8300000, guid: cc7dafec82c4e4a529cedbed0329155a, type: 3}
+    delay: 1.5
+    duration: 0
+    volume: 1
+  - clip: {fileID: 8300000, guid: 6d8b78e50c31d4113bbc45c239efaad3, type: 3}
+    delay: 0
+    duration: 0
+    volume: 1
   attackTurnSpeed: 8
   enrageThreshold: 0.5
+  deathMessagePrefab: {fileID: 7139995912448578565, guid: b339d4aae42d642099988a06907120a7, type: 3}
   attackHysteresis: 0.5
   earthquakePrefab: {fileID: 5195231291446677891, guid: a5f2e1a561eda814091741bf454dd28c, type: 3}
   earthquakeDestroyDelay: 5
   spawnAtJumpTarget: 1
   isChasing: 0
+  meleeAttacks:
+  - name: Attack 2
+    trigger: AttackLight
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 1.5
+      duration: 0
+      volume: 1
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 2
+      duration: 0
+      volume: 1
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 2.5
+      duration: 0
+      volume: 1
+  - name: 360
+    trigger: AttackHeavy
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 1.5
+      duration: 0
+      volume: 1
+  - name: Combo
+    trigger: AttackSpecial
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 1
+      duration: 0
+      volume: 1
 --- !u!195 &5754233446189405548
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1624,9 +1793,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: cb562df288a2744f89e95650c82be889, type: 2}
-  audioSource: {fileID: 0}
-  hitSounds: []
-  deathSounds: []
+  audioSource: {fileID: 2129971428}
+  hitSounds:
+  - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
+    delay: 0
+    volume: 1
+  deathSounds:
+  - clip: {fileID: 8300000, guid: 23acf983061e643f3afa53459902a207, type: 3}
+    delay: 0
+    volume: 0
+  currentHealth: 0
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []

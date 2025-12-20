@@ -11,6 +11,7 @@ public class DragonController : MonoBehaviour
     public Transform player;
     private NavMeshAgent agent;
     private Animator anim;
+    private EnemyStatController stats;
 
     [Header("Boss Settings")]
     public float maxHealth = 1000f;
@@ -28,6 +29,9 @@ public class DragonController : MonoBehaviour
     [Header("Enrage Settings")]
     public float enrageThreshold = 0.5f; // 50% HP
     private bool isEnraged = false;
+
+    [Header("Death Settings")]
+    public GameObject deathMessagePrefab; // Prefab to spawn on death
 
     [Tooltip("Extra distance required to resume chase after being in attack range")]
     public float attackHysteresis = 0.5f;
@@ -96,7 +100,30 @@ public class DragonController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        currentHealth = maxHealth;
+        
+        stats = GetComponent<EnemyStatController>();
+        if (stats != null)
+        {
+            stats.OnDeath.AddListener(Die);
+            stats.OnHealthChanged.AddListener(UpdateHealth);
+            
+            if (stats.currentHealth > 0)
+            {
+                currentHealth = stats.currentHealth;
+            }
+            else
+            {
+                float statMax = stats.GetMaxHealth();
+                currentHealth = statMax > 0 ? statMax : maxHealth;
+            }
+            
+            if (stats.GetMaxHealth() > 0) maxHealth = stats.GetMaxHealth();
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+
         ChangeState(BossState.Idle);
         if (agent != null)
         {
@@ -424,6 +451,12 @@ public class DragonController : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (stats != null)
+        {
+            stats.TakeDamage(amount);
+            return;
+        }
+
         currentHealth -= amount;
         if (currentHealth <= 0 && currentState != BossState.Dead)
         {
@@ -431,11 +464,21 @@ public class DragonController : MonoBehaviour
         }
     }
 
+    public void UpdateHealth(float health)
+    {
+        currentHealth = health;
+    }
+
     void Die()
     {
         ChangeState(BossState.Dead);
         agent.isStopped = true;
         anim.SetTrigger("Die");
+        
+        if (deathMessagePrefab != null)
+        {
+            Instantiate(deathMessagePrefab);
+        }
         // Disable boss logic here
     }
 
@@ -522,7 +565,15 @@ public class DragonController : MonoBehaviour
     public void ResetBossOnRespawn()
     {
         // Health/state
-        currentHealth = maxHealth;
+        if (stats != null)
+        {
+            stats.ResetStats();
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+
         isEnraged = false;
         isPerformingAttack = false;
         isChasing = false;

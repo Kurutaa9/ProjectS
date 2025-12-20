@@ -20,7 +20,7 @@ public class EnemyStatController : MonoBehaviour
     public List<SoundEffect> hitSounds = new List<SoundEffect>();
     public List<SoundEffect> deathSounds = new List<SoundEffect>();
 
-    private float currentHealth;
+    public float currentHealth;
     private bool hasTakenDamage;
     public UnityEvent<bool> OnDamageStateChanged;
     public UnityEvent<float> OnHealthChanged;
