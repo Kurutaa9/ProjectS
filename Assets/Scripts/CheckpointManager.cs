@@ -17,4 +17,11 @@ public static class CheckpointManager
         _checkpointRotation = t.rotation;
         _hasCheckpoint = true;
     }
+
+    public static void ResetCheckpoint()
+    {
+        _hasCheckpoint = false;
+        _checkpointPosition = Vector3.zero;
+        _checkpointRotation = Quaternion.identity;
+    }
 }

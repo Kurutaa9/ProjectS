@@ -10,6 +10,8 @@ public class EndScene : MonoBehaviour
     public float fadeDuration = 2.0f;
     public float creditsStartDelay = 4.0f; // Time from trigger to credits start
     public float scrollSpeed = 50f;
+    public string mainMenuSceneName = "MainMenu";
+    public float returnToMenuDelay = 20.0f;
 
     [Header("UI References")]
     public Image whiteFadeImage; // Assign a white UI Image that stretches across the screen
@@ -103,5 +105,12 @@ public class EndScene : MonoBehaviour
             creditsRect.gameObject.SetActive(true);
             isScrolling = true;
         }
+
+        // Wait for the remaining time to reach returnToMenuDelay
+        // We are currently at 2.5 seconds
+        float remainingForMenu = Mathf.Max(0f, returnToMenuDelay - 2.5f);
+        yield return new WaitForSeconds(remainingForMenu);
+
+        SceneManager.LoadScene(mainMenuSceneName);
     }
 }

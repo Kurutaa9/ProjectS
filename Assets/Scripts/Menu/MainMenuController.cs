@@ -26,6 +26,9 @@ public class MainMenuController : MonoBehaviour
     [Header("Scenes")]
     public Object newGameScene;
 
+    [Header("Data to Reset")]
+    public CharacterStatsSO playerStats;
+
     [Header("Input System")]
     public InputActionReference navigate; // Vector2
     public InputActionReference submit;   // Button
@@ -237,6 +240,7 @@ public class MainMenuController : MonoBehaviour
         switch (entries[index].action)
         {
             case MenuAction.NewGame:
+                ResetGameData();
                 LoadSceneSafe(newGameScene);
                 break;
 
@@ -251,6 +255,22 @@ public class MainMenuController : MonoBehaviour
                 #endif
                     break;
         }
+    }
+
+    void ResetGameData()
+    {
+        // Reset Player Stats
+        if (playerStats != null)
+        {
+            playerStats.healthLevel = 1;
+            playerStats.staminaLevel = 1;
+            playerStats.flaskLevel = 1;
+            playerStats.damageLevel = 1;
+            playerStats.currentSolsSO = 0;
+        }
+
+        // Reset Checkpoint
+        CheckpointManager.ResetCheckpoint();
     }
 
     void LoadSceneSafe(Object sceneObj)

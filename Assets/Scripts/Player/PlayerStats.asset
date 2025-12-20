@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 289e3e21975c6c74192574ccb7f8ee86, type: 3}
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
-  healthLevel: 7
+  healthLevel: 1
   staminaLevel: 1
   flaskLevel: 1
-  damageLevel: 10000
+  damageLevel: 1
   staminaRegen: 40
   rollStaminaCost: 20
   soulsReward: 100
-  currentSolsSO: 49000
+  currentSolsSO: 0

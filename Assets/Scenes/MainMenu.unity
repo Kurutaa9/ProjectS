@@ -616,6 +616,7 @@ MonoBehaviour:
   barPadding: {x: 120, y: 18}
   moveSpeed: 18
   newGameScene: {fileID: 102900000, guid: 5c8621808bf1f5642b61965b9b536793, type: 3}
+  playerStats: {fileID: 11400000, guid: 674c606fea44ff943a16379adbbd429c, type: 2}
   navigate: {fileID: 1498463983589687503, guid: a7f8d78e4def66b45b53cbfc404ab4b4, type: 3}
   submit: {fileID: 2915607910292384694, guid: a7f8d78e4def66b45b53cbfc404ab4b4, type: 3}
   deadzone: 0.5

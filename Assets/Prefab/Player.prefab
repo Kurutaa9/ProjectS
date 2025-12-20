@@ -3196,7 +3196,6 @@ MonoBehaviour:
   isDead: 0
   staminaRegenDelay: 1
   healAmount: 30
-  maxFlasks: 3
   audioSource: {fileID: 3529758422027121835}
   healSounds:
   - clip: {fileID: 8300000, guid: 44c5b6e85984c384da527b08600a8bd0, type: 3}
