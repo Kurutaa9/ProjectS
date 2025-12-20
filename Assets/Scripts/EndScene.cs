@@ -8,15 +8,24 @@ public class EndScene : MonoBehaviour
 {
     [Header("Settings")]
     public float fadeDuration = 2.0f;
-    public float creditsStartDelay = 5.0f; // Time from trigger to credits start
+    public float creditsStartDelay = 4.0f; // Time from trigger to credits start
     public float scrollSpeed = 50f;
 
     [Header("UI References")]
     public Image whiteFadeImage; // Assign a white UI Image that stretches across the screen
     public RectTransform creditsRect; // Assign the RectTransform of the credits text/container
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip endAudioClip;
+
     private bool isTriggered = false;
     private bool isScrolling = false;
+
+    private void Start()
+    {
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+    }
 
     private void Update()
     {
@@ -61,15 +70,22 @@ public class EndScene : MonoBehaviour
         }
 
         // Wait 0.5 second then lock inputs
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
         if (pc != null) pc.inputsLocked = true;
 
-        // Wait for the rest of the delay before showing credits
-        // We already waited 1 second, so subtract that from the total start delay
-        float remainingDelay = Mathf.Max(0f, creditsStartDelay - 1.0f);
-        yield return new WaitForSeconds(remainingDelay);
+        // Wait until 2.0 seconds total have passed (2.0 - 0.5 = 1.5 seconds more)
+        yield return new WaitForSeconds(1.5f);
+        
+        // Play Audio
+        if (audioSource != null && endAudioClip != null)
+        {
+            audioSource.PlayOneShot(endAudioClip);
+        }
 
-        // Start scrolling the credits
+        // Wait until 2.5 seconds total have passed (2.5 - 2.0 = 0.5 seconds more)
+        yield return new WaitForSeconds(0.5f);
+
+        // Start scrolling the credits immediately (at 4 seconds)
         if (creditsRect != null)
         {
             // FIX: Ensure the text is drawn ON TOP of the black background
