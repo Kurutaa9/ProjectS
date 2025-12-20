@@ -821,6 +821,18 @@ PrefabInstance:
       propertyPath: fogRenderer
       value: 
       objectReference: {fileID: 1967115985}
+    - target: {fileID: 3999667713578641430, guid: 18071cfb1bd6438498d7a573be28d482, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3999667713578644438, guid: 18071cfb1bd6438498d7a573be28d482, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3999667713578833970, guid: 18071cfb1bd6438498d7a573be28d482, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6045229703734188102, guid: 18071cfb1bd6438498d7a573be28d482, type: 3}
       propertyPath: m_RootOrder
       value: 7
