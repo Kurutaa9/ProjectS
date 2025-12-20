@@ -7,6 +7,18 @@ public class EnemyStatController : MonoBehaviour
 {
     [SerializeField] private CharacterStatsSO baseStats;
 
+    [System.Serializable]
+    public class SoundEffect
+    {
+        public AudioClip clip;
+        public float delay;
+    }
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public List<SoundEffect> hitSounds = new List<SoundEffect>();
+    public List<SoundEffect> deathSounds = new List<SoundEffect>();
+
     private float currentHealth;
     private bool hasTakenDamage;
     public UnityEvent<bool> OnDamageStateChanged;
@@ -17,6 +29,8 @@ public class EnemyStatController : MonoBehaviour
 
     void Start()
     {
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+
         currentHealth = baseStats.maxHealth;
         hasTakenDamage = false;
         OnHealthChanged.Invoke(currentHealth);
@@ -41,13 +55,43 @@ public class EnemyStatController : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth - amount, 0f);
         OnHealthChanged.Invoke(currentHealth);
 
+        // Stop previous sounds
+        if (audioSource != null) audioSource.Stop();
+        StopAllCoroutines();
+
         if (currentHealth > 0f)
         {
+            PlaySounds(hitSounds);
             OnTakeDamage.Invoke();
         }
         else
         {
+            PlaySounds(deathSounds);
             OnDeath.Invoke();
+        }
+    }
+
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void PlaySounds(List<SoundEffect> sounds)
+    {
+        if (audioSource == null || sounds == null) return;
+        foreach (var sfx in sounds)
+        {
+            if (sfx.clip != null)
+            {
+                if (sfx.delay > 0)
+                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                else
+                    audioSource.PlayOneShot(sfx.clip);
+            }
         }
     }
 

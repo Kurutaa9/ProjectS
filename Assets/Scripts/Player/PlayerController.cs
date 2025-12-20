@@ -69,6 +69,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 rollDirection;
     public bool inputsLocked = false;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public System.Collections.Generic.List<PlayerStats.SoundEffect> rollSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+    public System.Collections.Generic.List<PlayerStats.SoundEffect> restEnterSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+    public System.Collections.Generic.List<PlayerStats.SoundEffect> restExitSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+
     // Sprinting
     [Header("Sprint Settings")]
     public bool isSprinting = false;
@@ -94,6 +100,10 @@ public class PlayerController : MonoBehaviour
     public bool isTakingHit = false;
     public bool isHealing = false;
 
+    private void Start()
+    {
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+    }
 
     private void OnEnable()
     {
@@ -364,6 +374,7 @@ public class PlayerController : MonoBehaviour
         isRolling = true;
         inputsLocked = true;
         attackLocked = true;
+        PlaySounds(rollSounds);
 
         if (moveDir.magnitude > 0.1f)
         {
@@ -696,4 +707,31 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("Rested at save spot. Enemies respawned and stats reset.");
     }
+
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void PlaySounds(System.Collections.Generic.List<PlayerStats.SoundEffect> sounds)
+    {
+        if (audioSource == null || sounds == null) return;
+        foreach (var sfx in sounds)
+        {
+            if (sfx.clip != null)
+            {
+                if (sfx.delay > 0)
+                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                else
+                    audioSource.PlayOneShot(sfx.clip);
+            }
+        }
+    }
+
+    public void PlayRestEnterSound() { PlaySounds(restEnterSounds); }
+    public void PlayRestExitSound() { PlaySounds(restExitSounds); }
 }

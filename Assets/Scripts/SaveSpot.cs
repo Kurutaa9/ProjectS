@@ -116,6 +116,7 @@ public class SaveSpot : MonoBehaviour
             playerController.inputsLocked = true;
             playerController.attackLocked = true;
             playerController.isSprinting = false; // safety
+            playerController.PlayRestEnterSound();
         }
     }
 
@@ -140,6 +141,7 @@ public class SaveSpot : MonoBehaviour
         {
             playerController.inputsLocked = false;
             playerController.attackLocked = false;
+            playerController.PlayRestExitSound();
         }
     }
 }

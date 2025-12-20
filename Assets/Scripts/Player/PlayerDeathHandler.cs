@@ -12,12 +12,17 @@ public class PlayerDeathHandler : MonoBehaviour
     public string deathStateName = "Death";
     public float respawnDelay = 3.0f;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public System.Collections.Generic.List<PlayerStats.SoundEffect> respawnSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+
     private bool isDying = false;
     private Vector3 startPosition;
     private Quaternion startRotation;
 
     private void Start()
     {
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
         // Cache initial position
         startPosition = transform.position;
         startRotation = transform.rotation;
@@ -108,6 +113,31 @@ public class PlayerDeathHandler : MonoBehaviour
             playerController.RespawnPlayer();
         }
 
+        PlaySounds(respawnSounds);
         isDying = false;
+    }
+
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void PlaySounds(System.Collections.Generic.List<PlayerStats.SoundEffect> sounds)
+    {
+        if (audioSource == null || sounds == null) return;
+        foreach (var sfx in sounds)
+        {
+            if (sfx.clip != null)
+            {
+                if (sfx.delay > 0)
+                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                else
+                    audioSource.PlayOneShot(sfx.clip);
+            }
+        }
     }
 }

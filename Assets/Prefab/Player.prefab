@@ -3101,6 +3101,16 @@ MonoBehaviour:
   rollDistance: 5
   rollSpeedMultiplier: 2
   inputsLocked: 0
+  audioSource: {fileID: 3529758422027121835}
+  rollSounds:
+  - clip: {fileID: 8300000, guid: ebf253f58d54d5e4e992f5bc5b107bd6, type: 3}
+    delay: 0
+  restEnterSounds:
+  - clip: {fileID: 8300000, guid: cdbf5ec075ae9ca4689a2d9ee9bc12be, type: 3}
+    delay: 0
+  restExitSounds:
+  - clip: {fileID: 0}
+    delay: 0
   isSprinting: 0
   sprintSpeedMultiplier: 1.75
   sprintStaminaDrain: 10
@@ -3169,9 +3179,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 674c606fea44ff943a16379adbbd429c, type: 2}
   isInvincible: 0
+  isDead: 0
   staminaRegenDelay: 1
   healAmount: 30
   maxFlasks: 3
+  audioSource: {fileID: 3529758422027121835}
+  healSounds:
+  - clip: {fileID: 8300000, guid: 44c5b6e85984c384da527b08600a8bd0, type: 3}
+    delay: 0
+  damageSounds:
+  - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
+    delay: 0
+  deathSounds:
+  - clip: {fileID: 8300000, guid: 84518b53aa450994fb95d5b83aea263b, type: 3}
+    delay: 0
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3221,6 +3242,10 @@ MonoBehaviour:
   playerController: {fileID: 8824110412222569703}
   deathStateName: Death
   respawnDelay: 0.25
+  audioSource: {fileID: 3529758422027121835}
+  respawnSounds:
+  - clip: {fileID: 8300000, guid: 098f725f7365ca44c84962c4d1ef14d9, type: 3}
+    delay: 0
 --- !u!1 &8944377135854447402
 GameObject:
   m_ObjectHideFlags: 0
