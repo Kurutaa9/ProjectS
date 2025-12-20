@@ -3105,12 +3105,25 @@ MonoBehaviour:
   rollSounds:
   - clip: {fileID: 8300000, guid: ebf253f58d54d5e4e992f5bc5b107bd6, type: 3}
     delay: 0
+    volume: 1
   restEnterSounds:
   - clip: {fileID: 8300000, guid: cdbf5ec075ae9ca4689a2d9ee9bc12be, type: 3}
     delay: 0
+    volume: 1
   restExitSounds:
   - clip: {fileID: 0}
     delay: 0
+    volume: 1
+  walkSounds:
+  - clip: {fileID: 8300000, guid: 627a49fa2f18cc04e9596dda00018392, type: 3}
+    delay: 0
+    volume: 0.25
+  runSounds:
+  - clip: {fileID: 8300000, guid: 627a49fa2f18cc04e9596dda00018392, type: 3}
+    delay: 0
+    volume: 0.25
+  footstepIntervalWalk: 0.5
+  footstepIntervalRun: 0.35
   isSprinting: 0
   sprintSpeedMultiplier: 1.75
   sprintStaminaDrain: 10
@@ -3187,12 +3200,15 @@ MonoBehaviour:
   healSounds:
   - clip: {fileID: 8300000, guid: 44c5b6e85984c384da527b08600a8bd0, type: 3}
     delay: 0
+    volume: 1
   damageSounds:
   - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
     delay: 0
+    volume: 1
   deathSounds:
   - clip: {fileID: 8300000, guid: 84518b53aa450994fb95d5b83aea263b, type: 3}
     delay: 0
+    volume: 1
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3246,6 +3262,7 @@ MonoBehaviour:
   respawnSounds:
   - clip: {fileID: 8300000, guid: 098f725f7365ca44c84962c4d1ef14d9, type: 3}
     delay: 0
+    volume: 1
 --- !u!1 &8944377135854447402
 GameObject:
   m_ObjectHideFlags: 0
