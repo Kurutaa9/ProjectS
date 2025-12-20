@@ -54,7 +54,7 @@ public class PlayerStats : MonoBehaviour
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
         currentFlasks = baseStats.maxFlasks;
-        currentSouls = base.currentSolsSO;
+        currentSouls = baseStats.currentSolsSO;
 
         OnHealthChanged.Invoke(currentHealth);
         OnStaminaChanged.Invoke(currentStamina);

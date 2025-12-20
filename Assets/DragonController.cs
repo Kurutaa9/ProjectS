@@ -18,6 +18,7 @@ public class DragonController : MonoBehaviour
     public float chaseRange = 50f;
     public float attackRange = 1000f;
     public float attackCooldown = 10f;
+    private float currentAttackCooldown; // Tracks the dynamic cooldown based on last attack
     private float lastAttackTime;
     private bool isScream = false;
 
@@ -55,12 +56,30 @@ public class DragonController : MonoBehaviour
     [Header("UI (optional)")]
     [SerializeField] private EnemyHealthBar enemyHealthBar; // assign in Inspector or auto-find
 
+    [System.Serializable]
+    public class SoundEffect
+    {
+        public AudioClip clip;
+        public float delay;
+        [Range(0f, 1f)] public float volume = 1f;
+    }
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public SoundEffect roarSound;
+    public SoundEffect flameAttackSound;
+    [Tooltip("Default attack sounds if specific attack option has none.")]
+    public List<SoundEffect> attackSounds;
+
     [HideInInspector] public bool isChasing; // public flag for UI
 
+    [System.Serializable]
     public class AttackOption
     {
         public string name;      // for debugging
         public string trigger;   // Animator trigger to fire
+        //public float recoveryTime = 2.0f; // Custom cooldown for this attack
+        public List<SoundEffect> specificSounds; // Specific sounds for this attack
     }
 
     // Fill this in the Inspector with as many attacks as you want
@@ -84,6 +103,7 @@ public class DragonController : MonoBehaviour
             agent.stoppingDistance = attackRange; // stop at attack range
         }
         if (!enemyHealthBar) enemyHealthBar = GetComponentInChildren<EnemyHealthBar>(true);
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -113,7 +133,7 @@ public class DragonController : MonoBehaviour
 
     void HandleIntroRoar()
     {
-        FacePlayer();
+        //FacePlayer();
 
         // Wait until the roar animation finishes
         var st = anim.GetCurrentAnimatorStateInfo(0);
@@ -152,6 +172,8 @@ public class DragonController : MonoBehaviour
             enemyHealthBar.ForceShow(true);
         }
 
+        PlaySound(roarSound);
+
         ChangeState(BossState.Intro);
     }
 
@@ -172,6 +194,13 @@ public class DragonController : MonoBehaviour
 
     void HandleChase()
     {
+        // Ensure NavMeshAgent is controlling movement/rotation
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.updateRotation = true;
+            agent.updatePosition = true;
+        }
+
         Debug.Log($"Chase: speed={agent.speed}, stopped={agent.isStopped}, onNav={agent.isOnNavMesh}, hasPath={agent.hasPath}, remaining={agent.remainingDistance}");
         isChasing = true;
 
@@ -213,7 +242,12 @@ public class DragonController : MonoBehaviour
             agent.updateRotation = false;
         }
 
-        FacePlayer();
+        // Face player if we haven't started the attack animation yet
+        if (!isPerformingAttack)
+        {
+            FacePlayer();
+        }
+        
         anim.SetBool("isMoving", false);
 
         // If already mid‑attack animation, just let it play
@@ -229,17 +263,45 @@ public class DragonController : MonoBehaviour
             return;
         }
 
+        // Ensure we are facing the player before starting the attack
+        Vector3 dirToPlayer = player.position - transform.position;
+        dirToPlayer.y = 0;
+        if (dirToPlayer.sqrMagnitude > 0.001f)
+        {
+            float angle = Vector3.Angle(transform.forward, dirToPlayer);
+            if (angle > 15f) // Wait until within 15 degrees
+            {
+                return; 
+            }
+        }
+
         // Pick a random attack and fire its trigger
         AttackOption opt = PickRandomMeleeAttack();
         if (opt == null)
         {
             // fallback to your original single attack
             anim.SetTrigger("AttackLight");
+            PlayRandomSound(attackSounds);
+            currentAttackCooldown = attackCooldown; // Use default cooldown
         }
         else
         {
             ResetMeleeAttackTriggers();
             anim.SetTrigger(opt.trigger);
+            currentAttackCooldown = attackCooldown; // Use custom cooldown
+            
+            // Play specific sounds if available, otherwise default
+            if (opt.specificSounds != null && opt.specificSounds.Count > 0)
+            {
+                foreach (var sfx in opt.specificSounds)
+                {
+                    PlaySound(sfx);
+                }
+            }
+            else
+            {
+                PlayRandomSound(attackSounds);
+            }
         }
 
         isPerformingAttack = true;
@@ -252,34 +314,54 @@ public class DragonController : MonoBehaviour
     {
         float dist = Vector3.Distance(transform.position, player.position);
         float timeSinceAttack = Time.time - lastAttackTime;
-        bool cooldownDone = timeSinceAttack >= attackCooldown;
+        bool cooldownDone = timeSinceAttack >= currentAttackCooldown;
 
-        // Always keep facing and stop moving during cooldown
+        // Failsafe: If animation event missed, force reset after cooldown + buffer
+        if (isPerformingAttack && timeSinceAttack > (currentAttackCooldown + 2.0f))
+        {
+            isPerformingAttack = false;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.updateRotation = true;
+                agent.updatePosition = true;
+            }
+        }
+
+        // Always stop moving during cooldown/attack
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = true;
         }
         anim.SetBool("isMoving", false);
-        FacePlayer();
-
-        // If cooldown is done and player is in attack range, go back to attacking
-        if (cooldownDone && dist <= attackRange)
+        
+        // Only face player if NOT currently attacking (i.e. waiting for cooldown)
+        if (!isPerformingAttack)
         {
-            ChangeState(BossState.Attack);
-            return;
+            FacePlayer();
         }
 
-        // If cooldown is done and player is out of range (+ hysteresis), resume chase
-        if (cooldownDone && dist > attackRange + attackHysteresis)
+        // Only transition if animation is finished AND cooldown is done
+        if (cooldownDone && !isPerformingAttack)
         {
-            anim.SetBool("isMoving", true);
-            if (agent != null && agent.isOnNavMesh)
+            // If player is in attack range, go back to attacking
+            if (dist <= attackRange)
             {
-                agent.isStopped = false;
-                agent.SetDestination(player.position);
+                ChangeState(BossState.Attack);
+                return;
             }
-            ChangeState(BossState.Chase);
-            return;
+
+            // If player is out of range (+ hysteresis), resume chase
+            if (dist > attackRange + attackHysteresis)
+            {
+                anim.SetBool("isMoving", true);
+                if (agent != null && agent.isOnNavMesh)
+                {
+                    agent.isStopped = false;
+                    agent.SetDestination(player.position);
+                }
+                ChangeState(BossState.Chase);
+                return;
+            }
         }
 
         // If still in cooldown, just hold and wait
@@ -289,22 +371,37 @@ public class DragonController : MonoBehaviour
     {
         // Enraged state = faster movement + shorter cooldown
         agent.speed = 6f;
-        attackCooldown = 1f;
+        currentAttackCooldown = 1f; // Force short cooldown in enrage
 
         if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
-            FacePlayer(); // keep turning toward player in enraged melee
-            if (Time.time - lastAttackTime >= attackCooldown)
+            // Only face player if not attacking
+            if (!isPerformingAttack)
+            {
+                FacePlayer(); 
+            }
+
+            if (Time.time - lastAttackTime >= currentAttackCooldown && !isPerformingAttack)
             {
                 anim.SetTrigger("EnrageAttack"); // Use stronger attack
                 lastAttackTime = Time.time;
+                isPerformingAttack = true; // Mark attack start
             }
         }
         else
         {
-            agent.isStopped = false;
-            agent.SetDestination(player.position);
-            anim.SetBool("isMoving", true);
+            // Only chase if not locked in attack animation
+            if (!isPerformingAttack)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(player.position);
+                anim.SetBool("isMoving", true);
+            }
+            else
+            {
+                agent.isStopped = true;
+                anim.SetBool("isMoving", false);
+            }
         }
     }
 
@@ -407,6 +504,7 @@ public class DragonController : MonoBehaviour
         {
             flameHitbox.ActivateFlame();
         }
+        PlaySound(flameAttackSound);
     }
 
     // Call this if you want to manually stop the flame early (optional)
@@ -479,5 +577,30 @@ public class DragonController : MonoBehaviour
         // Hide health bar until engaged again
         if (!enemyHealthBar) enemyHealthBar = GetComponentInChildren<EnemyHealthBar>(true);
         if (enemyHealthBar) enemyHealthBar.ForceShow(false);
+    }
+
+    private void PlaySound(SoundEffect sfx)
+    {
+        if (sfx == null || sfx.clip == null) return;
+        if (sfx.delay > 0) StartCoroutine(PlaySoundDelayed(sfx));
+        else if (audioSource != null) audioSource.PlayOneShot(sfx.clip, sfx.volume);
+    }
+
+    private IEnumerator PlaySoundDelayed(SoundEffect sfx)
+    {
+        yield return new WaitForSeconds(sfx.delay);
+        if (audioSource != null && sfx.clip != null)
+        {
+            audioSource.PlayOneShot(sfx.clip, sfx.volume);
+        }
+    }
+
+    private void PlayRandomSound(List<SoundEffect> list)
+    {
+        if (list != null && list.Count > 0)
+        {
+            var sfx = list[Random.Range(0, list.Count)];
+            PlaySound(sfx);
+        }
     }
 }
