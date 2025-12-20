@@ -81,8 +81,11 @@ public class SaveSpot : MonoBehaviour
         if (interactAction != null)
         {
             // triggered is true only on the frame performed
+            Debug.Log("PLAYER IS ON BONFIRE CAN INTERACT!");
             if (interactAction.action.triggered)
             {
+            Debug.Log("PLAYER IS NOW RESTING!");
+
                 playerController.RestAtSaveSpot();
                 if (isOpen) ClosePopup(); else OpenPopup();
             }

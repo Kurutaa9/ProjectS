@@ -21,11 +21,11 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Healing")]
     public float healAmount = 30f;
-    public int maxFlasks = 3;
+    // public int maxFlasks = 3;
     private int currentFlasks;
 
-    [Header("Currency")]
-    private int currentSouls = 0;
+    // [Header("Currency")]
+    // private int currentSouls = 0; // Removed local cache to avoid sync issues
 
     [System.Serializable]
     public class SoundEffect
@@ -53,17 +53,20 @@ public class PlayerStats : MonoBehaviour
 
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
-        currentFlasks = maxFlasks;
-        currentSouls = 0;
+        currentFlasks = baseStats.maxFlasks;
+        // currentSouls = baseStats.currentSolsSO; // Removed
 
         OnHealthChanged.Invoke(currentHealth);
         OnStaminaChanged.Invoke(currentStamina);
         OnFlasksChanged.Invoke(currentFlasks);
-        OnSoulsChanged.Invoke(currentSouls);
+        OnSoulsChanged.Invoke(baseStats.currentSolsSO);
     }
 
     void Update()
     {
+        Debug.Log("current health: " + GetCurrentHealth());
+        Debug.Log("max health: " + GetMaxHealth());
+        Debug.Log("Damage: " + GetBaseDamage());
         // stamina regen with delay after last consumption
         if (currentStamina < baseStats.maxStamina && Time.time >= regenBlockedUntil)
         {
@@ -115,13 +118,13 @@ public class PlayerStats : MonoBehaviour
 
     public void AddSouls(int amount)
     {
-        currentSouls += amount;
-        OnSoulsChanged.Invoke(currentSouls);
+        baseStats.currentSolsSO += amount;
+        OnSoulsChanged.Invoke(baseStats.currentSolsSO);
     }
 
     public int GetCurrentSouls()
     {
-        return currentSouls;
+        return baseStats.currentSolsSO;
     }
 
     public void TakeDamage(float amount)
@@ -203,7 +206,7 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
-        currentFlasks = maxFlasks;
+        currentFlasks = baseStats.maxFlasks;
         isInvincible = false;
         isDead = false;
         

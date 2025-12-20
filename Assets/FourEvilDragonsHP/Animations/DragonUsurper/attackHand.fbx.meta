@@ -753,7 +753,7 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
-    motionNodeName: 
+    motionNodeName: Root/Spine01
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 

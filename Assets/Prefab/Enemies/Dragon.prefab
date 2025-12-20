@@ -65,6 +65,134 @@ MonoBehaviour:
   flameParticles: {fileID: 1260262680362893504}
   activationDelay: 0.2
   activeDuration: 2
+--- !u!1 &845576522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 845576524}
+  - component: {fileID: 845576523}
+  m_Layer: 0
+  m_Name: DragonAudioSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &845576524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845576522}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1143808057638907776}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &845576523
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845576522}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1094704890
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,10 +236,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 2.085685
-  m_Height: 15.993834
+  m_Radius: 0.9201651
+  m_Height: 16.18924
   m_Direction: 2
-  m_Center: {x: -1.1989524, y: 1.8325801, z: -0.95521355}
+  m_Center: {x: -1.2866933, y: 1.8325955, z: -0.8575108}
 --- !u!114 &1094704893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3019,6 +3147,7 @@ Transform:
   - {fileID: 1143808057638848184}
   - {fileID: 2127756973967804787}
   - {fileID: 1863149537}
+  - {fileID: 845576524}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3035,7 +3164,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 5bd61d42e42f44b4a922495212e06f3f, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -3070,9 +3199,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.9520771
-  m_Height: 15.993834
+  m_Height: 16.125378
   m_Direction: 2
-  m_Center: {x: -0.0653445, y: 1.8325801, z: -0.95521355}
+  m_Center: {x: -0.06534451, y: 1.8325801, z: -0.88944054}
 --- !u!114 &1143808057106591851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3089,7 +3218,7 @@ MonoBehaviour:
   maxHealth: 1000
   chaseRange: 15
   attackRange: 30
-  attackCooldown: 2.5
+  attackCooldown: 5
   attackTurnSpeed: 8
   enrageThreshold: 0.5
   attackHysteresis: 0.5
@@ -3103,7 +3232,39 @@ MonoBehaviour:
   heavyLungeDistance: 8
   heavyLungeDuration: 0.45
   enemyHealthBar: {fileID: 0}
+  audioSource: {fileID: 845576523}
+  roarSound:
+    clip: {fileID: 8300000, guid: c4d4c41c1cdcbd64d9ec6a85f22cbe03, type: 3}
+    delay: 0.3
+    volume: 0.88
+  flameAttackSound:
+    clip: {fileID: 0}
+    delay: 0
+    volume: 0.87
+  attackSounds: []
   isChasing: 0
+  meleeAttacks:
+  - name: Attack 2
+    trigger: AttackLight
+    specificSounds:
+    - clip: {fileID: 8300000, guid: 79ae1c60fb72ece4cb5f19edb376a716, type: 3}
+      delay: 0.3
+      volume: 1
+  - name: 360
+    trigger: AttackHeavy
+    specificSounds:
+    - clip: {fileID: 8300000, guid: 7a3aa6ad74e7506438dd423bdde092ed, type: 3}
+      delay: 0.2
+      volume: 1
+    - clip: {fileID: 8300000, guid: 79ae1c60fb72ece4cb5f19edb376a716, type: 3}
+      delay: 1
+      volume: 0.88
+  - name: Combo
+    trigger: AttackSpecial
+    specificSounds:
+    - clip: {fileID: 8300000, guid: ab517091898fde54b9921f7989a04851, type: 3}
+      delay: 0
+      volume: 1
 --- !u!195 &1143808057106591853
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3139,9 +3300,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: a0e093ba914c74847add7093a3f450c0, type: 2}
-  audioSource: {fileID: 0}
-  hitSounds: []
-  deathSounds: []
+  audioSource: {fileID: 845576523}
+  hitSounds:
+  - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
+    delay: 0
+    volume: 1
+  deathSounds:
+  - clip: {fileID: 8300000, guid: c4d4c41c1cdcbd64d9ec6a85f22cbe03, type: 3}
+    delay: 0
+    volume: 0.89
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []

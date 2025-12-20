@@ -59,6 +59,9 @@ public class Weapon : MonoBehaviour
     public WeaponVFXConfig heavyAttackVFX;
     public WeaponVFXConfig lightAttackVFX;
 
+    private PlayerStats playerStats;
+    private EnemyStatController enemyStats;
+
     void Awake()
     {
         if (ownerRoot == null)
@@ -66,10 +69,35 @@ public class Weapon : MonoBehaviour
             ownerRoot = transform.root;
         }
 
+        // Cache stats components
+        if (ownerRoot != null)
+        {
+            playerStats = ownerRoot.GetComponent<PlayerStats>();
+            enemyStats = ownerRoot.GetComponent<EnemyStatController>();
+        }
+
         if (autoAssignTeamFromRootTag && ownerRoot != null)
         {
-            if (ownerRoot.CompareTag("Enemy")) ownerTeam = Team.Enemy;
-            else if (ownerRoot.CompareTag("Player")) ownerTeam = Team.Player;
+            if (ownerRoot.CompareTag("Enemy")) 
+            {
+                ownerTeam = Team.Enemy;
+            }
+            else if (ownerRoot.CompareTag("Player")) 
+            {
+                ownerTeam = Team.Player;
+            }
+            else
+            {
+                // Fallback: Check for known components if tag is missing
+                if (ownerRoot.GetComponent<EnemyStatController>() != null || ownerRoot.GetComponent<BossController>() != null || ownerRoot.GetComponent<DragonController>() != null)
+                {
+                    ownerTeam = Team.Enemy;
+                }
+                else if (ownerRoot.GetComponent<PlayerStats>() != null)
+                {
+                    ownerTeam = Team.Player;
+                }
+            }
         }
 
         // Ensure trails are off at start
@@ -236,6 +264,26 @@ public class Weapon : MonoBehaviour
         // Prevent self-hits: ignore colliders that belong to the same root as the owner
         if (ownerRoot != null && other.transform.root == ownerRoot) return;
 
+        // Calculate damage with stats and variation
+        float finalDamage = this.damage;
+        float variation = Random.Range(0.85f, 1.15f); // +/- 15% variation
+
+        if (ownerTeam == Team.Player && playerStats != null)
+        {
+            // Player: Base Damage + Weapon Damage
+            finalDamage = (playerStats.GetBaseDamage() + this.damage) * variation;
+        }
+        else if (ownerTeam == Team.Enemy && enemyStats != null)
+        {
+            // Enemy: Base Damage + Weapon Damage (Additive, consistent with Player)
+            finalDamage = (enemyStats.GetBaseDamage() + this.damage) * variation;
+        }
+        else
+        {
+            // Fallback
+            finalDamage = this.damage * variation;
+        }
+
         // Note: don't rely solely on collider tags; many setups tag the root only.
         // Instead, detect valid target components on the hit object or its parents.
         if (ownerTeam == Team.Player)
@@ -245,7 +293,7 @@ public class Weapon : MonoBehaviour
             {
                 int key = enemy.GetInstanceID();
                 if (hitVictimIds.Contains(key)) return;
-                enemy.TakeDamage(damage, stunChanceMultiplier);
+                enemy.TakeDamage(finalDamage, stunChanceMultiplier);
                 hitVictimIds.Add(key);
                 return;
             }
@@ -257,7 +305,7 @@ public class Weapon : MonoBehaviour
             {
                 int key = player.GetInstanceID();
                 if (hitVictimIds.Contains(key)) return;
-                player.TakeDamage(damage);
+                player.TakeDamage(finalDamage);
                 hitVictimIds.Add(key);
                 return;
             }
