@@ -76,8 +76,8 @@ public class BossController : MonoBehaviour
 
     void Update()
     {
-        if (!agent.isOnNavMesh)
-        Debug.LogError("Boss is NOT on the NavMesh!");
+        //if (!agent.isOnNavMesh)
+        //Debug.LogError("Boss is NOT on the NavMesh!");
 
         switch (currentState)
         {

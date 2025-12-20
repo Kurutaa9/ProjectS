@@ -299,6 +299,8 @@ MonoBehaviour:
   explorationMusic: {fileID: 8300000, guid: a53819cc521b1f24689b00c663d8fbb4, type: 3}
   musicFadeTime: 1
   victoryDelay: 2
+  prerequisiteBoss1: {fileID: 0}
+  prerequisiteBoss2: {fileID: 0}
 --- !u!1 &555430860
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,8 +390,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1, z: 5.5284424}
+  m_Center: {x: 0, y: 0, z: 0.40509856}
 --- !u!114 &5710578716666570518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,6 +410,8 @@ MonoBehaviour:
   explorationMusic: {fileID: 8300000, guid: a53819cc521b1f24689b00c663d8fbb4, type: 3}
   musicFadeTime: 1
   victoryDelay: 2
+  prerequisiteBoss1: {fileID: 0}
+  prerequisiteBoss2: {fileID: 0}
 --- !u!1 &697038572
 GameObject:
   m_ObjectHideFlags: 0
@@ -4449,7 +4453,7 @@ GameObject:
   - component: {fileID: 3999667713576460244}
   - component: {fileID: 3999667713572438246}
   - component: {fileID: 3999667713081363651}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: log_1.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4563,7 +4567,7 @@ GameObject:
   - component: {fileID: 3999667713576452712}
   - component: {fileID: 3999667713572418744}
   - component: {fileID: 3999667713449010490}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: plank_4.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4671,7 +4675,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3999667713578402834}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: dock_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19088,8 +19092,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1, z: 5.499064}
+  m_Center: {x: 0, y: 0, z: 0.42750236}
 --- !u!1 &5062855283373015791
 GameObject:
   m_ObjectHideFlags: 0
@@ -21205,6 +21209,8 @@ MonoBehaviour:
   explorationMusic: {fileID: 8300000, guid: a53819cc521b1f24689b00c663d8fbb4, type: 3}
   musicFadeTime: 1
   victoryDelay: 2
+  prerequisiteBoss1: {fileID: 0}
+  prerequisiteBoss2: {fileID: 0}
 --- !u!1 &7520550552456468311
 GameObject:
   m_ObjectHideFlags: 0
@@ -23632,7 +23638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _fogAreaPosition.x
-      value: 150
+      value: 157.90002
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _fogAreaPosition.y
@@ -23640,7 +23646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _fogAreaPosition.z
-      value: 333.5
+      value: 341.09998
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _specularIntensity
@@ -24308,7 +24314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.x
-      value: 346.29993
+      value: 354.19995
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.y
@@ -24316,7 +24322,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.z
-      value: 133.90002
+      value: 141.5
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _specularIntensity
@@ -25191,7 +25197,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.x
-      value: 348.69995
+      value: 356.59998
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.y
@@ -25199,7 +25205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.z
-      value: 237.10004
+      value: 244.70001
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _specularIntensity
