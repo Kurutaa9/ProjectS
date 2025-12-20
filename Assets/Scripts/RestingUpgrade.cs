@@ -32,41 +32,46 @@ public class RestingUpgrade : MonoBehaviour
     public void upgradeHealth()
     {   
         Debug.Log("UPGRADEHEALTH PRESSED!");
-        if (baseStats.currentSolsSO < baseStats.healthLevel * 1000) return;
+        int cost = baseStats.healthLevel * 1000;
+        if (baseStats.currentSolsSO < cost) return;
+        
         Debug.Log("UPGRADEHEALTH INSIDE!");
+        baseStats.currentSolsSO -= cost;
         baseStats.healthLevel += 1;
         Debug.Log("health level upgraded to " + baseStats.healthLevel);
-        baseStats.currentSolsSO -= baseStats.healthLevel * 1000;
         updateUI();
     }
 
     public void upgradeStamina()
     {
-        if (baseStats.currentSolsSO < baseStats.staminaLevel * 1000) return;
+        int cost = baseStats.staminaLevel * 1000;
+        if (baseStats.currentSolsSO < cost) return;
 
+        baseStats.currentSolsSO -= cost;
         baseStats.staminaLevel += 1;
         Debug.Log("stamina level upgraded to " + baseStats.staminaLevel);
-        baseStats.currentSolsSO -= baseStats.staminaLevel * 1000;
         updateUI();
     }
 
     public void upgradeFlask()
     {
-        if (baseStats.currentSolsSO < baseStats.flaskLevel * 1000) return;
+        int cost = baseStats.flaskLevel * 1000;
+        if (baseStats.currentSolsSO < cost) return;
 
+        baseStats.currentSolsSO -= cost;
         baseStats.flaskLevel += 1;
         Debug.Log("flask level upgraded to " + baseStats.flaskLevel);
-        baseStats.currentSolsSO -= baseStats.flaskLevel * 1000;
         updateUI();
     }
 
     public void upgradeDamage()
     {
-        if (baseStats.currentSolsSO < baseStats.damageLevel * 1000) return;
+        int cost = baseStats.damageLevel * 1000;
+        if (baseStats.currentSolsSO < cost) return;
 
+        baseStats.currentSolsSO -= cost;
         baseStats.damageLevel += 1;
         Debug.Log("damage level upgraded to " + baseStats.damageLevel);
-        baseStats.currentSolsSO -= baseStats.damageLevel * 1000;
         updateUI();
     }
 
