@@ -15,8 +15,8 @@ MonoBehaviour:
   healthLevel: 1
   staminaLevel: 1
   flaskLevel: 1
-  damageLevel: 1
+  damageLevel: 100
   staminaRegen: 40
   rollStaminaCost: 20
   soulsReward: 100
-  currentSolsSO: 0
+  currentSolsSO: 24500

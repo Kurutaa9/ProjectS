@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 289e3e21975c6c74192574ccb7f8ee86, type: 3}
-  m_Name: greatSwordEnemyStats
+  m_Name: spiderMutant 1
   m_EditorClassIdentifier: 
-  healthLevel: 1
+  healthLevel: 5
   staminaLevel: 1
   flaskLevel: 1
-  damageLevel: 1
+  damageLevel: 5
   staminaRegen: 1
   rollStaminaCost: 20
-  soulsReward: 300
+  soulsReward: 5000
   currentSolsSO: 0
