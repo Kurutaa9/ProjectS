@@ -64,6 +64,9 @@ public class PlayerStats : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("current health: " + GetCurrentHealth());
+        Debug.Log("max health: " + GetMaxHealth());
+        Debug.Log("Damage: " + GetBaseDamage());
         // stamina regen with delay after last consumption
         if (currentStamina < baseStats.maxStamina && Time.time >= regenBlockedUntil)
         {
