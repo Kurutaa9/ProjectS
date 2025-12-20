@@ -19,6 +19,11 @@ public class BossArenaController : MonoBehaviour
     [Tooltip("Delay after boss death before the barrier disappears.")]
     [SerializeField] private float victoryDelay = 2.0f;
 
+    [Header("Prerequisites")]
+    [Tooltip("Optional: Bosses that must be defeated before this arena can be accessed.")]
+    [SerializeField] private EnemyStatController prerequisiteBoss1;
+    [SerializeField] private EnemyStatController prerequisiteBoss2;
+
     private bool isFightActive = false;
     private bool isBossDefeated = false;
     private PlayerStats playerStats;
@@ -69,7 +74,7 @@ public class BossArenaController : MonoBehaviour
             }
         }
 
-        // 3. Ensure Barrier is initially disabled (open)
+        // 3. Handle Barrier State & Prerequisites
         if (arenaBarrier != null)
         {
             if (arenaBarrier == gameObject)
@@ -78,7 +83,59 @@ public class BossArenaController : MonoBehaviour
             }
             else
             {
-                arenaBarrier.SetActive(false);
+                // Check prerequisites
+                bool prerequisitesMet = CheckPrerequisitesMet();
+
+                if (!prerequisitesMet)
+                {
+                    // Block access
+                    arenaBarrier.SetActive(true);
+                    
+                    // Make the collider a solid wall so player cannot pass
+                    Collider col = GetComponent<Collider>();
+                    if (col != null) 
+                    {
+                        col.enabled = true;
+                        col.isTrigger = false;
+                    }
+
+                    // Listen for death to unlock
+                    if (prerequisiteBoss1 != null) prerequisiteBoss1.OnDeath.AddListener(OnPrerequisiteDeath);
+                    if (prerequisiteBoss2 != null) prerequisiteBoss2.OnDeath.AddListener(OnPrerequisiteDeath);
+                }
+                else
+                {
+                    // Allow access (Open)
+                    arenaBarrier.SetActive(false);
+                    
+                    // Ensure it is a trigger
+                    Collider col = GetComponent<Collider>();
+                    if (col != null) col.isTrigger = true;
+                }
+            }
+        }
+    }
+
+    private bool CheckPrerequisitesMet()
+    {
+        if (prerequisiteBoss1 != null && prerequisiteBoss1.GetCurrentHealth() > 0) return false;
+        if (prerequisiteBoss2 != null && prerequisiteBoss2.GetCurrentHealth() > 0) return false;
+        return true;
+    }
+
+    private void OnPrerequisiteDeath()
+    {
+        if (CheckPrerequisitesMet())
+        {
+            // Open barrier
+            if (arenaBarrier != null) arenaBarrier.SetActive(false);
+            
+            // Enable trigger
+            Collider col = GetComponent<Collider>();
+            if (col != null) 
+            {
+                col.enabled = true;
+                col.isTrigger = true;
             }
         }
     }
@@ -88,6 +145,8 @@ public class BossArenaController : MonoBehaviour
         // Cleanup listeners
         if (bossStats != null) bossStats.OnDeath.RemoveListener(OnBossDeath);
         if (playerStats != null) playerStats.OnDeath.RemoveListener(OnPlayerDeath);
+        if (prerequisiteBoss1 != null) prerequisiteBoss1.OnDeath.RemoveListener(OnPrerequisiteDeath);
+        if (prerequisiteBoss2 != null) prerequisiteBoss2.OnDeath.RemoveListener(OnPrerequisiteDeath);
     }
 
     private void OnTriggerEnter(Collider other)

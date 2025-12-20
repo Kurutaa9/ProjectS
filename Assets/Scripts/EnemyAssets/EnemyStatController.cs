@@ -30,12 +30,19 @@ public class EnemyStatController : MonoBehaviour
     public UnityEvent OnTakeDamage;
     public UnityEvent OnDeath;
 
-    void Start()
+    void Awake()
     {
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
 
         currentHealth = baseStats.maxHealth;
         hasTakenDamage = false;
+        // We can't invoke events in Awake if listeners are in Start, but usually listeners subscribe in Start/Awake.
+        // If listeners subscribe in Start, they might miss this initial invoke.
+        // However, OnHealthChanged is usually for UI updates.
+    }
+
+    void Start()
+    {
         OnHealthChanged.Invoke(currentHealth);
         OnDamageStateChanged.Invoke(hasTakenDamage);
     }
