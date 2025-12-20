@@ -49,7 +49,7 @@ public class EnemyStatController : MonoBehaviour
 
     void Update()
     {
-
+        // Debug.Log("ENEMY HELTH!!!!: " + baseStats.maxHealth);
     }
 
     public void TakeDamage(float amount, float stunMultiplier = 1.0f)
