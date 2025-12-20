@@ -34,6 +34,9 @@ public class PrincessController : MonoBehaviour
     public float enrageThreshold = 0.5f; // 50% HP
     private bool isEnraged = false;
 
+    [Header("Death Settings")]
+    public GameObject deathMessagePrefab; // Prefab to spawn on death
+
     [Tooltip("Extra distance required to resume chase after being in attack range")]
     public float attackHysteresis = 0.5f;
 
@@ -41,10 +44,21 @@ public class PrincessController : MonoBehaviour
 
     [HideInInspector] public bool isChasing; // public flag for UI
 
+    [System.Serializable]
+    public class SoundEffectConfig
+    {
+        public AudioClip clip;
+        public float delay; // Delay from the start of the attack
+        public float duration; // Duration to play (0 = full length)
+        [Range(0, 1)] public float volume = 1f;
+    }
+
+    [System.Serializable]
     public class AttackOption
     {
         public string name;      // for debugging
         public string trigger;   // Animator trigger to fire
+        public SoundEffectConfig[] soundEffects;
     }
 
     // Fill this in the Inspector with as many attacks as you want
@@ -57,12 +71,31 @@ public class PrincessController : MonoBehaviour
 
     private bool isPerformingAttack = false;
     private bool isInitialized = false;
+    private AudioSource audioSource;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        currentHealth = maxHealth;
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        // NEW: Hook into EnemyStatController if it exists
+        // This ensures Die() runs even if the weapon hits the StatController instead of this script
+        var stats = GetComponent<EnemyStatController>();
+        if (stats != null)
+        {
+            stats.OnDeath.AddListener(Die);
+            currentHealth = stats.currentHealth; // Sync health
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+
         ChangeState(BossState.Idle);
         
         StartCoroutine(InitializeNavMeshAgent());
@@ -248,10 +281,67 @@ public class PrincessController : MonoBehaviour
         {
             ResetMeleeAttackTriggers();
             anim.SetTrigger(opt.trigger);
+            PlayAttackSounds(opt.soundEffects);
         }
 
         isPerformingAttack = true;
         // Stay in Attack state until animation finishes (AE_AttackEnd will handle transition)
+    }
+
+    void PlayAttackSounds(SoundEffectConfig[] sounds)
+    {
+        if (sounds == null || audioSource == null) return;
+
+        foreach (var sfx in sounds)
+        {
+            if (sfx.clip != null)
+            {
+                StartCoroutine(PlaySoundDelayed(sfx));
+            }
+        }
+    }
+
+    IEnumerator PlaySoundDelayed(SoundEffectConfig sfx)
+    {
+        if (sfx.delay > 0)
+            yield return new WaitForSeconds(sfx.delay);
+        
+        if (sfx.clip == null) yield break;
+
+        if (sfx.duration > 0)
+        {
+            // Create a temporary AudioSource to allow stopping after duration
+            GameObject tempGO = new GameObject("TempSFX_" + sfx.clip.name);
+            tempGO.transform.position = transform.position;
+            tempGO.transform.SetParent(transform); // Move with boss
+            
+            AudioSource tempSource = tempGO.AddComponent<AudioSource>();
+            // Copy basic settings from main audio source if available
+            if (audioSource != null)
+            {
+                tempSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+                tempSource.spatialBlend = audioSource.spatialBlend;
+                tempSource.rolloffMode = audioSource.rolloffMode;
+                tempSource.minDistance = audioSource.minDistance;
+                tempSource.maxDistance = audioSource.maxDistance;
+            }
+            else
+            {
+                tempSource.spatialBlend = 1f; // Default to 3D
+            }
+
+            tempSource.clip = sfx.clip;
+            tempSource.volume = sfx.volume;
+            tempSource.Play();
+
+            Destroy(tempGO, sfx.duration);
+        }
+        else
+        {
+            // Play fully
+            if (audioSource != null)
+                audioSource.PlayOneShot(sfx.clip, sfx.volume);
+        }
     }
 
     void HandleRecover()
@@ -440,10 +530,29 @@ public class PrincessController : MonoBehaviour
 
     void Die()
     {
+        // Prevent running twice
+        if (currentState == BossState.Dead) return;
+
+        if (deathMessagePrefab != null)
+        {
+            // Instantiate at boss position to be safe (works for both UI and World Space)
+            Instantiate(deathMessagePrefab, transform.position, Quaternion.identity);
+        }
+        
         ChangeState(BossState.Dead);
-        agent.isStopped = true;
-        anim.SetTrigger("Die");
-        // Disable boss logic here
+        
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+        }
+        
+        if (anim != null)
+        {
+            anim.SetTrigger("Die");
+        }
+        
+        // Optional: Disable this script so Update() stops running
+        this.enabled = false;
     }
 
     // Smooth horizontal facing toward player
@@ -507,6 +616,8 @@ public class PrincessController : MonoBehaviour
     // Reset all runtime state so the boss can behave after player respawn
     public void ResetBossOnRespawn()
     {
+        this.enabled = true; // Ensure script is re-enabled on respawn
+        
         // Health/state
         currentHealth = maxHealth;
         isEnraged = false;

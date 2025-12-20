@@ -28,6 +28,9 @@ public class DragonController : MonoBehaviour
     public float enrageThreshold = 0.5f; // 50% HP
     private bool isEnraged = false;
 
+    [Header("Death Settings")]
+    public GameObject deathMessagePrefab; // Prefab to spawn on death
+
     [Tooltip("Extra distance required to resume chase after being in attack range")]
     public float attackHysteresis = 0.5f;
 
@@ -339,6 +342,11 @@ public class DragonController : MonoBehaviour
         ChangeState(BossState.Dead);
         agent.isStopped = true;
         anim.SetTrigger("Die");
+        
+        if (deathMessagePrefab != null)
+        {
+            Instantiate(deathMessagePrefab);
+        }
         // Disable boss logic here
     }
 

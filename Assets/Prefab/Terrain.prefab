@@ -23482,7 +23482,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: isDirty
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _color.b
@@ -23638,7 +23638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _fogAreaPosition.x
-      value: 157.90002
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _fogAreaPosition.y
@@ -23646,7 +23646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _fogAreaPosition.z
-      value: 341.09998
+      value: 333.5
       objectReference: {fileID: 0}
     - target: {fileID: 114000476839349962, guid: 7306d742a1dae45d6a3ba936927b248c, type: 3}
       propertyPath: _specularIntensity
@@ -24314,7 +24314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.x
-      value: 354.19995
+      value: 346.29993
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.y
@@ -24322,7 +24322,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.z
-      value: 141.5
+      value: 133.90002
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _specularIntensity
@@ -25197,7 +25197,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.x
-      value: 356.59998
+      value: 348.69995
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.y
@@ -25205,7 +25205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _fogAreaPosition.z
-      value: 244.70001
+      value: 237.10004
       objectReference: {fileID: 0}
     - target: {fileID: 114887486489900960, guid: 5667e30a9b45b488b916c994a81d1d9b, type: 3}
       propertyPath: _specularIntensity
