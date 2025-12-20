@@ -21,7 +21,7 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Healing")]
     public float healAmount = 30f;
-    public int maxFlasks = 3;
+    // public int maxFlasks = 3;
     private int currentFlasks;
 
     [Header("Currency")]
@@ -53,7 +53,7 @@ public class PlayerStats : MonoBehaviour
 
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
-        currentFlasks = maxFlasks;
+        currentFlasks = baseStats.maxFlasks;
         currentSouls = 0;
 
         OnHealthChanged.Invoke(currentHealth);
@@ -116,6 +116,7 @@ public class PlayerStats : MonoBehaviour
     public void AddSouls(int amount)
     {
         currentSouls += amount;
+        baseStats.currentSolsSO = currentSouls; //update the SO
         OnSoulsChanged.Invoke(currentSouls);
     }
 
@@ -203,7 +204,7 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealth = baseStats.maxHealth;
         currentStamina = baseStats.maxStamina;
-        currentFlasks = maxFlasks;
+        currentFlasks = baseStats.maxFlasks;
         isInvincible = false;
         isDead = false;
         
