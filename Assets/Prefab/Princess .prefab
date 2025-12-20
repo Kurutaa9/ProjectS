@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &964448643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 964448644}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &964448644
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964448643}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.19229442, y: -0.00000046581007, z: 0.0000018991349}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3876616404420685003}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &219258463155721219
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,6 +580,7 @@ Transform:
   - {fileID: 3441516036006662710}
   - {fileID: 5760167801172315862}
   - {fileID: 5476418809330765573}
+  - {fileID: 964448644}
   m_Father: {fileID: 4505859689323561130}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1285,7 +1317,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4014933013293035497}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0001, y: 0.561, z: -0}
+  m_LocalPosition: {x: 0.0001, y: 0.9, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2669,7 +2701,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7379447493204214190}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: cf848e5eb00f98342823fcc3f32c428a, type: 3}
   m_Controller: {fileID: 9100000, guid: c17493164d8ab2d4ab87a595530e96f7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -2724,10 +2756,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 5a23850d2de3f4f388da89333400b62c, type: 2}
+  audioSource: {fileID: 0}
+  hitSounds: []
+  deathSounds: []
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamageWithStun:
     m_PersistentCalls:
       m_Calls: []
   OnTakeDamage:
@@ -2785,7 +2823,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: 0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &4014933012859912306
@@ -2802,9 +2840,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   maxHealth: 100
-  chaseRange: 15
-  attackRange: 30
-  attackCooldown: 3
+  chaseRange: 30
+  attackRange: 15
+  attackCooldown: 5
+  retreatRange: 8
+  safeDistance: 15
+  retreatSpeed: 5
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
   attackTurnSpeed: 8
   enrageThreshold: 0.5
   attackHysteresis: 0.5
@@ -2821,6 +2865,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b4322070b1d4e91a181cf342c6b779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mageTransform: {fileID: 7864059869897546516}
+  player: {fileID: 0}
+  projectilePrefab: {fileID: 3624886635337431899, guid: 345d31ded22ee4ba9bff5bd07f9c0919, type: 3}
+  projectileSpawnPoint: {fileID: 964448644}
+  projectileSpeed: 20
+  projectileDamage: 15
+  useSpreadFire: 0
+  projectileCount: 3
+  spreadAngle: 30
+  runePrefab: {fileID: 7035410982994291534, guid: bd6287568ec0f49e0865a1dd59aed9d5, type: 3}
+  runeDamage: 20
+  runeRadius: 3
+  runeDelay: 1.5
+  wallPrefab: {fileID: 2079008771633437194, guid: 118acd0aecc874172b59bef026a48807, type: 3}
+  wallSpawnDistance: 7
+  wallSpeed: 8
+  wallDamage: 25
+  wallStartDelay: 1
+  wallRotationOffset: {x: 0, y: 0, z: 0}
+  slashPrefab: {fileID: 7597275148421266931, guid: c11ec8cbb63924b73a0db576945b213e, type: 3}
+  slashSpeed: 15
+  slashDamage: 20
+  slashRotationOffset: {x: 0, y: -90, z: 0}
 --- !u!1 &7476754614118935917
 GameObject:
   m_ObjectHideFlags: 0

@@ -458,6 +458,17 @@
                 },
                 {
                     "name": "",
+                    "id": "7152f712-30a9-4335-89bb-268f010ccca6",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;Joystick",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "22021342-26c3-4542-b468-7f352c28f555",
                     "path": "<Keyboard>/f",
                     "interactions": "",

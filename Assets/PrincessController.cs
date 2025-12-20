@@ -25,6 +25,7 @@ public class PrincessController : MonoBehaviour
     public float retreatRange = 8f;      // if player closer than this, retreat
     public float safeDistance = 15f;     // retreat until this far from player
     public float retreatSpeed = 5f;      // movement speed while retreating
+    public LayerMask obstacleMask = 1;   // Default layer (set in Inspector)
 
     [Header("Rotation")]
     public float attackTurnSpeed = 8f; // rotation speed while attacking
@@ -301,6 +302,9 @@ public class PrincessController : MonoBehaviour
         if (dist >= safeDistance)
         {
             anim.SetBool("isRetreating", false);
+            anim.SetBool("isStrafingLeft", false);
+            anim.SetBool("isStrafingRight", false);
+
             if (agent != null && agent.isOnNavMesh)
             {
                 agent.updateRotation = true;
@@ -312,24 +316,73 @@ public class PrincessController : MonoBehaviour
             return;
         }
 
-        // Otherwise, keep retreating (move away from player)
-        anim.SetBool("isRetreating", true);
-        if (agent != null && agent.isOnNavMesh)
+        FacePlayer(); // Always face player
+
+        // Check for wall behind
+        Vector3 retreatDir = (transform.position - player.position).normalized;
+        // Raycast backwards from slightly up to avoid ground
+        bool wallBehind = Physics.Raycast(transform.position + Vector3.up, retreatDir, 2f, obstacleMask);
+
+        if (wallBehind)
         {
-            agent.updateRotation = false; // Let us control facing
-            agent.isStopped = false;
-            agent.speed = retreatSpeed;
+            // Wall detected behind! Try to strafe.
+            //anim.SetBool("isRetreating", false);
 
-            // Calculate retreat direction (opposite of player direction)
-            Vector3 retreatDir = (transform.position - player.position).normalized;
-            
-            // Move directly away from player using agent.Move
-            Vector3 moveAmount = retreatDir * retreatSpeed * Time.deltaTime;
-            agent.Move(moveAmount);
+            // Check Left and Right relative to boss
+            bool blockedLeft = Physics.Raycast(transform.position + Vector3.up, -transform.right, 2f, obstacleMask);
+            bool blockedRight = Physics.Raycast(transform.position + Vector3.up, transform.right, 2f, obstacleMask);
+
+            Vector3 moveDir = Vector3.zero;
+
+            // Prefer left, then right
+            if (!blockedLeft)
+            {
+                anim.SetBool("isStrafingLeft", true);
+                anim.SetBool("isStrafingRight", false);
+                moveDir = -transform.right;
+            }
+            else if (!blockedRight)
+            {
+                anim.SetBool("isStrafingLeft", false);
+                anim.SetBool("isStrafingRight", true);
+                moveDir = transform.right;
+            }
+            else
+            {
+                // Cornered (blocked behind, left, and right) -> Force Attack
+                anim.SetBool("isStrafingLeft", false);
+                anim.SetBool("isStrafingRight", false);
+                ChangeState(BossState.Attack);
+                return;
+            }
+
+            // Execute Strafe Movement
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.updateRotation = false;
+                agent.isStopped = false;
+                agent.speed = retreatSpeed;
+                agent.Move(moveDir * retreatSpeed * Time.deltaTime);
+            }
         }
+        else
+        {
+            // No wall behind -> Normal Retreat
+            anim.SetBool("isRetreating", true);
+            anim.SetBool("isStrafingLeft", false);
+            anim.SetBool("isStrafingRight", false);
 
-        // Face player while retreating
-        FacePlayer();
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.updateRotation = false; // Let us control facing
+                agent.isStopped = false;
+                agent.speed = retreatSpeed;
+                
+                // Move directly away from player using agent.Move
+                Vector3 moveAmount = retreatDir * retreatSpeed * Time.deltaTime;
+                agent.Move(moveAmount);
+            }
+        }
     }
 
     void HandleEnraged()
@@ -491,6 +544,8 @@ public class PrincessController : MonoBehaviour
             anim.ResetTrigger("Die");
             anim.SetBool("isMoving", false);
             anim.SetBool("isRetreating", false);
+            anim.SetBool("isStrafingLeft", false);
+            anim.SetBool("isStrafingRight", false);
         }
 
         // Reset agent speed (in case it was changed during retreat)

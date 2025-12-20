@@ -1586,7 +1586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b784fa873d171e479519870d4fffcc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapon: {fileID: 5754233446750686069}
+  weapons: []
   slashTrail: {fileID: 0}
   stopOnEnd: 1
   clearOnRestart: 1
@@ -1624,10 +1624,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: cb562df288a2744f89e95650c82be889, type: 2}
+  audioSource: {fileID: 0}
+  hitSounds: []
+  deathSounds: []
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamageWithStun:
     m_PersistentCalls:
       m_Calls: []
   OnTakeDamage:
@@ -3302,11 +3308,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 20
+  stunChanceMultiplier: 1
   canDamage: 0
   ownerTeam: 0
   ownerRoot: {fileID: 0}
   autoAssignTeamFromRootTag: 1
   attackStaminaCost: 0
+  normalTrail: {fileID: 0}
+  heavyTrail: {fileID: 0}
+  vfxSpawnPoint: {fileID: 0}
+  heavyAttackVFX:
+    vfxPrefab: {fileID: 0}
+    hitBoxPrefab: {fileID: 0}
+    hitBoxDelay: 0
+    hitBoxDuration: 0.5
+    damageMultiplier: 1
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    startDelay: 0
+    lifeTime: 0
+    stopEmissionAfter: 0
+    triggerPoint: 0.9
+  lightAttackVFX:
+    vfxPrefab: {fileID: 0}
+    hitBoxPrefab: {fileID: 0}
+    hitBoxDelay: 0
+    hitBoxDuration: 0.5
+    damageMultiplier: 1
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    startDelay: 0
+    lifeTime: 0
+    stopEmissionAfter: 0
+    triggerPoint: 0.9
 --- !u!4 &5211119589830027178 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1bdc8068280bb4349b542776b3975f0f, type: 3}
