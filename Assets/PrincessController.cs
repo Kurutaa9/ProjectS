@@ -360,6 +360,11 @@ public class PrincessController : MonoBehaviour
     void ChangeState(BossState newState)
     {
         currentState = newState;
+        if (currentState == BossState.Chase)
+        {
+            var hb = GetComponentInChildren<EnemyHealthBar>(true);
+            if (hb) hb.ForceShow(true);
+        }
     }
 
     void EnterEnrageMode()
