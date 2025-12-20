@@ -48,15 +48,15 @@ public class BossManager : MonoBehaviour
 
     void OnEnable()
     {
-        if (stats) stats.OnTakeDamage.AddListener(OnDamageReceived);
+        if (hitHandler) hitHandler.OnStunned.AddListener(OnStunned);
     }
 
     void OnDisable()
     {
-        if (stats) stats.OnTakeDamage.RemoveListener(OnDamageReceived);
+        if (hitHandler) hitHandler.OnStunned.RemoveListener(OnStunned);
     }
 
-    private void OnDamageReceived()
+    private void OnStunned()
     {
         if (combat) combat.StopAttack();
         cooldownTimer = 0f;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 public class EnemyHitHandler : MonoBehaviour
 {
@@ -17,9 +18,14 @@ public class EnemyHitHandler : MonoBehaviour
     public int animatorLayer = 0;
     [Tooltip("How long to stun the enemy if animation length cannot be found")]
     public float defaultStunDuration = 0.5f;
+    [Tooltip("Probability (0-1) that the enemy will be stunned when hit.")]
+    [Range(0f, 1f)]
+    public float stunProbability = 1.0f;
 
     public bool isHit = false;
     private bool isDead = false;
+
+    public UnityEvent OnStunned;
 
     private void Awake()
     {
@@ -33,7 +39,7 @@ public class EnemyHitHandler : MonoBehaviour
     {
         if (stats)
         {
-            stats.OnTakeDamage.AddListener(PlayGetHit);
+            stats.OnTakeDamageWithStun.AddListener(PlayGetHitWithStun);
             stats.OnDeath.AddListener(OnDeath);
         }
     }
@@ -42,7 +48,7 @@ public class EnemyHitHandler : MonoBehaviour
     {
         if (stats)
         {
-            stats.OnTakeDamage.RemoveListener(PlayGetHit);
+            stats.OnTakeDamageWithStun.RemoveListener(PlayGetHitWithStun);
             stats.OnDeath.RemoveListener(OnDeath);
         }
     }
@@ -61,10 +67,17 @@ public class EnemyHitHandler : MonoBehaviour
         StopAllCoroutines();
     }
 
-    private void PlayGetHit()
+    private void PlayGetHitWithStun(float stunMultiplier)
     {
         // Don't play hit animation if already dead or currently being hit
         if (isDead || isHit) return;
+
+        // Check probability with multiplier
+        // Effective probability = base probability * multiplier
+        // e.g. 0.5 * 1.5 = 0.75 chance
+        float effectiveProbability = Mathf.Clamp01(stunProbability * stunMultiplier);
+
+        if (Random.value > effectiveProbability) return;
 
         StartCoroutine(HitRoutine());
     }
@@ -72,6 +85,7 @@ public class EnemyHitHandler : MonoBehaviour
     private IEnumerator HitRoutine()
     {
         isHit = true;
+        OnStunned.Invoke();
 
         // Disable weapons immediately
         var weapons = GetComponentsInChildren<Weapon>(true);

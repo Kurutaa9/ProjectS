@@ -506,6 +506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+  stunChanceMultiplier: 1
   canDamage: 0
   ownerTeam: 0
   ownerRoot: {fileID: 0}
@@ -600,6 +601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+  stunChanceMultiplier: 1
   canDamage: 0
   ownerTeam: 0
   ownerRoot: {fileID: 0}
@@ -788,7 +790,7 @@ MonoBehaviour:
   weapons:
   - {fileID: 1856098470250988324}
   - {fileID: 1856098471268798752}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 294623896}
   endOnAnimatorTagExit: 1
   attackTag: Attack
   attacks:
@@ -800,7 +802,10 @@ MonoBehaviour:
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 1
+      volume: 0.502
   logAttacks: 0
 --- !u!136 &1856098472256327772
 CapsuleCollider:
@@ -849,13 +854,18 @@ MonoBehaviour:
   hitSounds:
   - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
     delay: 0
+    volume: 1
   deathSounds:
   - clip: {fileID: 8300000, guid: 84518b53aa450994fb95d5b83aea263b, type: 3}
     delay: 0
+    volume: 1
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamageWithStun:
     m_PersistentCalls:
       m_Calls: []
   OnTakeDamage:
@@ -899,7 +909,11 @@ MonoBehaviour:
   getHitStateName: GetHit
   animatorLayer: 0
   defaultStunDuration: 0.5
+  stunProbability: 0.2
   isHit: 0
+  OnStunned:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1856098472256327761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2981,6 +2995,10 @@ PrefabInstance:
     - target: {fileID: 2127756974390716129, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_Camera
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
+      propertyPath: offset.y
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: enemyStats

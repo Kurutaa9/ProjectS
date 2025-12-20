@@ -25,6 +25,8 @@ public class EnemyStatController : MonoBehaviour
     public UnityEvent<bool> OnDamageStateChanged;
     public UnityEvent<float> OnHealthChanged;
 
+    // Pass the stun multiplier to listeners
+    public UnityEvent<float> OnTakeDamageWithStun;
     public UnityEvent OnTakeDamage;
     public UnityEvent OnDeath;
 
@@ -43,7 +45,7 @@ public class EnemyStatController : MonoBehaviour
 
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, float stunMultiplier = 1.0f)
     {
         //Debug.Log($"enemy take {amount} damage");
         if (!hasTakenDamage)
@@ -64,6 +66,7 @@ public class EnemyStatController : MonoBehaviour
         {
             PlaySounds(hitSounds);
             OnTakeDamage.Invoke();
+            OnTakeDamageWithStun.Invoke(stunMultiplier);
         }
         else
         {

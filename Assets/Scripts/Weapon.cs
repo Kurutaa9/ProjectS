@@ -7,6 +7,7 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     public float damage;
+    public float stunChanceMultiplier = 1.0f;
     // Track victims by a stable key (component/root instanceID) to avoid multi-collider double hits
     private readonly HashSet<int> hitVictimIds = new HashSet<int>();
     public bool canDamage = false;
@@ -244,7 +245,7 @@ public class Weapon : MonoBehaviour
             {
                 int key = enemy.GetInstanceID();
                 if (hitVictimIds.Contains(key)) return;
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, stunChanceMultiplier);
                 hitVictimIds.Add(key);
                 return;
             }

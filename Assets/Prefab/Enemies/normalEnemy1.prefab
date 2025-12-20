@@ -281,7 +281,7 @@ MonoBehaviour:
   anim: {fileID: 7074069466474282187}
   weapons:
   - {fileID: 2107699697250358860}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1791793964}
   endOnAnimatorTagExit: 1
   attackTag: Attack
   attacks:
@@ -293,16 +293,22 @@ MonoBehaviour:
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: b0a98ddf746ae9b498369a43bee8bdfc, type: 3}
+      delay: 1
+      volume: 0.656
   - name: special attack
     animatorTrigger: AttackSpecial
     recovery: 2
     damagePerHit: 40
-    selectionWeight: 0.5
+    selectionWeight: 0.7
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 1
+      volume: 0.485
   logAttacks: 0
 --- !u!136 &5472490806491216347
 CapsuleCollider:
@@ -351,13 +357,18 @@ MonoBehaviour:
   hitSounds:
   - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
     delay: 0
+    volume: 1
   deathSounds:
   - clip: {fileID: 8300000, guid: 84518b53aa450994fb95d5b83aea263b, type: 3}
     delay: 0
+    volume: 1
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamageWithStun:
     m_PersistentCalls:
       m_Calls: []
   OnTakeDamage:
@@ -401,7 +412,11 @@ MonoBehaviour:
   getHitStateName: GetHit
   animatorLayer: 0
   defaultStunDuration: 0.5
+  stunProbability: 0.76
   isHit: 0
+  OnStunned:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8461466927852268230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,6 +696,10 @@ PrefabInstance:
     - target: {fileID: 2127756974390716129, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_Camera
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
+      propertyPath: offset.y
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: enemyStats

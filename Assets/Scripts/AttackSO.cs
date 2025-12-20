@@ -8,6 +8,8 @@ public class AttackSO : ScriptableObject
     public AnimatorOverrideController animatorOV;
     public float damage;
     public float staminaCost;
+    [Tooltip("Multiplier for the chance to stun the enemy (1.0 = normal, >1.0 = higher chance)")]
+    public float stunChanceMultiplier = 1.0f;
 
     [System.Serializable]
     public class SoundEffect

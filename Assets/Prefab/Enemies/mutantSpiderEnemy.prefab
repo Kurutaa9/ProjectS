@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+  stunChanceMultiplier: 1
   canDamage: 0
   ownerTeam: 1
   ownerRoot: {fileID: 8388905809133619521}
@@ -282,6 +283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+  stunChanceMultiplier: 1
   canDamage: 0
   ownerTeam: 1
   ownerRoot: {fileID: 8388905809133619521}
@@ -5910,7 +5912,7 @@ MonoBehaviour:
   weapons:
   - {fileID: 2523597408304070989}
   - {fileID: 2523597408519526633}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1872222315}
   endOnAnimatorTagExit: 1
   attackTag: Attack
   attacks:
@@ -5922,7 +5924,10 @@ MonoBehaviour:
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 0.8
+      volume: 0.374
   - name: special attack
     animatorTrigger: AttackSpecial
     recovery: 0.5
@@ -5931,7 +5936,10 @@ MonoBehaviour:
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: b0a98ddf746ae9b498369a43bee8bdfc, type: 3}
+      delay: 0.3
+      volume: 0.512
   logAttacks: 0
 --- !u!136 &8388905809133262206
 CapsuleCollider:
@@ -5980,13 +5988,18 @@ MonoBehaviour:
   hitSounds:
   - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
     delay: 0
+    volume: 1
   deathSounds:
   - clip: {fileID: 8300000, guid: 84518b53aa450994fb95d5b83aea263b, type: 3}
     delay: 0
+    volume: 1
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamageWithStun:
     m_PersistentCalls:
       m_Calls: []
   OnTakeDamage:
@@ -6030,7 +6043,11 @@ MonoBehaviour:
   getHitStateName: GetHit
   animatorLayer: 0
   defaultStunDuration: 0.5
+  stunProbability: 0.97
   isHit: 0
+  OnStunned:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8388905809133262180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7339,7 +7356,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: offset.y
-      value: 2
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: enemyStats

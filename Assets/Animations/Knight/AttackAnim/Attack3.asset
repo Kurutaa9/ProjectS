@@ -15,6 +15,8 @@ MonoBehaviour:
   animatorOV: {fileID: 22100000, guid: ddc77aa3111b70c45b30212fc90d1831, type: 2}
   damage: 30
   staminaCost: 30
+  stunChanceMultiplier: 1.5
   soundEffects:
   - clip: {fileID: 8300000, guid: 4e0307cb784dd7c4aa8d324a11c811b2, type: 3}
     delay: 0
+    volume: 1

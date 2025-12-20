@@ -533,6 +533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+  stunChanceMultiplier: 1
   canDamage: 0
   ownerTeam: 1
   ownerRoot: {fileID: 0}
@@ -2465,7 +2466,7 @@ MonoBehaviour:
   anim: {fileID: 7839654999019890428}
   weapons:
   - {fileID: 661448456728437782}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 572613766}
   endOnAnimatorTagExit: 1
   attackTag: Attack
   attacks:
@@ -2477,7 +2478,10 @@ MonoBehaviour:
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 0.3
+      volume: 0.523
   - name: comboAttack
     animatorTrigger: AttackLong
     recovery: 2
@@ -2486,7 +2490,16 @@ MonoBehaviour:
     attackSO: {fileID: 0}
     attackSound: {fileID: 0}
     soundDelay: 0
-    soundEffects: []
+    soundEffects:
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 0.6
+      volume: 0.47
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 1.7
+      volume: 0.352
+    - clip: {fileID: 8300000, guid: a557b08580a892e4192b052cd6c25bdb, type: 3}
+      delay: 2.8
+      volume: 0.528
   logAttacks: 0
 --- !u!136 &7099697688031519808
 CapsuleCollider:
@@ -2535,13 +2548,18 @@ MonoBehaviour:
   hitSounds:
   - clip: {fileID: 8300000, guid: 77944e54a09636c4c85b8bd96e392bf6, type: 3}
     delay: 0
+    volume: 1
   deathSounds:
   - clip: {fileID: 8300000, guid: 84518b53aa450994fb95d5b83aea263b, type: 3}
     delay: 0
+    volume: 1
   OnDamageStateChanged:
     m_PersistentCalls:
       m_Calls: []
   OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTakeDamageWithStun:
     m_PersistentCalls:
       m_Calls: []
   OnTakeDamage:
@@ -2585,7 +2603,11 @@ MonoBehaviour:
   getHitStateName: GetHit
   animatorLayer: 0
   defaultStunDuration: 0.5
+  stunProbability: 0.75
   isHit: 0
+  OnStunned:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7099697688031519813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2979,6 +3001,10 @@ PrefabInstance:
     - target: {fileID: 2127756974390716129, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: m_Camera
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
+      propertyPath: offset.y
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 2127756974390716130, guid: 56061db5d3c634fdeb006622d72bc783, type: 3}
       propertyPath: enemyStats
