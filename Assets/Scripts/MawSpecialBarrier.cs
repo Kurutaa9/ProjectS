@@ -13,22 +13,30 @@ public class MawSpecialBarrier : MonoBehaviour
     [Tooltip("Delay (seconds) before the barrier disappears after boss death.")]
     [SerializeField] private float disappearDelay = 0f;
 
+    [Header("Music Settings")]
+    [SerializeField] private AudioClip bossMusic;
+    [SerializeField] private AudioClip explorationMusic;
+    [Tooltip("Assign a specific collider to act as the music trigger. This collider will NOT be forced to isTrigger=false.")]
+    [SerializeField] private Collider musicTriggerCollider;
+
     private bool hasSubscribed = false;
+    private PlayerStats playerStats;
 
     void Awake()
     {
         // Ensure any colliders on this object are NOT triggers as requested
+        // EXCEPTION: The music trigger collider
         var cols = GetComponentsInChildren<Collider>(true);
         foreach (var c in cols)
         {
-            if (c != null) c.isTrigger = false;
+            if (c != null && c != musicTriggerCollider) c.isTrigger = false;
         }
 
         // Try to auto-resolve boss stats if not assigned
         if (bossStats == null)
         {
-            // Prefer a GameObject tagged "Boss"
-            var bossObj = GameObject.FindGameObjectWithTag("Boss");
+            // Prefer a GameObject tagged "Enemy" (since we don't have a "Boss" tag)
+            var bossObj = GameObject.FindGameObjectWithTag("Enemy");
             if (bossObj != null)
             {
                 bossStats = bossObj.GetComponent<EnemyStatController>();
@@ -42,6 +50,19 @@ public class MawSpecialBarrier : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                playerStats.OnDeath.AddListener(OnPlayerDeath);
+            }
+        }
+    }
+
     void OnEnable()
     {
         TrySubscribe();
@@ -50,6 +71,7 @@ public class MawSpecialBarrier : MonoBehaviour
     void OnDisable()
     {
         TryUnsubscribe();
+        if (playerStats != null) playerStats.OnDeath.RemoveListener(OnPlayerDeath);
     }
 
     private void TrySubscribe()
@@ -70,8 +92,31 @@ public class MawSpecialBarrier : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (GlobalAudioManager.Instance != null && bossMusic != null)
+            {
+                GlobalAudioManager.Instance.PlayMusic(bossMusic);
+            }
+        }
+    }
+
+    private void OnPlayerDeath()
+    {
+        if (GlobalAudioManager.Instance != null && explorationMusic != null)
+        {
+            GlobalAudioManager.Instance.PlayMusic(explorationMusic);
+        }
+    }
+
     private void OnBossDeath()
     {
+        if (GlobalAudioManager.Instance != null && explorationMusic != null)
+        {
+            GlobalAudioManager.Instance.PlayMusic(explorationMusic);
+        }
         // Start coroutine so we can respect optional delay
         StartCoroutine(DisappearRoutine());
     }

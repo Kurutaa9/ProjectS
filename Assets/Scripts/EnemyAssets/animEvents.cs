@@ -138,4 +138,11 @@ public class animEvents : MonoBehaviour
     {
         StopTrailRendererNow();
     }
+
+    // Added to catch legacy animation events and prevent errors
+    public void AE_AttackEnd()
+    {
+        // If you have a controller that needs to know when the attack ends, call it here.
+        // For now, this empty method prevents the "no receiver" error.
+    }
 }

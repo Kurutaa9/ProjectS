@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public InputActionReference rollAction;
     public InputActionReference lockOnTargetAction;
     public InputActionReference healAction;
+    public InputActionReference killSelfAction;
 
     [Header("orientation")]
     public Camera cam;
@@ -104,6 +105,7 @@ public class PlayerController : MonoBehaviour
 
     public bool isTakingHit = false;
     public bool isHealing = false;
+    private bool sprintToggle = false;
 
     private void Start()
     {
@@ -113,13 +115,14 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         if (moveAction != null) moveAction.action.Enable();
-        if (jumpAction != null) jumpAction.action.Enable();
+        // if (jumpAction != null) jumpAction.action.Enable(); // Jump Disabled
         if (lockOnTargetAction != null) lockOnTargetAction.action.Enable();
         if (AttackAction != null) AttackAction.action.Enable();
         if (heavyAttackAction != null) heavyAttackAction.action.Enable();
         if (sprintAction != null) sprintAction.action.Enable();
         if (rollAction != null) rollAction.action.Enable();
         if (healAction != null) healAction.action.Enable();
+        if (killSelfAction != null) killSelfAction.action.Enable();
 
         baseAnimatorController = anim.runtimeAnimatorController;
     }
@@ -127,16 +130,27 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         moveAction.action.Disable();
-        jumpAction.action.Disable();
+        // jumpAction.action.Disable(); // Jump Disabled
         lockOnTargetAction.action.Disable();
         AttackAction.action.Disable();
         sprintAction.action.Disable();
         rollAction.action.Disable();
         healAction.action.Disable();
+        if (killSelfAction != null) killSelfAction.action.Disable();
     }
 
     void Update()
     {
+        // Debug: Kill Player
+        if (killSelfAction != null && killSelfAction.action.WasPressedThisFrame())
+        {
+            if (playerStats != null)
+            {
+                playerStats.SetInvincible(false); // Bypass dodge frames
+                playerStats.TakeDamage(playerStats.GetCurrentHealth() + 9999f);
+            }
+        }
+
         // Prevent stamina regen while attacking
         if (IsAttacking && playerStats != null)
         {
@@ -168,7 +182,8 @@ public class PlayerController : MonoBehaviour
         moveDir.y = 0f;
         moveDir = moveDir.normalized;
 
-        // Jump
+        // Jump - DISABLED
+        /*
         if (jumpAction.action.triggered && grounded && !inputsLocked)
         {
             if (playerStats != null && playerStats.CanPerformAction(jumpStaminaCost))
@@ -181,6 +196,7 @@ public class PlayerController : MonoBehaviour
             //     // Not enough stamina — do not jump. Could add feedback here.
             // }
         }
+        */
 
         // Apply gravity
         playerVelocity.y += gravity * Time.deltaTime;
@@ -239,14 +255,26 @@ public class PlayerController : MonoBehaviour
         float speedMultiplier = 1f;
         try
         {
-            float sprintVal = (sprintAction != null) ? sprintAction.action.ReadValue<float>() : 0f;
+            // Toggle Sprint Logic
+            if (sprintAction != null && sprintAction.action.triggered)
+            {
+                sprintToggle = !sprintToggle;
+            }
+
+            // Reset toggle if we stop moving (optional, but usually feels better)
+            if (moveDir.magnitude < 0.1f)
+            {
+                sprintToggle = false;
+            }
+
             // Can't start sprint if exhausted
-            isSprinting = sprintVal > 0.5f && !lockedOnTarget && moveDir.magnitude > 0.1f && !inputsLocked && grounded && !isRolling && !isExhausted;
+            isSprinting = sprintToggle && !lockedOnTarget && moveDir.magnitude > 0.1f && !inputsLocked && grounded && !isRolling && !isExhausted;
         }
         catch
         {
             // In case the action isn't set or ReadValue fails, ensure sprint is false
             isSprinting = false;
+            sprintToggle = false;
         }
 
         if (isSprinting)
@@ -269,6 +297,7 @@ public class PlayerController : MonoBehaviour
                     // stamina would reach zero this frame -> exhaustion
                     isSprinting = false;
                     isExhausted = true;
+                    sprintToggle = false; // Reset toggle
                     speedMultiplier = 1f;
                 }
                 else
