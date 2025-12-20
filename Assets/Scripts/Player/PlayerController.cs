@@ -74,6 +74,11 @@ public class PlayerController : MonoBehaviour
     public System.Collections.Generic.List<PlayerStats.SoundEffect> rollSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
     public System.Collections.Generic.List<PlayerStats.SoundEffect> restEnterSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
     public System.Collections.Generic.List<PlayerStats.SoundEffect> restExitSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+    public System.Collections.Generic.List<PlayerStats.SoundEffect> walkSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+    public System.Collections.Generic.List<PlayerStats.SoundEffect> runSounds = new System.Collections.Generic.List<PlayerStats.SoundEffect>();
+    public float footstepIntervalWalk = 0.5f;
+    public float footstepIntervalRun = 0.3f;
+    private float footstepTimer = 0f;
 
     // Sprinting
     [Header("Sprint Settings")]
@@ -295,8 +300,34 @@ public class PlayerController : MonoBehaviour
         
 
         controller.Move(finalMove * Time.deltaTime);
+        HandleFootsteps();
         combatControls();
         updateAnimations();
+    }
+
+    private void HandleFootsteps()
+    {
+        if (grounded && !inputsLocked && !isRolling && !isTakingHit && move.magnitude > 0.1f)
+        {
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0f)
+            {
+                if (isSprinting)
+                {
+                    PlaySounds(runSounds);
+                    footstepTimer = footstepIntervalRun;
+                }
+                else
+                {
+                    PlaySounds(walkSounds);
+                    footstepTimer = footstepIntervalWalk;
+                }
+            }
+        }
+        else
+        {
+            footstepTimer = Mathf.Min(footstepTimer, 0.05f);
+        }
     }
 
 
@@ -708,12 +739,12 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Rested at save spot. Enemies respawned and stats reset.");
     }
 
-    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay, float volume)
     {
         yield return new WaitForSeconds(delay);
         if (audioSource != null && clip != null)
         {
-            audioSource.PlayOneShot(clip);
+            audioSource.PlayOneShot(clip, volume);
         }
     }
 
@@ -725,9 +756,9 @@ public class PlayerController : MonoBehaviour
             if (sfx.clip != null)
             {
                 if (sfx.delay > 0)
-                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay, sfx.volume));
                 else
-                    audioSource.PlayOneShot(sfx.clip);
+                    audioSource.PlayOneShot(sfx.clip, sfx.volume);
             }
         }
     }

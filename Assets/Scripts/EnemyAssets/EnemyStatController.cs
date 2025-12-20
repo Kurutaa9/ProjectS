@@ -12,6 +12,7 @@ public class EnemyStatController : MonoBehaviour
     {
         public AudioClip clip;
         public float delay;
+        [Range(0f, 1f)] public float volume = 1f;
     }
 
     [Header("Audio")]
@@ -71,12 +72,12 @@ public class EnemyStatController : MonoBehaviour
         }
     }
 
-    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay, float volume)
     {
         yield return new WaitForSeconds(delay);
         if (audioSource != null && clip != null)
         {
-            audioSource.PlayOneShot(clip);
+            audioSource.PlayOneShot(clip, volume);
         }
     }
 
@@ -88,9 +89,9 @@ public class EnemyStatController : MonoBehaviour
             if (sfx.clip != null)
             {
                 if (sfx.delay > 0)
-                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                    StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay, sfx.volume));
                 else
-                    audioSource.PlayOneShot(sfx.clip);
+                    audioSource.PlayOneShot(sfx.clip, sfx.volume);
             }
         }
     }

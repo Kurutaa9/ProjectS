@@ -15,6 +15,7 @@ public class AttackSO : ScriptableObject
         public AudioClip clip;
         [Tooltip("Delay in seconds before playing the sound")]
         public float delay = 0f;
+        [Range(0f, 1f)] public float volume = 1f;
     }
 
     [Header("Audio")]

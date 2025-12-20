@@ -365,12 +365,12 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay)
+    private IEnumerator PlaySoundDelayed(AudioClip clip, float delay, float volume)
     {
         yield return new WaitForSeconds(delay);
         if (audioSource != null && clip != null)
         {
-            audioSource.PlayOneShot(clip);
+            audioSource.PlayOneShot(clip, volume);
         }
     }
 
@@ -386,9 +386,9 @@ public class PlayerCombat : MonoBehaviour
                 if (sfx.clip != null)
                 {
                     if (sfx.delay > 0)
-                        StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay));
+                        StartCoroutine(PlaySoundDelayed(sfx.clip, sfx.delay, sfx.volume));
                     else
-                        audioSource.PlayOneShot(sfx.clip);
+                        audioSource.PlayOneShot(sfx.clip, sfx.volume);
                 }
             }
         }
