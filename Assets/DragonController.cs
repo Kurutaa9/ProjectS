@@ -270,10 +270,7 @@ public class DragonController : MonoBehaviour
         }
 
         // Face player if we haven't started the attack animation yet
-        if (!isPerformingAttack)
-        {
-            FacePlayer();
-        }
+        FacePlayer();
         
         anim.SetBool("isMoving", false);
 
@@ -362,10 +359,7 @@ public class DragonController : MonoBehaviour
         anim.SetBool("isMoving", false);
         
         // Only face player if NOT currently attacking (i.e. waiting for cooldown)
-        if (!isPerformingAttack)
-        {
-            FacePlayer();
-        }
+        FacePlayer();
 
         // Only transition if animation is finished AND cooldown is done
         if (cooldownDone && !isPerformingAttack)

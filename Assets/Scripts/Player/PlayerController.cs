@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public InputActionReference lockOnTargetAction;
     public InputActionReference healAction;
     public InputActionReference killSelfAction;
+    public InputActionReference godModeAction;
 
     [Header("orientation")]
     public Camera cam;
@@ -123,6 +124,7 @@ public class PlayerController : MonoBehaviour
         if (rollAction != null) rollAction.action.Enable();
         if (healAction != null) healAction.action.Enable();
         if (killSelfAction != null) killSelfAction.action.Enable();
+        if (godModeAction != null) godModeAction.action.Enable();
 
         baseAnimatorController = anim.runtimeAnimatorController;
     }
@@ -137,6 +139,7 @@ public class PlayerController : MonoBehaviour
         rollAction.action.Disable();
         healAction.action.Disable();
         if (killSelfAction != null) killSelfAction.action.Disable();
+        if (godModeAction != null) godModeAction.action.Disable();
     }
 
     void Update()
@@ -149,6 +152,12 @@ public class PlayerController : MonoBehaviour
                 playerStats.SetInvincible(false); // Bypass dodge frames
                 playerStats.TakeDamage(playerStats.GetCurrentHealth() + 9999f);
             }
+        }
+
+        // God Mode Toggle
+        if (godModeAction != null && godModeAction.action.WasPressedThisFrame())
+        {
+            ToggleGodMode();
         }
 
         // Prevent stamina regen while attacking
@@ -766,6 +775,27 @@ public class PlayerController : MonoBehaviour
         EnemyRespawnManager.RespawnAllEnemies();
 
         Debug.Log("Rested at save spot. Enemies respawned and stats reset.");
+    }
+
+    private bool isGodMode = false;
+    private float originalSpeed;
+
+    private void ToggleGodMode()
+    {
+        isGodMode = !isGodMode;
+        if (isGodMode)
+        {
+            originalSpeed = playerSpeed;
+            playerSpeed = 20f;
+            if (playerStats != null) playerStats.SetGodMode(true);
+            Debug.Log("God Mode Enabled: Speed=20");
+        }
+        else
+        {
+            playerSpeed = originalSpeed;
+            if (playerStats != null) playerStats.SetGodMode(false);
+            Debug.Log("God Mode Disabled: Speed=" + originalSpeed);
+        }
     }
 
     private IEnumerator PlaySoundDelayed(AudioClip clip, float delay, float volume)

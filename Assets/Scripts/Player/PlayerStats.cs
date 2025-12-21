@@ -13,6 +13,32 @@ public class PlayerStats : MonoBehaviour
     [Tooltip("When true, incoming damage is ignored (used for dodge i-frames).")]
     public bool isInvincible = false;
     public bool isDead = false;
+    
+    private int originalDamageLevel;
+    private bool isGodMode = false;
+
+    public void SetGodMode(bool enabled)
+    {
+        if (enabled)
+        {
+            if (!isGodMode)
+            {
+                originalDamageLevel = baseStats.damageLevel;
+                baseStats.damageLevel = 1000;
+                isGodMode = true;
+                Debug.Log("God Mode Damage Enabled");
+            }
+        }
+        else
+        {
+            if (isGodMode)
+            {
+                baseStats.damageLevel = originalDamageLevel;
+                isGodMode = false;
+                Debug.Log("God Mode Damage Disabled");
+            }
+        }
+    }
 
     [Header("Stamina Regen Control")]
     [Tooltip("Seconds to wait after any stamina usage before regen starts again.")]

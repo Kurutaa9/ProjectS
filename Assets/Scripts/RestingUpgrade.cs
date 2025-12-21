@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 
 public class RestingUpgrade : MonoBehaviour
@@ -15,11 +16,57 @@ public class RestingUpgrade : MonoBehaviour
     public TMP_Text solsAmountText;
     public TMP_Text flaskAmountText;
 
-    // void Start(){
-    //     updateUI();
-    // }
+    [Header("Input System")]
+    public InputActionReference navigateAction;
+    public InputActionReference submitAction;
+
+    [Header("Controller Settings")]
+    public Color selectedColor = Color.yellow;
+    public Color normalColor = Color.white;
+    private int selectedIndex = 0;
+    private bool isAxisInUse = false;
+
+    private void OnEnable()
+    {
+        if (navigateAction != null && navigateAction.action != null) navigateAction.action.Enable();
+        if (submitAction != null && submitAction.action != null) submitAction.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (navigateAction != null && navigateAction.action != null) navigateAction.action.Disable();
+        if (submitAction != null && submitAction.action != null) submitAction.action.Disable();
+    }
+
+    void Start()
+    {
+        if (baseStats == null) Debug.LogError("RestingUpgrade: BaseStats is not assigned!");
+        if (solsAmountText == null) 
+        {
+            Debug.LogWarning("RestingUpgrade: SolsAmountText is not assigned!");
+        }
+        else
+        {
+            // Ensure the text object is active and rendered on top of its siblings (backgrounds)
+            solsAmountText.gameObject.SetActive(true);
+            solsAmountText.transform.SetAsLastSibling();
+        }
+
+        if (flaskAmountText == null) 
+        {
+            Debug.LogWarning("RestingUpgrade: FlaskAmountText is not assigned!");
+        }
+        else
+        {
+            flaskAmountText.gameObject.SetActive(true);
+            flaskAmountText.transform.SetAsLastSibling();
+        }
+        
+        updateUI();
+    }
 
     void Update(){
+        HandleInput();
         updateUI();
         Debug.Log("current sols: " + baseStats.currentSolsSO);
         Debug.Log("current health: " + baseStats.maxHealth);
@@ -27,6 +74,67 @@ public class RestingUpgrade : MonoBehaviour
         Debug.Log("current flask: " + baseStats.maxFlasks);
         Debug.Log("current damage: " + baseStats.baseDamage);
 
+    }
+
+    void HandleInput()
+    {
+        float v = 0f;
+        bool submit = false;
+
+        // Try New Input System
+        if (navigateAction != null && navigateAction.action != null)
+        {
+            v = navigateAction.action.ReadValue<Vector2>().y;
+        }
+        else
+        {
+            // Fallback to Legacy
+            v = Input.GetAxisRaw("Vertical");
+        }
+
+        // Try New Input System Submit
+        if (submitAction != null && submitAction.action != null)
+        {
+            if (submitAction.action.WasPressedThisFrame()) submit = true;
+        }
+        else
+        {
+            // Fallback to Legacy Submit
+            if (Input.GetButtonDown("Submit") || Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Return)) submit = true;
+        }
+
+        if (Mathf.Abs(v) > 0.5f)
+        {
+            if (!isAxisInUse)
+            {
+                if (v < 0)
+                {
+                    selectedIndex++;
+                    if (selectedIndex > 3) selectedIndex = 0;
+                }
+                else if (v > 0)
+                {
+                    selectedIndex--;
+                    if (selectedIndex < 0) selectedIndex = 3;
+                }
+                isAxisInUse = true;
+            }
+        }
+        else
+        {
+            isAxisInUse = false;
+        }
+
+        if (submit)
+        {
+            switch (selectedIndex)
+            {
+                case 0: upgradeHealth(); break;
+                case 1: upgradeStamina(); break;
+                case 2: upgradeFlask(); break;
+                case 3: upgradeDamage(); break;
+            }
+        }
     }
 
     public void upgradeHealth()
@@ -77,13 +185,42 @@ public class RestingUpgrade : MonoBehaviour
 
     void updateUI()
     {
-        Debug.Log("UI updated!");
-        healthLevelText.text = baseStats.healthLevel.ToString();
-        staminaLevelText.text = baseStats.staminaLevel.ToString();
-        flaskLevelText.text = baseStats.flaskLevel.ToString();
-        damageLevelText.text = baseStats.damageLevel.ToString();
+        // Debug.Log("UI updated!");
+        if (baseStats == null) return;
 
-        solsAmountText.text = baseStats.currentSolsSO.ToString();
-        flaskAmountText.text = baseStats.maxFlasks.ToString();
+        if (healthLevelText != null) 
+        {
+            healthLevelText.text = baseStats.healthLevel.ToString();
+            healthLevelText.color = (selectedIndex == 0) ? selectedColor : normalColor;
+        }
+
+        if (staminaLevelText != null) 
+        {
+            staminaLevelText.text = baseStats.staminaLevel.ToString();
+            staminaLevelText.color = (selectedIndex == 1) ? selectedColor : normalColor;
+        }
+
+        if (flaskLevelText != null) 
+        {
+            flaskLevelText.text = baseStats.flaskLevel.ToString();
+            flaskLevelText.color = (selectedIndex == 2) ? selectedColor : normalColor;
+        }
+
+        if (damageLevelText != null) 
+        {
+            damageLevelText.text = baseStats.damageLevel.ToString();
+            damageLevelText.color = (selectedIndex == 3) ? selectedColor : normalColor;
+        }
+
+        if (solsAmountText != null) 
+        {
+            solsAmountText.text = baseStats.currentSolsSO.ToString();
+            solsAmountText.color = normalColor;
+        }
+        if (flaskAmountText != null) 
+        {
+            flaskAmountText.text = baseStats.maxFlasks.ToString();
+            flaskAmountText.color = normalColor;
+        }
     }
 }
