@@ -2665,6 +2665,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3953408205760077216, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_margin.z
+      value: -0.7484131
+      objectReference: {fileID: 0}
+    - target: {fileID: 7496554170266210945, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8391138351962397078, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
       propertyPath: m_Name
       value: PlayerHUD

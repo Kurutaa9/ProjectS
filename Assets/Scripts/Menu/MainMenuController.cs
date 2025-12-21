@@ -241,7 +241,9 @@ public class MainMenuController : MonoBehaviour
         {
             case MenuAction.NewGame:
                 ResetGameData();
-                LoadSceneSafe(newGameScene);
+                // LoadSceneSafe(newGameScene);
+            SceneManager.LoadScene("Prototype");
+
                 break;
 
             case MenuAction.Continue:

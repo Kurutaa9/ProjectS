@@ -9,6 +9,7 @@
     "com.unity.inputsystem": "1.7.0",
     "com.unity.postprocessing": "3.4.0",
     "com.unity.render-pipelines.high-definition": "12.1.15",
+    "com.unity.render-pipelines.high-definition-config": "12.1.15",
     "com.unity.render-pipelines.universal": "12.1.15",
     "com.unity.shadergraph": "12.1.15",
     "com.unity.terrain-tools": "4.0.5",
