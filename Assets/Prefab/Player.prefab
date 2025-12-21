@@ -3079,6 +3079,7 @@ MonoBehaviour:
   lockOnTargetAction: {fileID: -8217979969292354152, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   healAction: {fileID: 4917344766067524477, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   killSelfAction: {fileID: 6490121655583884946, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  godModeAction: {fileID: -6149913233630057694, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
   cam: {fileID: 0}
   orientation: {fileID: 518714140054880408}
   playerObj: {fileID: 7582084291591181332}

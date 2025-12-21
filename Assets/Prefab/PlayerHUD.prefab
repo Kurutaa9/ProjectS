@@ -230,7 +230,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 73.902466, w: 0}
+  m_margin: {x: 0, y: 0, z: -0.7484131, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -253,7 +253,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7503212313606574206
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1315,6 +1315,10 @@ PrefabInstance:
     - target: {fileID: 3609285777876748962, guid: 6cdb907b2e1eb414a9a4963a1a72b500, type: 3}
       propertyPath: m_Layer
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7417365828211088435, guid: 6cdb907b2e1eb414a9a4963a1a72b500, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6cdb907b2e1eb414a9a4963a1a72b500, type: 3}

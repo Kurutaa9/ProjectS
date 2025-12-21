@@ -4229,6 +4229,10 @@ MonoBehaviour:
   damageLevelText: {fileID: 2538901107185605773}
   solsAmountText: {fileID: 0}
   flaskAmountText: {fileID: 0}
+  navigateAction: {fileID: -8963325313229851701, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  submitAction: {fileID: -3460384171904080698, guid: 55eb10ec92e6ce649b64a564e2bb7f15, type: 3}
+  selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6585900776898876975
 GameObject:
   m_ObjectHideFlags: 0
