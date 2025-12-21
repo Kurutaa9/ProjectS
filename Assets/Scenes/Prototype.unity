@@ -2597,6 +2597,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1181184133353537416, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181184133353537416, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181184133353537416, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181184133353537416, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851295597777923057, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851295597777923057, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851295597777923057, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851295597777923057, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8391138351962397078, guid: b24095fb7de63f948ad1997b2502137f, type: 3}
       propertyPath: m_Name
       value: PlayerHUD
@@ -2972,6 +3004,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ca3239fe147420408cdf07ccd350bf3, type: 3}
+--- !u!114 &1166773864 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1967115985, guid: 8d6133d732367e647858eddc87953d69, type: 3}
+  m_PrefabInstance: {fileID: 990345118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3d446f7ff644b70a8daaa5525fcf56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1185054124
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4820,6 +4863,10 @@ PrefabInstance:
       propertyPath: bossStats
       value: 
       objectReference: {fileID: 6527167786498624159}
+    - target: {fileID: 114000476959761475, guid: 18071cfb1bd6438498d7a573be28d482, type: 3}
+      propertyPath: fogRenderer
+      value: 
+      objectReference: {fileID: 1166773864}
     - target: {fileID: 2402025107920045211, guid: 18071cfb1bd6438498d7a573be28d482, type: 3}
       propertyPath: m_Name
       value: Terrain
@@ -5465,6 +5512,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3040114449939552650, guid: 3c762635428ed4640b46bf290758ea3f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3040114449939552650, guid: 3c762635428ed4640b46bf290758ea3f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3040114451050738527, guid: 3c762635428ed4640b46bf290758ea3f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3040114451050738527, guid: 3c762635428ed4640b46bf290758ea3f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3040114451050738527, guid: 3c762635428ed4640b46bf290758ea3f, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4014933012859912306, guid: 3c762635428ed4640b46bf290758ea3f, type: 3}
       propertyPath: player
       value: 

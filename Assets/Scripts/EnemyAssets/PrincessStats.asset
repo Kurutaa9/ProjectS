@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 289e3e21975c6c74192574ccb7f8ee86, type: 3}
   m_Name: PrincessStats
   m_EditorClassIdentifier: 
-  healthLevel: 35
+  healthLevel: 15
   staminaLevel: 1
   flaskLevel: 1
-  damageLevel: 15
+  damageLevel: 45
   staminaRegen: 1
   rollStaminaCost: 20
   soulsReward: 50000

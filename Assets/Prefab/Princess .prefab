@@ -3042,18 +3042,18 @@ MonoBehaviour:
   projectileCount: 3
   spreadAngle: 30
   runePrefab: {fileID: 7035410982994291534, guid: bd6287568ec0f49e0865a1dd59aed9d5, type: 3}
-  runeDamage: 20
+  runeDamage: 150
   runeRadius: 3
   runeDelay: 1.5
   wallPrefab: {fileID: 2079008771633437194, guid: 118acd0aecc874172b59bef026a48807, type: 3}
   wallSpawnDistance: 5
   wallSpeed: 8
-  wallDamage: 25
+  wallDamage: 125
   wallStartDelay: 1
   wallRotationOffset: {x: 0, y: 0, z: 0}
   slashPrefab: {fileID: 7597275148421266931, guid: c11ec8cbb63924b73a0db576945b213e, type: 3}
   slashSpeed: 15
-  slashDamage: 20
+  slashDamage: 200
   slashRotationOffset: {x: 0, y: -90, z: 0}
 --- !u!1 &7476754614118935917
 GameObject:
